@@ -23,10 +23,10 @@ Para probar que todo se instaló y compiló correctamente:
 * $ source Mobile-Robots-2021-1/catkin_ws/devel/setup.bash
 * $ roslaunch bring_up justina_simple.launch
 
-Si todo se instaló y compiló correctamente, se debería ver un RViz como el siguiente:<br>
+Si todo se instaló y compiló correctamente, se debería ver un Gazebo como el siguiente:<br>
 <img src="https://github.com/mnegretev/Mobile-Robots-2021-1/blob/master/Media/gazebo.png" alt="Star Gazer App" width="700"/>
-<br>
-Y un Gazebo como el siguiente:<br>
+<br><br>
+Y un RViz como el siguiente:<br>
 <img src="https://github.com/mnegretev/Mobile-Robots-2021-1/blob/master/Media/rviz.png" alt="Star Gazer App" width="700"/>
 
 ## Contacto
