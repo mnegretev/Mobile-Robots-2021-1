@@ -29,7 +29,7 @@ Si todo se instaló y compiló correctamente, se debería ver un RViz como el si
 
 Y un Gazebo como el siguiente:
 
-<img src="https://github.com/mnegretev/PAPIME_PE112120/blob/master/Media/TestMaps2.png" alt="Star Gazer App" width="300"/>
+<img src="https://github.com/mnegretev/Mobile-Robots-2021-1/blob/master/Media/rviz.png" alt="Star Gazer App" width="300"/>
 
 ## Contacto
 Dr. Marco Negrete<br>
