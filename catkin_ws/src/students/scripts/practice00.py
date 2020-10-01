@@ -22,7 +22,7 @@ def callback_laser_scan(msg):
     #	
     print int(( 0 - msg.ang_min)/msg.angle_increment)
     global obstacle_detected
-    if(msg.ranges[index] < 1.0)
+    if(msg.ranges[index] < 1.0):
         obstacle_detected= msg.ranges[index]
     return
     
