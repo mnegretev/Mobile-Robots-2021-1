@@ -20,7 +20,22 @@ def callback_laser_scan(msg):
     # TODO:
     # Do something to detect if there is an obstacle in front of the robot.
     #
-    return
+	print("Valor de laser recibido"+str(len(msg.ranges)))
+    print("Angulo minimo"+str(msg.angle_min))
+    print("angulo incremento"+str(msg.angle_increment))
+    index=int((0-msg.angle_min)/msg.angle_increment)
+    print("index for 0 rad "+str(index))
+    print("adsf"+str(msg.ranges[index]))
+
+
+    global obstacle_detected
+    obstacle_detected = msg.ranges[index]<1.0
+
+    #if(msg.ranges[index]<1.0):
+    #    print("obstaculo detectado")
+    #else:
+    #    print("no hay riesgo")
+    #return
 
 def main():
     print "PRACTICE 00 - " + NAME
@@ -28,7 +43,10 @@ def main():
     rospy.Subscriber("/scan", LaserScan, callback_laser_scan)
     pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
     loop = rospy.Rate(10)
-    
+
+
+    global obstacle_detected
+    obstacle_detected = True
     while not rospy.is_shutdown():
         #
         # TODO:
@@ -36,6 +54,14 @@ def main():
         # Move forward if there is no obstacle in front and stop otherwise.
         # Publish the message.
         #
+           
+        cmd_vel = Twist()
+        if not obstacle_detected:
+            cmd_vel.linear.x=0.5
+        else:
+            cmd_vel.linear.x=0.0
+        pub_cmd_vel.Publish(cmd_vel)
+
         loop.sleep()
 
 
