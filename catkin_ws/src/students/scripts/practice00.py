@@ -26,8 +26,8 @@ def callback_laser_scan(msg):
     index = int((0 - msg.angle_min)/msg.angle_increment)
     #print("Index for 0 rad: " + str(index))
     #print("Distance at 0 rad: " + str(msg.ranges[index]))
-    global obstacle_detected = sg.ranges[index] < 1.0 
-    obstacle_detected = sg.ranges[index] < 1.0 
+    global obstacle_detected 
+    obstacle_detected = msg.ranges[index] < 1.0 
 
     #if(sg.ranges[index] < 1.0)
     #    print("Warning! Obstacle detected")
