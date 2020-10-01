@@ -34,7 +34,7 @@ def main():
     loop = rospy.Rate(10)
     
     global obstacle_detected
-    obstcle_detected=True
+    obstacle_detected=True
     while not rospy.is_shutdown():
         #
         # TODO:
