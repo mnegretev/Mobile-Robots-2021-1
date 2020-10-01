@@ -13,7 +13,11 @@ import rospy
 from sensor_msgs.msg   import LaserScan
 from geometry_msgs.msg import Twist
 
+<<<<<<< HEAD
 NAME = "perez_vasquez_carlos"
+=======
+NAME = "vazquez_perez"
+>>>>>>> 4745aae56288a4981e36d12b294b799cdd38b434
 
 def callback_laser_scan(msg):
     #
