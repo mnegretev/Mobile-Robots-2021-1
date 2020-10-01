@@ -13,13 +13,20 @@ import rospy
 from sensor_msgs.msg   import LaserScan
 from geometry_msgs.msg import Twist
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "Torres Trejo Luis David"
 
 def callback_laser_scan(msg):
     #
     # TODO:
     # Do something to detect if there is an obstacle in front of the robot.
     #
+    print("Recive laser Scan with" + str(len(msg.ranges)))
+    print("Angle Min: " + str(msg.angle_min))
+    print("Angle Increment: " + str(msg.angle_increment))
+    index = int ((0 - msg.angle_min)/msg.angle_increment)
+    print("Index for 0 rad: " + str(index))
+    print("Distance at 0 rad: " + str(msg.ranges[index]))
+
     return
 
 def main():
