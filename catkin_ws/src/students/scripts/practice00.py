@@ -13,7 +13,9 @@ import rospy
 from sensor_msgs.msg   import LaserScan
 from geometry_msgs.msg import Twist
 
-NAME = "Martinez_Fadul"
+
+NAME = "MARTINEZ FADUL"
+
 
 def callback_laser_scan(msg):
     #
@@ -32,12 +34,14 @@ def callback_laser_scan(msg):
 
     return
 
+
 def main():
     print "PRACTICE 00 - " + NAME
     rospy.init_node("practice00")
     rospy.Subscriber("/scan", LaserScan, callback_laser_scan)
     pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
     loop = rospy.Rate(10)
+
     global obstacle_detected
     obstacle_detected = True
     while not rospy.is_shutdown():
@@ -53,6 +57,7 @@ def main():
         else:
             cmd_vel.linear.x = 0
         pub_cmd_vel.publish(cmd_vel)
+
         loop.sleep()
 
 
