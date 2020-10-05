@@ -20,6 +20,19 @@ def callback_laser_scan(msg):
     # TODO:
     # Do something to detect if there is an obstacle in front of the robot.
     #
+    #print("Recived laser scan with " + str(len(msg.ranges))) #Imprimimos cuantas lecturas del laser tenemos
+    #print("Angle min: ", + str(msg.angle_min))
+    #print("Angle increment: ",  + str(msg.angle_inscrement))
+    index = int((0 - msg.angle_min) /msg.angle_increment))
+    #print("Index for 0 rad: " + str(index))
+    #print("Distance at 0 rad: " + str(msg.ranges[index]))
+    global obstacle_detected
+    obstacle_detected = msg.ranges[index] < 1.0
+   
+    if(msg.ranges[index] < 1.0):
+	print("Warning! Obstacle detected")
+    else:
+	print("No risk of collision)
     return
 
 def main():
@@ -35,7 +48,12 @@ def main():
         # Declare a Twist message and assign the appropiate speeds:
         # Move forward if there is no obstacle in front and stop otherwise.
         # Publish the message.
-        #
+        cmd_vel = Twist()
+        if not obstacle_detected:
+            cmd_vel.linear.x = 0.5
+ 	else:
+	   cdmd_vel.linear.x = 0
+	pub_cmd_vel-publish(cmd_vel)
         loop.sleep()
 
 
