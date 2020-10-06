@@ -41,6 +41,8 @@ def main():
     pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
     loop = rospy.Rate(10)
     
+    global obstacle_detected = True
+
     while not rospy.is_shutdown():
         #
         # TODO:
@@ -52,7 +54,7 @@ def main():
             cmd_vel.linear.x = 0.5
         else:
             cmd_vel.linear.x = 0
-        pub_cmd_vel_publish(cmd_vel)
+    pub_cmd_vel.publish(cmd_vel)
         loop.sleep()
 
 
