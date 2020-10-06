@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/nacho/Documents/ROS/Mobile-Robots-2021-1/catkin_ws/devel/include/**",
+                "/home/nacho/catkin_ws/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/nacho/catkin_ws/src/gscam/include/**",
+                "/home/nacho/Documents/ROS/Mobile-Robots-2021-1/catkin_ws/src/tools/occupancy_grid_utils/include/**",
+                "/home/nacho/catkin_ws/src/realsense-ros/realsense2_camera/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/home/linuxbrew/.linuxbrew/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

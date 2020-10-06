@@ -1,0 +1,5 @@
+conda deactivate
+echo $GAZEBO_MODEL_PATH
+export GAZEBO_MODEL_PATH=/home/nacho/Documents/ROS/Mobile-Robots-2021-1/catkin_ws/src/bring_up/models
+source ~/Documents/ROS/Mobile-Robots-2021-1/catkin_ws/devel/setup.bash 
+roslaunch bring_up justina_simple.launch 
