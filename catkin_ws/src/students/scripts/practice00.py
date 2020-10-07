@@ -23,7 +23,7 @@ def callback_laser_scan(msg):
     return
 
 def main():
-    print "PRACTICE 00 - " + ARJONA JIMENEZ GERARDO
+    print "PRACTICE 00 - " + NAME
     rospy.init_node("practice00")
     rospy.Subscriber("/scan", LaserScan, callback_laser_scan)
     pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
