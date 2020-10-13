@@ -20,11 +20,12 @@ def callback_laser_scan(msg):
     # TODO:
     # Do something to detect if there is an obstacle in front of the robot.
     #	
+    index = int((0 - msg.angle.min)/msg.angle_increment)
     print int(( 0 - msg.ang_min)/msg.angle_increment)
     global obstacle_detected
-    if(msg.ranges[index] < 1.0):
-        obstacle_detected= msg.ranges[index]
-    return
+    #if(msg.ranges[index] < 1.0):
+    #    obstacle_detected= msg.ranges[index]
+    #return
     
 def main():
     print "PRACTICE 00 - " + NAME
@@ -42,6 +43,7 @@ def main():
         # Move forward if there is no obstacle in front and stop otherwise.
         # Publish the message.
         #
+	cmd_vel = Twist()
 	if not obstacle_detected:
 	    cmd_vel.linerar.x=0.5
 	else:
