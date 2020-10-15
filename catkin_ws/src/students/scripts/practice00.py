@@ -14,7 +14,7 @@ from sensor_msgs.msg   import LaserScan
 from geometry_msgs.msg import Twist
 
 
-NAME = "MARTINEZ FADUL"
+NAME = "MARTINEZ FADUL JESUS"
 
 
 def callback_laser_scan(msg):
@@ -44,6 +44,7 @@ def main():
 
     global obstacle_detected
     obstacle_detected = True
+    
     while not rospy.is_shutdown():
         #
         # TODO:
