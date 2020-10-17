@@ -31,7 +31,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     # If path cannot be found, return an empty tuple []
     #
     execution_steps=0
-    open_list      = deque() ############ Queque
+    open_list      = deque() ############ Queue
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
