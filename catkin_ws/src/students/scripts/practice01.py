@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "Torres_Trejo"
 
 static_map = None
 grid_map   = None
@@ -31,7 +31,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     # If path cannot be found, return an empty tuple []
     #
     execution_steps=0
-    open_list      = deque() ############ Queue
+    open_list      = deque() ############ 
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
@@ -43,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft()  ######## HINT
+        [r,c] = open_list.popleft()  ######## QUEUE
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
