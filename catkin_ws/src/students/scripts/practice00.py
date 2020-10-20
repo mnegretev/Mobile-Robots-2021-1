@@ -22,7 +22,7 @@ def callback_laser_scan(msg):
     # TODO:
     # Do something to detect if there is an obstacle in front of the robot.
     #
-    print("Received laser scan with: " + str(len(msg.ranges)))
+    #print("Received laser scan with: " + str(len(msg.ranges)))
     #print(str(msg.angle_min))
     #print(str(msg.angle_increment))
     index = int((0 - msg.angle_min)/msg.angle_increment)

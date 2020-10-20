@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "Martinez-Fadul-Jesús"
+NAME = "Martinez-Fadul-Jesus"
 
 static_map = None
 grid_map   = None
@@ -76,7 +76,42 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
     # If path cannot be found, return an empty tuple []
     #
+    execution_steps=0
+    open_list      = deque() ############ HINT
+    in_open_list   = numpy.full(grid_map.shape, False)
+    in_closed_list = numpy.full(grid_map.shape, False)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+
+    [r,c] = [start_r, start_c]
+    open_list.append([start_r, start_c])
+    in_open_list[start_r, start_c] = True
+    distances   [start_r, start_c] = 0
+
+    while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
+        [r,c] = open_list.pop()  ######## HINT
+        in_closed_list[r,c] = True
+        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
+        dist = distances[r,c] + 1
+        for [nr,nc] in neighbors:
+            if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
+                continue
+            if dist < distances[nr,nc]:
+                distances[nr,nc]    = dist
+                parent_nodes[nr,nc] = [r,c]
+            if not in_open_list[nr,nc]:
+                in_open_list[nr,nc] = True
+                open_list.append([nr,nc])
+            execution_steps += 1
+
+    if [r,c] != [goal_r, goal_c]:
+        print "Cannot calculate path by Breadth First Search:'("
+        return []
+    print "Path calculated after " + str(execution_steps) + " steps."
     path = []
+    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
+        path.insert(0, [r,c])
+        [r,c] = parent_nodes[r,c]
     return path
 
 def generic_callback(req, algorithm):
