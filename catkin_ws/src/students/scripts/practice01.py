@@ -105,7 +105,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by Depth First Search:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
