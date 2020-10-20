@@ -43,6 +43,7 @@ def main():
     
     global obstacle_detected
     obstacle_detected = True 
+
     while not rospy.is_shutdown():
         #
         # TODO:
@@ -57,7 +58,6 @@ def main():
             cmd_vel.linear.x = 0
 
         pub_cmd_vel.publish(cmd_vel)
- 	
         loop.sleep()
 
 
