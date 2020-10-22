@@ -71,7 +71,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
 def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     #
     # TODO:
-    # Write a breadth first search algorithm to find a path in an occupancy grid map given the start cell
+    # Write a depth first search algorithm to find a path in an occupancy grid map given the start cell
     # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
     # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
     # If path cannot be found, return an empty tuple []
