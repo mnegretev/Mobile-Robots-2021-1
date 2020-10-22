@@ -43,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [start_r, start_c] = open_list.popleft()  ######## HINT
+        [r,c] = open_list.pop()  ######## HINT
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
