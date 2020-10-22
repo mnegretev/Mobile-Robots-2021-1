@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "Arguelles_Macosay"
 
 static_map = None
 grid_map   = None
