@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "Arguelles_Macosay"
+NAME = "ARGUELLES_MACOSAY"
 
 static_map = None
 grid_map   = None
@@ -43,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft()  ######## HINT
+        [start_r, start_c] = open_list.popleft()  ######## HINT
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -132,3 +132,4 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
+    
