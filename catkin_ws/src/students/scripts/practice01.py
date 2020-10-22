@@ -79,7 +79,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     [r,c] = [start_r, start_c]
     open_list.append([start_r, start_c])
     in_open_list[start_r, start_c] = True
-    distances   [start_r, start_c] = 0
+    distances   [start_r, start_c] = 0 
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
         [r,c] = open_list.pop()  
