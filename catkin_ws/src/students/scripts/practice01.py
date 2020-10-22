@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "ARMANDO_MEDINA_F"
+NAME = "ARMANDO MEDINA FERNANDEZ"
 
 static_map = None
 grid_map   = None
@@ -59,9 +59,9 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'( "
+        print ("Cannot calculate path by Breadth First Search:'(")
         return []
-    print "Path calculated after " + str(execution_steps) + " steps."
+    print ("Path calculated after " + str(execution_steps) + " steps.")
     path = []
     while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
         path.insert(0, [r,c])
@@ -139,7 +139,7 @@ def callback_dfs(req):
 
 def main():
     global static_map, grid_map
-    print "PRACTICE 01 - " + NAME
+    print ("PRACTICE 01 - " + NAME)
     rospy.init_node("practice01")
     rospy.Service('/navigation/path_planning/breadth_first_search', GetPlan, callback_bfs)
     rospy.Service('/navigation/path_planning/depth_first_search'  , GetPlan, callback_dfs)
