@@ -99,13 +99,10 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
         [g,[r,c]] = heap.heappop(open_list)
         in_closed_list[r,c] = True
-        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        dist = distances[r,c] + 1 
-	hr = numpy.absolute(r-ro)
-	hc = numpy.absolute(c-co)
-	h = hr+hc
-        f = h + dist
-        for [nr,nc] in neighbors:
+        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]] 
+	for [nr,nc] in neighbors:
+	    h = numpy.absolute(nr-ro) + numpy.absolute(nc-co)
+	    dist = distances[r,c] + 1 + h
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
             if dist < distances[nr,nc]:
@@ -113,7 +110,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-  		heap.heappush(open_list,[f,[nr,nc]])
+  		heap.heappush(open_list,[dist,[nr,nc]])
             execution_steps += 1
     if [r,c] != [goal_r, goal_c]:
         print "Cannot calculate path by Breadth First Search:'("
