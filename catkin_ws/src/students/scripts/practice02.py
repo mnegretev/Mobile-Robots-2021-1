@@ -18,7 +18,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "practica_2 corriendo."
+NAME = "Rangel_Navarro_Abraham_Salvador"
 
 def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
