@@ -40,7 +40,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    heapq.heappush(open_list,(0, [start_r, start_c]))   ###### Initialize Priority Queue
+    heapq.heappush(open_list,(0, [start_r, start_c]))   ##### Initialize Priority Queue
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
