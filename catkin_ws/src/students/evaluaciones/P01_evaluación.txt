@@ -1,0 +1,2 @@
+La práctica funciona correctamente.
+El programa calcula correctamente las rutas. 
