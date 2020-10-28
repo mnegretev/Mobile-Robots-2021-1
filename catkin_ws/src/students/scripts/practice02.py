@@ -49,7 +49,8 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         [r,c] = heapq.heappop(open_list)#open_list.popleft() 
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        dist = distances[r,c] + 1
+        #g = distances[r,c] + 1
+	#g = distances[r,c] + 1 + cost_map[nr,nc]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
@@ -103,7 +104,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         [r,c] = heapq.heappop(open_list) 
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        dist = distances[r,c] + 1
+        #dist = distances[r,c] + 1
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
