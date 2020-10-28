@@ -113,7 +113,6 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
 	    h = math.sqrt((goal_r - r)*(goal_r - r)+(goal_c - c)*(goal_c - c))
 	    #print "h ",h
             f = g + h
-	    #print "f ",f," vs dist ",distances[nr,nc]
             if f < distances[nr,nc]:
                 distances[nr,nc]    = f
                 parent_nodes[nr,nc] = [r,c]
