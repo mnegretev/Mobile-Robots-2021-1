@@ -33,8 +33,15 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     execution_steps=0
     lista=[]
-    open_list = lista
+    open_list      = lista
     heapq.heapify(open_list)
+    in_open_list   = numpy.full(grid_map.shape, False)
+    in_closed_list = numpy.full(grid_map.shape, False)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+
+    [r,c] = [start_r, start_c]
+    open_list.append([start_r, start_c])
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
@@ -46,23 +53,24 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list) #heap
+        [r,c] = heapq.heappop(open_list)  ######## HINT
+        
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            g = distances[r,c] + 1 + cost_map[nr,nc]
-            if g < distances[nr,nc]:
-                distances[nr,nc]    = g
+            dist = distances[r,c] + 1 + cost_map[nr,nc]
+            if dist < distances[nr,nc]:
+                distances[nr,nc]    = dist
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list,(g,[nr,nc])) #indicarle al heap que matenga el nodo correcto
+                heapq.heappush(open_list,[nr,nc])
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Dijkstra:'("
+        print "Cannot calculate path by Breadth First Search:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -85,8 +93,15 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     execution_steps=0
     lista=[]
-    open_list = lista
+    open_list      = lista
     heapq.heapify(open_list)
+    in_open_list   = numpy.full(grid_map.shape, False)
+    in_closed_list = numpy.full(grid_map.shape, False)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+
+    [r,c] = [start_r, start_c]
+    open_list.append([start_r, start_c])
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
@@ -98,33 +113,33 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)
-        print [r,c]
+        [r,c] = heapq.heappop(open_list)  ######## HINT
+        
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            g = distances[r,c] + 1 + cost_map[nr,nc] 
+            dist = distances[r,c] + 1 + cost_map[nr,nc] 
             h= abs(goal_r-r+goal_c-c)
-            f= g + h
-            if g < distances[nr,nc]:
-                distances[nr,nc]    = g
+            f= dist + h
+            if dist < distances[nr,nc]:
+                distances[nr,nc]    = dist
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list,(f,[nr,nc])) #indicarle al heap que matenga el nodo correcto
+                heapq.heappush(open_list,[nr,nc])
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by A+ :'("
+        print "Cannot calculate path by Breadth First Search:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
     while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
         path.insert(0, [r,c])
         [r,c] = parent_nodes[r,c]
-    return path   
+    return path
 
 def get_maps():
     clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
