@@ -106,7 +106,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
         [r,c] = heapq.heappop(open_list)  ###Una vez que el monton este organizado correctamente,
-        #usa heappop() para eliminar el elemento con el valor más bajo.
+        #usa heappop() para eliminar el elemento con el valor mas bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         ##dist = distances[r,c] + 1
