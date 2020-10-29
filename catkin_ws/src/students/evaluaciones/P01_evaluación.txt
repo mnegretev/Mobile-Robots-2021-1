@@ -1,0 +1,5 @@
+La práctica no corre.
+El intérprete arroja el siguiente error:
+SyntaxError: Non-ASCII character '\xc3' in file /home/marco/CLASES/Mobile-Robots-2021-1/catkin_ws/src/students/scripts/practice01.py on line 34, but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details.
+
+Calificación: 5
