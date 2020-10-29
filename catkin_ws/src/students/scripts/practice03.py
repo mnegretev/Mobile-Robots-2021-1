@@ -78,11 +78,14 @@ def get_cost_map(static_map, cost_radius):
     for i in range(0,height-1):
         for j in range(0,width-1):
             if static_map[i,j]>50:
-                for k1 in range(i-r,i+r):
-                    for k2 in range(j-r,j+r):
-                        c= r + 1 + numpy.max(numpy.absolute(k1),numpy.absolute(k2))
-                        cost_map[i+r,j+r] = numpy.max(c,cost_map[i+r,j+r])
+                for k1 in range(-r,r):
+                    for k2 in range(-r,r):
+                        c = r + 1 - max(numpy.absolute(k1),numpy.absolute(k2))
+                        cost_map[i+k1,j+k2] = max(c,cost_map[i+k1,j+k2])
     return cost_map
+
+
+
 
 def callback_inflated_map(req):
     global static_map, inflation_radius
