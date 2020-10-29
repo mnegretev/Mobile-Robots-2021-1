@@ -41,20 +41,20 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list,(0,[start_r,start_c]))
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list,(0,[start_r,start_c]))
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  
-        
+        lista_aux2 = heapq.heappop(open_list)  
+        [r,c]=lista_aux2[1]
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
@@ -66,7 +66,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list,[nr,nc])
+                heapq.heappush(open_list,(g,[nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
@@ -101,32 +101,34 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list,(0,[start_r,start_c]))
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list,(0,[start_r,start_c]))
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list) 
-        
+        lista_aux=heapq.heappop(open_list)
+        [r,c]=lista_aux[1]
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            f = distances[r,c] + 1 + cost_map[nr,nc] + (abs(goal_r-r)+abs(goal_c-c))
+            g = distances[r,c] + 1 + cost_map[nr,nc] 
+            h = (abs(goal_r-r)+abs(goal_c-c))
+            f = g+h
             if f < distances[nr,nc]:
-                distances[nr,nc]    = f
+                distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list,[nr,nc])
+                heapq.heappush(open_list,(f,[nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
