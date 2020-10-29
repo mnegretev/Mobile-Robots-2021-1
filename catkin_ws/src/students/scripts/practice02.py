@@ -33,14 +33,14 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     execution_steps=0
     open_list      = [] ############ HINT
-    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
+    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar #heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una fuente de datos.
+    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de #clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una #fuente de datos.
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
@@ -85,19 +85,19 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     execution_steps=0
     open_list      = [] ############ HINT
-    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
+    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar #heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una fuente de datos.
+    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de #clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una #fuente de datos.
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  ###Una vez que el montón esté organizado correctamente, usa heappop() para eliminar el elemento con el valor más bajo.
+        [r,c] = heapq.heappop(open_list)  ###Una vez que el montón esté organizado correctamente, #usa heappop() para eliminar el elemento con el valor más bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         ##dist = distances[r,c] + 1
