@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 #
 # AUTONOMOUS MOBILE ROBOTS - UNAM, FI, 2021-1
-# PRACTICE 1 - PATH PLANNING BY BREADTH FIRST SEARCH AND DEPTH FIRST SEARCH
+# PRACTICE 2 - PATH PLANNING BY DIJKSTRA AND A-STAR
 #
 # Instructions:
 # Write the code necessary to plan a path using two search algorithms:
-# Breadth first search and Depth first search
+# Dijkstra and A*
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
 #
 
 import sys
 import numpy
+import heapq
 import rospy
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
@@ -19,47 +20,49 @@ from collections import deque
 
 NAME = "MEDINA FERNANDEZ ARMANDO"
 
-static_map = None
-grid_map   = None
-
-def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
+def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     # TODO:
-    # Write a breadth first search algorithm to find a path in an occupancy grid map given the start cell
+    # Write a Dijkstra algorithm to find a path in an occupancy grid map given the start cell
     # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
     # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
     # If path cannot be found, return an empty tuple []
+    # Hint: Use a priority queue to implement the open list. 
+    # Documentation to implement priority queues in python can be found in
+    # https://docs.python.org/2/library/heapq.html
     #
     execution_steps=0
     open_list      = deque() ############ HINT
+    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una fuente de datos.
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft()  ######## HINT
+        [r,c] = heapq.heappop(open_list)  ###Una vez que el montón esté organizado correctamente, usa heappop() para eliminar el elemento con el valor más bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        dist = distances[r,c] + 1
+        ##dist = distances[r,c] + 1
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            if dist < distances[nr,nc]:
-                distances[nr,nc]    = dist
+            g = distances[r,c] + 1 + cost_map[nr][nc]
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                open_list.append([nr,nc])
+                heapq.heappush(open_list, (g, [nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by Dijkstra:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -68,44 +71,52 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
         [r,c] = parent_nodes[r,c]
     return path
 
-def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
+def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
     # TODO:
-    # Write a breadth first search algorithm to find a path in an occupancy grid map given the start cell
+    # Write a A* algorithm to find a path in an occupancy grid map given the start cell
     # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
     # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
     # If path cannot be found, return an empty tuple []
+    # Use Manhattan distance as heuristic function
+    # Hint: Use a priority queue to implement the open list
+    # Documentation to implement priority queues in python can be found in
+    # https://docs.python.org/2/library/heapq.html
     #
     execution_steps=0
     open_list      = deque() ############ HINT
+    heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    open_list.append([start_r, start_c])
+    heapq.heappush(open_list, (0, [start_r, start_c])) ###Cuando se usa heappush(), el orden de clasificación de los elementos se mantiene a medida que se agregan nuevos elementos desde una fuente de datos.
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.pop()  ######## HINT
+        [r,c] = heapq.heappop(open_list)  ###Una vez que el montón esté organizado correctamente, usa heappop() para eliminar el elemento con el valor más bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        dist = distances[r,c] + 1
+        ##dist = distances[r,c] + 1
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            if dist < distances[nr,nc]:
-                distances[nr,nc]    = dist
+            g = distances[r,c] + 1 + cost_map[nr][nc]
+            h = abs(nr - goal_r) + abs(nc - goal_c)
+            f = g + h
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                open_list.append([nr,nc])
+                heapq.heappush(open_list, (f, [nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by A*:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -113,20 +124,46 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
         path.insert(0, [r,c])
         [r,c] = parent_nodes[r,c]
     return path
+
+def get_maps():
+    clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
+    clt_cost_map   = rospy.ServiceProxy("/cost_map"    , GetMap)
+    clt_inflated   = rospy.ServiceProxy("/inflated_map", GetMap)
+    static_map   = clt_static_map()
+    static_map   = static_map.map
+    try:
+        inflated_map = clt_inflated()
+        inflated_map = inflated_map.map
+    except:
+        inflated_map = static_map
+        print("Cannot get inflated map. Using static map instead")
+    inflated_map = numpy.asarray(inflated_map.data)
+    inflated_map = numpy.reshape(inflated_map, (static_map.info.height, static_map.info.width))
+    try:
+        cost_map = clt_cost_map()
+        cost_map = cost_map.map
+    except:
+        cost_map = static_map
+        print("Cannot get cost map. Using static map instead")
+    cost_map = numpy.asarray(cost_map.data)
+    cost_map = numpy.reshape(cost_map, (static_map.info.height, static_map.info.width))
+    return [static_map, inflated_map, cost_map]
 
 def generic_callback(req, algorithm):
+    [static_map, inflated_map, cost_map] = get_maps()
+    
     [start_x, start_y] = [req.start.pose.position.x, req.start.pose.position.y]
     [goal_x,  goal_y ] = [req.goal.pose.position.x , req.goal.pose.position.y ]
     [zero_x,  zero_y ] = [static_map.info.origin.position.x,static_map.info.origin.position.y]
     [start_c, start_r] = [int((start_x - zero_x)/static_map.info.resolution), int((start_y - zero_y)/static_map.info.resolution)]
     [goal_c , goal_r ] = [int((goal_x  - zero_x)/static_map.info.resolution), int((goal_y  - zero_y)/static_map.info.resolution)]
 
-    if algorithm == 'bfs':
-        print("Calculating path by Breadth First Search from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
-        path = breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map)
+    if algorithm == 'dijkstra':
+        print("Calculating path by Dijkstra from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
+        path = dijkstra(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
     else:
-        print("Calculating path by Depth First Search from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
-        path = depth_first_search(start_r, start_c, goal_r, goal_c, grid_map)
+        print("Calculating path by A* from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
+        path = a_star(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
     
     msg_path = Path()
     msg_path.header.frame_id = "map"
@@ -140,24 +177,18 @@ def generic_callback(req, algorithm):
     pub_path.publish(msg_path)
     return GetPlanResponse(msg_path)
 
-def callback_bfs(req):
-    return generic_callback(req, 'bfs')
+def callback_dijkstra(req):
+    return generic_callback(req, 'dijkstra')
 
-def callback_dfs(req):
-    return generic_callback(req, 'dfs')
+def callback_a_star(req):
+    return generic_callback(req, 'a_star')
 
 def main():
-    global static_map, grid_map
-    print "PRACTICE 01 - " + NAME
-    rospy.init_node("practice01")
-    rospy.Service('/navigation/path_planning/breadth_first_search', GetPlan, callback_bfs)
-    rospy.Service('/navigation/path_planning/depth_first_search'  , GetPlan, callback_dfs)
+    print "PRACTICE 02 - " + NAME
+    rospy.init_node("practice02")
+    rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
+    rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
     rospy.wait_for_service('/static_map')
-    clt = rospy.ServiceProxy("/static_map", GetMap)
-    static_map = clt()
-    static_map = static_map.map
-    grid_map   = numpy.asarray(static_map.data)
-    grid_map   = numpy.reshape(grid_map, (static_map.info.height, static_map.info.width))
     loop = rospy.Rate(10)
     while not rospy.is_shutdown():
         loop.sleep()

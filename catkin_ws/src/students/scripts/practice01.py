@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "ARMANDO MEDINA FERNANDEZ"
+NAME = "MEDINA FERNANDEZ ARMANDO"
 
 static_map = None
 grid_map   = None
@@ -31,12 +31,11 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     # If path cannot be found, return an empty tuple []
     #
     execution_steps=0
-    open_list = deque() #Los deques son una generalización de pilas y colas (el nombre se pronuncia "baraja" y es la abreviatura de "cola de dos extremos").
-    #
-    in_open_list = numpy.full(grid_map.shape, False)
+    open_list      = deque() ############ HINT
+    in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
-    distances = numpy.full(grid_map.shape, sys.maxint)
-    parent_nodes = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
     open_list.append([start_r, start_c])
@@ -44,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft() #Retire y devuelva un elemento del lado izquierdo del deque. 
+        [r,c] = open_list.popleft()  ######## HINT
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -60,9 +59,9 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print ("Cannot calculate path by Breadth First Search:'(")
+        print "Cannot calculate path by Breadth First Search:'("
         return []
-    print ("Path calculated after " + str(execution_steps) + " steps.")
+    print "Path calculated after " + str(execution_steps) + " steps."
     path = []
     while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
         path.insert(0, [r,c])
@@ -90,7 +89,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.pop()  ######## HINT Retire y devuelva un elemento del lado derecho de la placa.
+        [r,c] = open_list.pop()  ######## HINT
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -103,7 +102,16 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
                 open_list.append([nr,nc])
- 
+            execution_steps += 1
+
+    if [r,c] != [goal_r, goal_c]:
+        print "Cannot calculate path by Breadth First Search:'("
+        return []
+    print "Path calculated after " + str(execution_steps) + " steps."
+    path = []
+    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
+        path.insert(0, [r,c])
+        [r,c] = parent_nodes[r,c]
     return path
 
 def generic_callback(req, algorithm):
@@ -140,7 +148,7 @@ def callback_dfs(req):
 
 def main():
     global static_map, grid_map
-    print ("PRACTICE 01 - " + NAME)
+    print "PRACTICE 01 - " + NAME
     rospy.init_node("practice01")
     rospy.Service('/navigation/path_planning/breadth_first_search', GetPlan, callback_bfs)
     rospy.Service('/navigation/path_planning/depth_first_search'  , GetPlan, callback_dfs)
