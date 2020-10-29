@@ -70,7 +70,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by Dijkstra:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -132,7 +132,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by A+:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
