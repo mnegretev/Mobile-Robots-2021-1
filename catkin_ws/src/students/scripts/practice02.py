@@ -32,7 +32,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     # https://docs.python.org/2/library/heapq.html
     #
     execution_steps=0
-    open_list      = deque() ############ HINT
+    open_list      = [] ############ HINT
     heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
@@ -84,7 +84,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     # https://docs.python.org/2/library/heapq.html
     #
     execution_steps=0
-    open_list      = deque() ############ HINT
+    open_list      = [] ############ HINT
     heapq.heapify(open_list) ###Si los datos ya están en la memoria, es más eficiente usar heapify() para reordenar los elementos de la lista en su lugar.
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
