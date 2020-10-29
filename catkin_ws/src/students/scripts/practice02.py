@@ -49,7 +49,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  ###Una vez que el monton este organizado correctamente,
+        [r,c] = heapq.heappop(open_list)[1]  ###Una vez que el monton este organizado correctamente,
         #usa heappop() para eliminar el elemento con el valor mas bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
@@ -105,7 +105,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  ###Una vez que el monton este organizado correctamente,
+        [r,c] = heapq.heappop(open_list)[1]  ###Una vez que el monton este organizado correctamente,
         #usa heappop() para eliminar el elemento con el valor mas bajo.
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
