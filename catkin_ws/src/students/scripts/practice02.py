@@ -53,16 +53,16 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  ######## HINT
+        [r,c] = heapq.heappop(open_list)  
         
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            dist = distances[r,c] + 1 + cost_map[nr,nc]
-            if dist < distances[nr,nc]:
-                distances[nr,nc]    = dist
+            g = distances[r,c] + 1 + cost_map[nr,nc]
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
@@ -113,18 +113,18 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)  ######## HINT
+        [r,c] = heapq.heappop(open_list) 
         
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            dist = distances[r,c] + 1 + cost_map[nr,nc] 
+            g = distances[r,c] + 1 + cost_map[nr,nc] 
             h= abs(goal_r-r+goal_c-c)
-            f= dist + h
-            if dist < distances[nr,nc]:
-                distances[nr,nc]    = dist
+            f= g + h
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
