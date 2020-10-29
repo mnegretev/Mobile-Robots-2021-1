@@ -18,7 +18,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "Rangel_Navarro_Abraham_Salvador"
+NAME = "rangel_navarro"
 
 def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
@@ -38,6 +38,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+   
 
     [r,c] = [start_r, start_c]
     in_open_list[start_r, start_c] = True
@@ -48,7 +49,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         [g,[r,c]] = heap.heappop(open_list)
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c], [r,c-1]]
-        dist = distances[r,c] + 1
+        dist = distances[r,c] + 1 + cost_map[r,c]  #
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
@@ -102,7 +103,8 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]] 
 	for [nr,nc] in neighbors:
 	    h = numpy.absolute(nr-ro) + numpy.absolute(nc-co)
-	    dist = distances[r,c] + 1 + h
+	    dist = distances[nr,nc] + 1
+	    f = dist + h
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
             if dist < distances[nr,nc]:
@@ -110,7 +112,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-  		heap.heappush(open_list,[dist,[nr,nc]])
+  		heap.heappush(open_list,[f,[nr,nc]])
             execution_steps += 1
     if [r,c] != [goal_r, goal_c]:
         print "Cannot calculate path by Breadth First Search:'("
