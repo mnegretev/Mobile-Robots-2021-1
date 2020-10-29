@@ -121,7 +121,6 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
             f = distances[r,c] + 1 + cost_map[nr,nc] + (abs(goal_r-r)+abs(goal_c-c))
-            f= g + h
             if f < distances[nr,nc]:
                 distances[nr,nc]    = f
                 parent_nodes[nr,nc] = [r,c]
