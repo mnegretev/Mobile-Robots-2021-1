@@ -18,34 +18,100 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "AMALFI_FIGUEROA_ISAAC"
 
 def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
-    #
-    # TODO:
-    # Write a Dijkstra algorithm to find a path in an occupancy grid map given the start cell
-    # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
-    # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
-    # If path cannot be found, return an empty tuple []
-    # Hint: Use a priority queue to implement the open list. 
-    # Documentation to implement priority queues in python can be found in
-    # https://docs.python.org/2/library/heapq.html
-    #
-    
+
+    #TOMAMOS EL ALGORTIMOS DE BUSQUEDA  breadth_first_search() DE LA SESION ANTERIOR
+    #las lineas comentadas fueron las modificadas para este algoritmo
+
+    execution_steps=0
+    open_list = [] # deque()
+    heapq.heapify(open_list) # Add this line
+    in_open_list   = numpy.full(grid_map.shape, False)
+    in_closed_list = numpy.full(grid_map.shape, False)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+
+    [r,c] = [start_r, start_c]
+    heapq.heappush(open_list, (0, [start_r, start_c]))
+    in_open_list[start_r, start_c] = True
+    distances   [start_r, start_c] = 0
+
+    while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
+        [r,c] = heapq.heappop(open_list)[1] #[r,c] = open_list.popleft()
+        in_closed_list[r,c] = True
+        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
+        # dist = distances[r,c] + 1
+        for [nr,nc] in neighbors:
+            if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
+                continue
+            g = distances[r,c] + 1 + cost_map[nr][nc] 
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
+                parent_nodes[nr,nc] = [r,c]
+            if not in_open_list[nr,nc]:
+                in_open_list[nr,nc] = True
+                heapq.heappush(open_list, (g, [nr, nc])) # open_list.append([nr,nc])
+            execution_steps += 1
+
+    if [r,c] != [goal_r, goal_c]:
+        print "Cannot calculate path by Dijkstra:'(" #print "Cannot calculate path by Breadth First Search:'("
+        return []
+    print "Path calculated after " + str(execution_steps) + " steps."
+    path = []
+    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
+        path.insert(0, [r,c])
+        [r,c] = parent_nodes[r,c]
+    return path
+
 
 def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
-    #
-    # TODO:
-    # Write a A* algorithm to find a path in an occupancy grid map given the start cell
-    # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
-    # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
-    # If path cannot be found, return an empty tuple []
-    # Use Manhattan distance as heuristic function
-    # Hint: Use a priority queue to implement the open list
-    # Documentation to implement priority queues in python can be found in
-    # https://docs.python.org/2/library/heapq.html
-    #
-    
+
+    #TOMAMOS EL ALGORITMO DE BUSQUEDA DE LA SESIÓN ANTERIOR
+    #las lineas comentadas fueron las modificadas para este algoritmo
+
+    execution_steps=0
+    in_open_list   = [] #open_list      = deque()
+    heapq.heapify(open_list) # Add this line
+    in_open_list   = numpy.full(grid_map.shape, False)
+    in_closed_list = numpy.full(grid_map.shape, False)
+    distances      = numpy.full(grid_map.shape, sys.maxint)
+    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+
+    [r,c] = [start_r, start_c]
+    heapq.heappush(open_list, (0, [start_r, start_c])) 
+    in_open_list[start_r, start_c] = True
+    distances   [start_r, start_c] = 0
+
+    while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
+        [r,c] = heapq.heappop(open_list)[1]  #r,c] = open_list.pop()
+        in_closed_list[r,c] = True
+        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
+        # dist = distances[r,c] + 1
+        for [nr,nc] in neighbors:
+            if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
+                continue
+            g = distances[r,c] + 1 + cost_map[nr][nc]
+            h = abs(goal_r - nr) + abs(goal_c - nc) # Manhattan Distance
+            f = g + h 
+            if g < distances[nr,nc]:
+                distances[nr,nc]    = g
+                parent_nodes[nr,nc] = [r,c]
+            if not in_open_list[nr,nc]:
+                in_open_list[nr,nc] = True
+                heapq.heappush(open_list, (f, [nr, nc])) # open_list.append([nr,nc])
+            execution_steps += 1        
+
+    if [r,c] != [goal_r, goal_c]:
+        print "Cannot calculate path by A Star :'("
+        return []
+    print "Path calculated after " + str(execution_steps) + " steps."
+    path = []
+    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
+        path.insert(0, [r,c])
+        [r,c] = parent_nodes[r,c]
+    return path
 
 def get_maps():
     clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
@@ -65,7 +131,7 @@ def get_maps():
         cost_map = clt_cost_map()
         cost_map = cost_map.map
     except:
-        cost_map = inflated_map
+        cost_map = static_map
         print("Cannot get cost map. Using static map instead")
     cost_map = numpy.asarray(cost_map.data)
     cost_map = numpy.reshape(cost_map, (static_map.info.height, static_map.info.width))
@@ -73,7 +139,7 @@ def get_maps():
 
 def generic_callback(req, algorithm):
     [static_map, inflated_map, cost_map] = get_maps()
-    
+
     [start_x, start_y] = [req.start.pose.position.x, req.start.pose.position.y]
     [goal_x,  goal_y ] = [req.goal.pose.position.x , req.goal.pose.position.y ]
     [zero_x,  zero_y ] = [static_map.info.origin.position.x,static_map.info.origin.position.y]
@@ -86,7 +152,7 @@ def generic_callback(req, algorithm):
     else:
         print("Calculating path by A* from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
         path = a_star(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
-    
+
     msg_path = Path()
     msg_path.header.frame_id = "map"
     for [r,c] in path:
@@ -120,4 +186,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-    

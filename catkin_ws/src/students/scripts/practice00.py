@@ -41,6 +41,7 @@ def main():
     pub_cmd_vel = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
     loop = rospy.Rate(10)
     
+    #Global variable for obstacle
     object obstacle_detected
     obstacle_detected = True
     while not rospy.is_shutdown():
