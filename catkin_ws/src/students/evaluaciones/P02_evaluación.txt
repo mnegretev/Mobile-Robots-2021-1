@@ -1,0 +1,5 @@
+La práctica 02 funciona solo parcialmente.
+Los dos algoritmos, Dijkstray A* calculan rutas pero no son las óptimas.
+Esto se debe a que en ambos casos se está haciendo un uso incorrecto
+de las funciones heappush y heappop.
+Calificación: 7
