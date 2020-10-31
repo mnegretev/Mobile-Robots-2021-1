@@ -1,0 +1,3 @@
+La práctica 02 funciona correctamente.
+El programa calcula correctamente las rutas y
+los resultados son los esperados. 
