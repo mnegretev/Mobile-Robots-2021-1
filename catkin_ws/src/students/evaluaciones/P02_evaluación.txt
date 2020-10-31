@@ -1,0 +1,7 @@
+La práctica 02 funciona solo parcialmente. 
+Las rutas se calculan correctamente usando Dijkstra pero al ejecutar A*
+el programa arroja el siguiente error:
+
+line 76, in a_star\n    heapq.heapify(open_list) # Add this line\n', "NameError: global name 'open_list' is not defined
+
+Calificación: 7

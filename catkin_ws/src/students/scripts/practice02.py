@@ -68,7 +68,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
 
 def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
 
-    #TOMAMOS EL ALGORITMO DE BUSQUEDA DE LA SESIÓN ANTERIOR
+    #TOMAMOS EL ALGORITMO DE BUSQUEDA DE LA SESION ANTERIOR
     #las lineas comentadas fueron las modificadas para este algoritmo
 
     execution_steps=0
