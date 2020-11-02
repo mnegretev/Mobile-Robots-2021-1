@@ -212,7 +212,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>Nearness:</string>
+      <string>Cost:</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="navTxtNearness">
@@ -329,7 +329,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>O&amp;mnidirectional</string>
+      <string>Omnidirec&amp;tional</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="navRbDifferential">
@@ -342,7 +342,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>Differential</string>
+      <string>&amp;Differential</string>
      </property>
     </widget>
    </widget>
