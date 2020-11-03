@@ -1,212 +1,122 @@
 #!/usr/bin/env python
 #
 # AUTONOMOUS MOBILE ROBOTS - UNAM, FI, 2021-1
-# PRACTICE 2 - PATH PLANNING BY DIJKSTRA AND A-STAR
+# PRACTICE 3 - INFLATION AND COST MAPS
 #
 # Instructions:
-# Write the code necessary to plan a path using two search algorithms:
-# Dijkstra and A*
-# MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
+# Write the code necesary to inflate a map given an inflation radius, and to
+# get a cost map given a cost radius.
+# Consider the map as a bidimensional array with free and occupied cells:
+# [[ 0 0 0 0 0 0]
+#  [ 0 X 0 0 0 0]
+#  [ 0 X X 0 0 0]
+#  [ 0 X X 0 0 0]
+#  [ 0 X 0 0 0 0]
+#  [ 0 0 0 X 0 0]]
+# Where occupied cells 'X' have a value of 100 and free cells have a value of 0.
+# In this example map[1][1] has a value of 100 and map[1][2] has a value of 0.
+#
+# Consider the cost map as a bidimensional array where free cells have a value indicating
+# how near they are to the nearest occupied cell:
+# [[ 3 3 3 2 2 1]
+#  [ 3 X 3 3 2 1]
+#  [ 3 X X 3 2 1]
+#  [ 3 X X 3 2 2]
+#  [ 3 X 3 3 3 2]
+#  [ 3 3 3 X 3 2]]
+# 
 #
 
 import sys
-import numpy
-import heapq
 import rospy
-from geometry_msgs.msg import PoseStamped
-from nav_msgs.msg import Path
-from nav_msgs.srv import *
-from collections import deque
+import numpy
+from nav_msgs.msg import OccupancyGrid
+from nav_msgs.srv import GetMap
+from nav_msgs.srv import GetMapResponse
+from nav_msgs.srv import GetMapRequest
 
-NAME = "ARGUELLES_MACOSAY" 
+NAME = "ARGUELLES_MACOSAY"
+static_map = None
 
-def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
+def get_inflated_map(static_map, inflation_cells):
+    print("Inflating map by " + str(inflation_cells) + " cells")
+    inflated = numpy.copy(static_map)
+    [height, width] = static_map.shape
     #
     # TODO:
-    # Write a Dijkstra algorithm to find a path in an occupancy grid map given the start cell
-    # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
-    # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
-    # If path cannot be found, return an empty tuple []
-    # Hint: Use a priority queue to implement the open list. 
-    # Documentation to implement priority queues in python can be found in
-    # https://docs.python.org/2/library/heapq.html
+    # Write the code necessary to inflate the obstacles in the map a radius
+    # given by 'inflation_cells'
+    # Map is given in 'static_map' as a bidimensional numpy array.
+    # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    execution_steps=0
-    lista=[]
-    open_list      = lista
-    heapq.heapify(open_list)
-    in_open_list   = numpy.full(grid_map.shape, False)
-    in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
-    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+    
+    return inflated
 
-    [r,c] = [start_r, start_c]
-    heapq.heappush(open_list,(0,[start_r,start_c]))
-    in_open_list   = numpy.full(grid_map.shape, False)
-    in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
-    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
-
-    [r,c] = [start_r, start_c]
-    heapq.heappush(open_list,(0,[start_r,start_c]))
-    in_open_list[start_r, start_c] = True
-    distances   [start_r, start_c] = 0
-
-    while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        lista_aux2 = heapq.heappop(open_list)  
-        [r,c]=lista_aux2[1]
-        in_closed_list[r,c] = True
-        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        for [nr,nc] in neighbors:
-            if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
-                continue
-            g = distances[r,c] + 1 + cost_map[nr,nc]
-            if g < distances[nr,nc]:
-                distances[nr,nc]    = g
-                parent_nodes[nr,nc] = [r,c]
-            if not in_open_list[nr,nc]:
-                in_open_list[nr,nc] = True
-                heapq.heappush(open_list,(g,[nr,nc]))
-            execution_steps += 1
-
-    if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Dijkstra:'("
-        return []
-    print "Path calculated after " + str(execution_steps) + " steps."
-    path = []
-    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
-        path.insert(0, [r,c])
-        [r,c] = parent_nodes[r,c]
-    return path
-
-def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
+def get_cost_map(static_map, cost_radius):
+    print "Calculating cost map with " +str(cost_radius) + " cells"
+    cost_map = numpy.copy(static_map)
+    [height, width] = static_map.shape
     #
     # TODO:
-    # Write a A* algorithm to find a path in an occupancy grid map given the start cell
-    # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
-    # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
-    # If path cannot be found, return an empty tuple []
-    # Use Manhattan distance as heuristic function
-    # Hint: Use a priority queue to implement the open list
-    # Documentation to implement priority queues in python can be found in
-    # https://docs.python.org/2/library/heapq.html
+    # Write the code necessary to calculate a cost map of the give map.
+    # Cost must be calculated a number of 'cost_radius' cells around the occupied space.
+    # Cost must increase when distance to obstacles decreases, and must be zero for all
+    # cells farther than 'cost_radius' cells from the obstacles. 
+    # Map is given in 'static_map' as a bidimensional numpy array.
+    # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    execution_steps=0
-    lista=[]
-    open_list      = lista
-    heapq.heapify(open_list)
-    in_open_list   = numpy.full(grid_map.shape, False)
-    in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
-    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+    return cost_map
 
-    [r,c] = [start_r, start_c]
-    heapq.heappush(open_list,(0,[start_r,start_c]))
-    in_open_list   = numpy.full(grid_map.shape, False)
-    in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
-    parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
+def callback_inflated_map(req):
+    global static_map, inflation_radius
+    grid = numpy.asarray(static_map.data, dtype='int')
+    grid = numpy.reshape(grid, (static_map.info.height, static_map.info.width))
+    inflation_cells = int(inflation_radius/static_map.info.resolution)
+    inflated_map = get_inflated_map(grid, inflation_cells)
+    resp = GetMapResponse()
+    resp.map = OccupancyGrid()
+    resp.map.info = static_map.info
+    resp.map.data = numpy.ravel(numpy.reshape(inflated_map, (len(static_map.data), 1)))
+    return resp
 
-    [r,c] = [start_r, start_c]
-    heapq.heappush(open_list,(0,[start_r,start_c]))
-    in_open_list[start_r, start_c] = True
-    distances   [start_r, start_c] = 0
-
-    while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        lista_aux=heapq.heappop(open_list)
-        [r,c]=lista_aux[1]
-        in_closed_list[r,c] = True
-        neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        for [nr,nc] in neighbors:
-            if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
-                continue
-            g = distances[r,c] + 1 + cost_map[nr,nc] 
-            h = (abs(goal_r-r)+abs(goal_c-c))
-            f = g+h
-            if f < distances[nr,nc]:
-                distances[nr,nc]    = g
-                parent_nodes[nr,nc] = [r,c]
-            if not in_open_list[nr,nc]:
-                in_open_list[nr,nc] = True
-                heapq.heappush(open_list,(f,[nr,nc]))
-            execution_steps += 1
-
-    if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by A+:'("
-        return []
-    print "Path calculated after " + str(execution_steps) + " steps."
-    path = []
-    while [parent_nodes[r,c][0],parent_nodes[r,c][1]] != [-1,-1]:
-        path.insert(0, [r,c])
-        [r,c] = parent_nodes[r,c]
-    return path
-
-def get_maps():
-    clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
-    clt_cost_map   = rospy.ServiceProxy("/cost_map"    , GetMap)
-    clt_inflated   = rospy.ServiceProxy("/inflated_map", GetMap)
-    static_map   = clt_static_map()
-    static_map   = static_map.map
-    try:
-        inflated_map = clt_inflated()
-        inflated_map = inflated_map.map
-    except:
-        inflated_map = static_map
-        print("Cannot get inflated map. Using static map instead")
-    inflated_map = numpy.asarray(inflated_map.data)
-    inflated_map = numpy.reshape(inflated_map, (static_map.info.height, static_map.info.width))
-    try:
-        cost_map = clt_cost_map()
-        cost_map = cost_map.map
-    except:
-        cost_map = static_map
-        print("Cannot get cost map. Using static map instead")
-    cost_map = numpy.asarray(cost_map.data)
-    cost_map = numpy.reshape(cost_map, (static_map.info.height, static_map.info.width))
-    return [static_map, inflated_map, cost_map]
-
-def generic_callback(req, algorithm):
-    [static_map, inflated_map, cost_map] = get_maps()
+def callback_cost_map(req):
+    global static_map, cost_radius
+    grid = numpy.asarray(static_map.data, dtype='int')
+    grid = numpy.reshape(grid, (static_map.info.height, static_map.info.width))
+    cost_cells = int(cost_radius/static_map.info.resolution)
+    cost_map = get_cost_map(grid, cost_cells)
+    resp = GetMapResponse()
+    resp.map = OccupancyGrid()
+    resp.map.info = static_map.info
+    resp.map.data = numpy.ravel(numpy.reshape(cost_map, (len(static_map.data), 1)))
+    return resp
     
-    [start_x, start_y] = [req.start.pose.position.x, req.start.pose.position.y]
-    [goal_x,  goal_y ] = [req.goal.pose.position.x , req.goal.pose.position.y ]
-    [zero_x,  zero_y ] = [static_map.info.origin.position.x,static_map.info.origin.position.y]
-    [start_c, start_r] = [int((start_x - zero_x)/static_map.info.resolution), int((start_y - zero_y)/static_map.info.resolution)]
-    [goal_c , goal_r ] = [int((goal_x  - zero_x)/static_map.info.resolution), int((goal_y  - zero_y)/static_map.info.resolution)]
-
-    if algorithm == 'dijkstra':
-        print("Calculating path by Dijkstra from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
-        path = dijkstra(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
-    else:
-        print("Calculating path by A* from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
-        path = a_star(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
-    
-    msg_path = Path()
-    msg_path.header.frame_id = "map"
-    for [r,c] in path:
-        p = PoseStamped()
-        p.pose.position.x = c*static_map.info.resolution + static_map.info.origin.position.x
-        p.pose.position.y = r*static_map.info.resolution + static_map.info.origin.position.y
-        msg_path.poses.append(p)
-    pub_path = rospy.Publisher('/navigation/calculated_path', Path, queue_size=10)
-    pub_path.publish(msg_path)
-    pub_path.publish(msg_path)
-    return GetPlanResponse(msg_path)
-
-def callback_dijkstra(req):
-    return generic_callback(req, 'dijkstra')
-
-def callback_a_star(req):
-    return generic_callback(req, 'a_star')
-
 def main():
-    print "PRACTICE 02 - " + NAME
-    rospy.init_node("practice02")
-    rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
-    rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
+    global static_map, inflation_radius, cost_radius
+    print "PRACTICE 03 - " + NAME
+    rospy.init_node("practice03")
+    rospy.Service('/inflated_map', GetMap, callback_inflated_map)
+    rospy.Service('/cost_map', GetMap, callback_cost_map)
+    pub_inflated = rospy.Publisher("/inflated_map", OccupancyGrid, queue_size=10)
     rospy.wait_for_service('/static_map')
+    clt_static_map = rospy.ServiceProxy("/static_map", GetMap)
+    static_map     = clt_static_map()
+    static_map     = static_map.map
     loop = rospy.Rate(10)
+    
+    counter = 0
+    cost_radius = 0.5
+    inflation_radius = 0.3
     while not rospy.is_shutdown():
+        if counter == 0:
+            if rospy.has_param("/navigation/path_planning/cost_radius"):
+                cost_radius = rospy.get_param("/navigation/path_planning/cost_radius")
+            if rospy.has_param("/navigation/path_planning/inflation_radius"):
+                new_inflation_radius = rospy.get_param("/navigation/path_planning/inflation_radius")
+                if new_inflation_radius != inflation_radius:
+                    inflation_radius = new_inflation_radius
+                    pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
+        counter = (counter + 1) % 10
         loop.sleep()
 
 if __name__ == '__main__':
@@ -215,4 +125,5 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException:
         pass
     
+
 
