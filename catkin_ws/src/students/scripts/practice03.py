@@ -49,7 +49,7 @@ def get_inflated_map(static_map, inflation_cells):
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    
+    lista=[]
     return inflated
 
 def get_cost_map(static_map, cost_radius):
