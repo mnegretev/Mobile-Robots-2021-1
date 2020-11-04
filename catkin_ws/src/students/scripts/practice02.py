@@ -35,18 +35,19 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     open_list      = []
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
+    g_values       = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
     #open_list.append([start_r, start_c])
-    heapq.heapify(open_list)
-    heapq.heappush(open_list,[start_r, start_c])
+    #heapq.heapify(open_list)
+    heapq.heappush(open_list,(0,[start_r, start_c]))
     in_open_list[start_r, start_c] = True
-    distances   [start_r, start_c] = 0
+    #distances   [start_r, start_c] = 0
+    g_values [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)#open_list.popleft() 
+        [r,c] = heapq.heappop(open_list)[1]#open_list.popleft() 
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         #g = distances[r,c] + 1
@@ -54,14 +55,14 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-	    g = distances[r,c] + 1 + cost_map[nr,nc]
-            if g < distances[nr,nc]:
-                distances[nr,nc]    = g
+	    g_value = g_values[r,c] + 1 + cost_map[nr,nc]
+            if g_value < g_values[nr,nc]:
+                g_values[nr,nc]    = g_value
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
                 #open_list.append([nr,nc])
-		heapq.heappush(open_list,[nr,nc])
+		heapq.heappush(open_list,(g_value, [nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
@@ -91,34 +92,34 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     open_list      = [] 
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
-    distances      = numpy.full(grid_map.shape, sys.maxint)
+    g_values       = numpy.full(grid_map.shape, sys.maxint)
+    f_values       = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    heapq.heapify(open_list)
-    heapq.heappush(open_list,[start_r, start_c])
+    #heapq.heapify(open_list)
+    heapq.heappush(open_list,(0,[start_r, start_c]))
     in_open_list[start_r, start_c] = True
-    distances   [start_r, start_c] = 0
+    g_values   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list) 
+        [r,c] = heapq.heappop(open_list)[1]
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        #dist = distances[r,c] + 1
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-	    g = distances[r,c] + 1 + cost_map[nr,nc]
-	    #Para calcular el valor de h se aplico la distancia euclideana entre dos puntos
-	    h = math.sqrt((goal_r - r)*(goal_r - r)+(goal_c - c)*(goal_c - c))
-	    #print "h ",h
+	    g = g_values[r,c] + 1 + cost_map[nr,nc]
+	    #h = math.sqrt((goal_r - r)*(goal_r - r)+(goal_c - c)*(goal_c - c))
+            h = abs(nr - goal_r) + abs(nc - goal_c)
             f = g + h
-            if f < distances[nr,nc]:
-                distances[nr,nc]    = f
+            if g < g_values[nr,nc]:
+                g_values[nr,nc]    = g
+		f_values[nr,nc]    = f
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list,[nr,nc])
+                heapq.heappush(open_list,(f, [nr,nc]))
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
