@@ -62,7 +62,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by dijkstra :'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -103,10 +103,11 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
 	dist = distances[r,c] + 1 
 	for [nr,nc] in neighbors:
-	    h = numpy.absolute(ro-nr) + numpy.absolute(co-nc)
-	    f = dist + h
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
+            h = numpy.absolute(ro-nr) + numpy.absolute(co-nc)
+            f = dist + h + cost_map[nr,nc]
+
             if dist < distances[nr,nc]:
                 distances[nr,nc]    = dist
                 parent_nodes[nr,nc] = [r,c]
@@ -115,7 +116,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
   		heap.heappush(open_list,[f,[nr,nc]])
             execution_steps += 1
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Breadth First Search:'("
+        print "Cannot calculate path by A* :'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []

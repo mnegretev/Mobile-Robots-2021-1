@@ -42,13 +42,20 @@ def get_inflated_map(static_map, inflation_cells):
     print("Inflating map by " + str(inflation_cells) + " cells")
     inflated = numpy.copy(static_map)
     [height, width] = static_map.shape
-    #
+    #515      492
     # TODO:
     # Write the code necessary to inflate the obstacles in the map a radius
     # given by 'inflation_cells'
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
+    for i in range(0,height):
+	for j in range(0,width):
+		if(static_map[i,j]> 50):
+			for k1 in range(i-inflation_cells,i+inflation_cells):
+				for k2 in range(j-inflation_cells,j+inflation_cells):
+					inflated[k1,k2] = 100
+    print('se ejecuto correctamente el inflado del mapa')
     
     return inflated
 
@@ -65,6 +72,19 @@ def get_cost_map(static_map, cost_radius):
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
+    for i in range(0,height):
+    	for j in range(0,width):
+		if(static_map[i,j]> 50):
+			for k1 in range(-cost_radius,cost_radius+1):
+				for k2 in range(-cost_radius,cost_radius+1):
+					ax = [numpy.absolute(k1),numpy.absolute(k2)]
+					maximo = numpy.argmax(ax)
+
+					c = cost_radius + 1 - ax[maximo]
+
+					ax = [c, cost_map[i+cost_radius,j+cost_radius]]
+					maximo = numpy.argmax(ax)
+					cost_map[i+cost_radius,j+cost_radius] = ax[maximo]
     return cost_map
 
 def callback_inflated_map(req):
@@ -124,4 +144,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-    
