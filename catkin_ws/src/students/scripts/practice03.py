@@ -52,9 +52,9 @@ def get_inflated_map(static_map, inflation_cells):
     r= inflation_cells
     for i in range(0,width):
         for j in range(0,height):
-            if (static_map[j,i]>=50):
-                for k1 in range(i-r,i+r+1):
-                    for k2 in range(j-r,j+r+1):
+            if (static_map[j,i]>50):
+                for k1 in range(j-r,j+r+1):
+                    for k2 in range(i-r,i+r+1):
                         inflated[k1,k2]=100
     return inflated
 
@@ -62,7 +62,7 @@ def get_cost_map(static_map, cost_radius):
     print "Calculating cost map with " +str(cost_radius) + " cells"
     cost_map = numpy.copy(static_map)
     [height, width] = static_map.shape
-    #
+    #6
     # TODO:
     # Write the code necessary to calculate a cost map of the give map.
     # Cost must be calculated a number of 'cost_radius' cells around the occupied space.
