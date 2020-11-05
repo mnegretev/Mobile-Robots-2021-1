@@ -79,8 +79,7 @@ def get_cost_map(static_map, cost_radius):
                 for k1 in range(-r, r+1):
                     for k2 in range(-r, r+1):
                         c = r+1 - max(abs(k1), abs(k2))
-                        cost_map[i+k1 ,j+k2]= max(c, cost_map[i+k1, j+k2])
-                        
+                        cost_map[i+k1 ,j+k2]= max(c, cost_map[i+k1, j+k2])                  
     return cost_map
 
 def callback_inflated_map(req):
