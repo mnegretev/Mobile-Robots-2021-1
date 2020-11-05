@@ -75,8 +75,8 @@ def get_cost_map(static_map, cost_radius):
             if(static_map[j, i] > 50):
                 for k1 in range(-cost_radius, cost_radius):
                     for k2 in range(-cost_radius, cost_radius):
-                        c = cost_radius + 1 - max(abs(k1), abs(k2))
-                        cost_map[j+cost_radius,i+cost_radius]=max(c,cost_map[j+cost_radius,i+cost_radius])
+                        c = cost_radius + 1 - max(numpy.absolute(k1),numpy.absolute(k2))
+                        cost_map[j+k2,i+k1]=max(c,cost_map[j+k2,i+k1])
     return cost_map
 
 def callback_inflated_map(req):
