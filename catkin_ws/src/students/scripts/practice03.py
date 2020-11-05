@@ -60,7 +60,7 @@ def get_inflated_map(static_map, inflation_cells):
 def get_cost_map(static_map, cost_radius):
     print "Calculating cost map with " +str(cost_radius) + " cells"
     cost_map = numpy.copy(static_map)
-    [height, width] = static_map.shape
+    [height, width] = static_map.shape #Donde i = height y j = width
     #
     # TODO:
     # Write the code necessary to calculate a cost map of the give map.

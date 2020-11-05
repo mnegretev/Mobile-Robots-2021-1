@@ -8,6 +8,7 @@
 # Dijkstra and A*
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
 #
+# Correcciones para correr la practica 3
 
 import sys
 import numpy
