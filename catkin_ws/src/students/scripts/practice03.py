@@ -50,11 +50,11 @@ def get_inflated_map(static_map, inflation_cells):
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
     r= inflation_cells
-    for i in range(0,width-1):
-        for j in range(0,height-1):
-            if (static_map[i,j]>=50):
-                for k1 in static_map[i-r,i+r]:
-                    for k2 in range(j-r,j+r):
+    for i in range(0,width):
+        for j in range(0,height):
+            if (static_map[j,i]>=50):
+                for k1 in range(i-r,i+r+1):
+                    for k2 in range(j-r,j+r+1):
                         inflated[k1,k2]=100
     return inflated
 
@@ -71,15 +71,15 @@ def get_cost_map(static_map, cost_radius):
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    r= cost_radius
+    cr= cost_radius
     
-    for i in range(0,width-1):
-        for j in range(0,height-1):
-            if(static_map[i,j]>=50):
-                for k1 in range(-r,+r):
-                    for k2 in range(-r,+r):
-                        c = r+1 - max(abs(k1),abs(k2))
-                        cost_map[i+r,j+r]=max(c,cost_map[i+r,j+r])
+    for i in range(0,width):
+        for j in range(0,height):
+            if(static_map[j,i]>50):
+                for k1 in range(j-cr,j+cr+1):
+                    for k2 in range(i-cr,i+cr+1):
+                        c = cr+1 - max(abs(k1),abs(k2))
+                        cost_map[j+cr,i+cr]=max(c,cost_map[j+cr,i+cr])
     return cost_map
 
 def callback_inflated_map(req):
