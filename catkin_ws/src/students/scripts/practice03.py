@@ -52,8 +52,8 @@ def get_inflated_map(static_map, inflation_cells):
     for i in range(0,height):
 	for j in range(0,width):
 		if(static_map[i,j]> 50):
-			for k1 in range(i-inflation_cells,i+inflation_cells):
-				for k2 in range(j-inflation_cells,j+inflation_cells):
+			for k1 in range(i-inflation_cells,i+inflation_cells+1):
+				for k2 in range(j-inflation_cells,j+inflation_cells+1):
 					inflated[k1,k2] = 100
     print('se ejecuto correctamente el inflado del mapa')
     
@@ -84,7 +84,7 @@ def get_cost_map(static_map, cost_radius):
 
 					ax = [c, cost_map[i+cost_radius,j+cost_radius]]
 					maximo = numpy.argmax(ax)
-					cost_map[i+cost_radius,j+cost_radius] = ax[maximo]
+					cost_map[i+k1,j+k2] = ax[maximo]
     print('El mapa de costo se ejecuto correctamente')
     return cost_map
 
