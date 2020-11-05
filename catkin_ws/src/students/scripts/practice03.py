@@ -35,7 +35,7 @@ from nav_msgs.srv import GetMap
 from nav_msgs.srv import GetMapResponse
 from nav_msgs.srv import GetMapRequest
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "rangel_navarro"
 static_map = None
 
 def get_inflated_map(static_map, inflation_cells):
@@ -85,6 +85,7 @@ def get_cost_map(static_map, cost_radius):
 					ax = [c, cost_map[i+cost_radius,j+cost_radius]]
 					maximo = numpy.argmax(ax)
 					cost_map[i+cost_radius,j+cost_radius] = ax[maximo]
+    print('El mapa de costo se ejecuto correctamente')
     return cost_map
 
 def callback_inflated_map(req):
