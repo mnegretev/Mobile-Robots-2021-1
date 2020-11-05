@@ -85,7 +85,7 @@ def get_cost_map(static_map, cost_radius):
                     for k2 in range(-cost_radius, cost_radius):
                         c = cost_radius + 1 - max(abs(k1), abs(k2))
                         # print(c)
-                        cost_map[j+cost_radius, i+cost_radius] = max(c, cost_map[j+cost_radius, i+cost_radius])
+                        cost_map[k1+cost_radius, k2+cost_radius] = max(c, cost_map[j+cost_radius, i+cost_radius])
     print("Done")
     return cost_map
 
