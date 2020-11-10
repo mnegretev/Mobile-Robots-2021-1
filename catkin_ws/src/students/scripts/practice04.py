@@ -144,12 +144,7 @@ def get_smooth_path(original_path, alpha, beta):
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
     
     U  = copy.deepcopy(gradient) 
-
-    #for i in range(len(original_path)):
-    #	smooth_path[i] = numpy.random.rand(1,2)[0]
-    #print('for 1')
-
-    for k in range(6): # while  
+    for k in range(40):  #while
 	    for i in range(1,len(original_path)):
 		for j in [0,1]:
 			U[i-1][j] = 0.5*((smooth_path[i-1][j] - original_path[i-1][j])**2) + 0.5*((smooth_path[i][j] - smooth_path[i-1][j])**2)
@@ -164,17 +159,10 @@ def get_smooth_path(original_path, alpha, beta):
 		     gradient[i-1][j] = alpha*(smooth_path[i-1][j] - original_path[i-1][j]) + beta*(2*smooth_path[i-1][j] - smooth_path[i-2][j] - smooth_path[i][j])
 		    
 	    print(numpy.linalg.norm(gradient,numpy.inf))
-		    #print(len(smooth_path))
-		    #print(len(U))
-		    #print(len(gradient))
-		     
 	    for i in range(len(original_path)):
 		for j in [0,1]:
-			smooth_path[i][j] = U[i][j] - 0.5*gradient[i][j]	
-     						    
-    #print(numpy.linalg.norm(gradient,numpy.inf))
+			smooth_path[i][j] = smooth_path[i][j] - epsilon*gradient[i][j]	
     return smooth_path
-
 
 def get_maps():
     clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
