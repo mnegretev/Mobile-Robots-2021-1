@@ -77,14 +77,8 @@ def get_cost_map(static_map, cost_radius):
 		if(static_map[i,j]> 50):
 			for k1 in range(-cost_radius,cost_radius+1):
 				for k2 in range(-cost_radius,cost_radius+1):
-					ax = [numpy.absolute(k1),numpy.absolute(k2)]
-					maximo = numpy.argmax(ax)
-
-					c = cost_radius + 1 - ax[maximo]
-
-					ax = [c, cost_map[i+cost_radius,j+cost_radius]]
-					maximo = numpy.argmax(ax)
-					cost_map[i+k1,j+k2] = ax[maximo]
+					cost = cost_radius - max(abs(k1), abs(k2)) +1
+					cost_map[i+k1,j+k2] = max(cost,cost_map[i+k1,j+k2])
     print('El mapa de costo se ejecuto correctamente')
     return cost_map
 
