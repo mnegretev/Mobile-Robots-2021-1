@@ -147,7 +147,7 @@ def get_smooth_path(original_path, alpha, beta):
     gradient     = [[0,0] for i in range(len(smooth_path))] # Gradient has N components of the form [x,y]. 
     epsilon      = 0.5                                      # This variable will weight the calculated gradient.
     
-    last         = len(smooth_path) - 1                     # Variabla for the last one point of Smooth Path                     
+    last         = len(smooth_path) - 1                     # Variabla for the last one point of Smooth Path   
 
     while gradient_mag > tolerance:
         for i in range(1, len(original_path) - 1):          # Calculate all components except first one and last one
