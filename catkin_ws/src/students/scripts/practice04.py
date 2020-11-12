@@ -160,6 +160,7 @@ def get_smooth_path(original_path, alpha, beta):
     #xo,yo es el original_path
     # gradiente es mi matriz auxiliar
     while gradient_mag> tolerance:
+        #aqui marca error en el indice de la lista
         gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))- (beta*(smooth_path[1][0] - smooth_path[0][0]))
         smooth_path[0][0]=smooth_path[0][0]-(epsilon*gradient[0][0])
         gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))- (beta*(smooth_path[1][1] - smooth_path[0][1]))
