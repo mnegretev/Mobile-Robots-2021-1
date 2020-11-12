@@ -176,6 +176,7 @@ def get_smooth_path(original_path, alpha, beta):
         gradient[n-1][0]=epsilon*(alpha*(smooth_path[n-1][1]-original_path[n-1][0])+beta*(smooth_path[n-1][1]-smooth_path[n-2][1]))
         smooth_path[n-1][1]=smooth_path[n-1][1]-((gradient[n-1][1])*epsilon)
         gradient_mag=numpy.linalg.norm(gradient)
+        gradient_mag=abs(gradient_mag)
     return smooth_path
 
 
