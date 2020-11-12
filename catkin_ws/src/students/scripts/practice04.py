@@ -19,7 +19,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "rangel_navarro"
 
 def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #
@@ -141,27 +141,45 @@ def get_smooth_path(original_path, alpha, beta):
     tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
-    epsilon      = 0.5                                     # This variable will weight the calculated gradient.
-    
-    U  = copy.deepcopy(gradient) 
-    for k in range(40):  #while
-	    for i in range(1,len(original_path)):
-		for j in [0,1]:
-			U[i-1][j] = 0.5*((smooth_path[i-1][j] - original_path[i-1][j])**2) + 0.5*((smooth_path[i][j] - smooth_path[i-1][j])**2)
+    epsilon      = 0.6                                  # This variable will weight the calculated gradient.
+    tab_path	 = copy.deepcopy(original_path)
 
-	    for i in range(1,len(original_path)):
-		for j in [0,1]:
-		   if i == 1:
-		     gradient[i-1][j] = alpha*(smooth_path[i-1][j] - original_path[i-1][j]) - beta*(smooth_path[i][j] - smooth_path[i-1][j])
-	       	   elif i == len(original_path):
+    tab = True 
+    cont = 0
+    while tab: 
+       	cont += 1
+	for i in range(len(original_path)):
+	     for j in [0,1]:
+		smooth_path[i][j] = 0.5*((smooth_path[i][j] - original_path[i][j])**2) 
+        for i in range(1,len(original_path)):
+	     for j in [0,1]:
+		tab_path[i][j] = 0.5*((smooth_path[i][j]-smooth_path[i-1][j])**2)
+    
+	for i in range(1,len(original_path)):
+	     for j in [0,1]:
+		smooth_path[i][j] = tab_path[i][j]+smooth_path[i][j]
+
+        for i in range(len(original_path)):  ###########################  gradiente:
+	      for j in [0,1]:
+		   if i == 0: # x0
+		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) - beta*(smooth_path[i+1][j] - smooth_path[i][j])
+	       	   elif i == len(original_path)-1:# xn
 		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) + beta*(smooth_path[i][j] - smooth_path[i-1][j])
-		   else:
-		     gradient[i-1][j] = alpha*(smooth_path[i-1][j] - original_path[i-1][j]) + beta*(2*smooth_path[i-1][j] - smooth_path[i-2][j] - smooth_path[i][j])
-		    
-	    print(numpy.linalg.norm(gradient,numpy.inf))
-	    for i in range(len(original_path)):
-		for j in [0,1]:
-			smooth_path[i][j] = smooth_path[i][j] - epsilon*gradient[i][j]	
+		   else:# xi
+		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) + beta*(2*smooth_path[i][j] - smooth_path[i-1][j] - smooth_path[i+1][j])
+	    
+        #print(numpy.linalg.norm(gradient,numpy.inf))
+	for i in range(len(original_path)):
+	     for j in [0,1]:
+		 smooth_path[i][j] = smooth_path[i][j] - epsilon*gradient[i][j] 
+        if (numpy.linalg.norm(gradient,numpy.inf) < tolerance) or (cont == 1000):
+		tab = False
+		#print(cont)
+    
+    #print(len(original_path))
+    #print(len(smooth_path))
+    #print(len(gradient))          
+    print('Se obtubo una ruta nueva ')
     return smooth_path
 
 def get_maps():
@@ -238,7 +256,7 @@ def callback_a_star(req):
     return generic_callback(req, 'a_star')
 
 def main():
-    print "PRACTICE 02 - " + NAME
+    print "PRACTICE 04 - " + NAME
     rospy.init_node("practice02")
     rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
     rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
