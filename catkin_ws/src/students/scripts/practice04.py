@@ -10,7 +10,7 @@
 #
 
 import sys
-import numpy
+import numpy 
 import heapq
 import rospy
 import copy
@@ -159,19 +159,23 @@ def get_smooth_path(original_path, alpha, beta):
     #xn,yn = smooth path 
     #xo,yo es el original_path
     # gradiente es mi matriz auxiliar
-    while (abs(gradient_mag)> tolerance):
-        gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))-(beta*(smooth_path[1][0] - smooth_path[0][0]))
+    while (gradient_mag> tolerance):
+        gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))- (beta*(smooth_path[1][0] - smooth_path[0][0]))
         smooth_path[0][0]=smooth_path[0][0]-(epsilon*gradient[0][0])
-        gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))-(beta*(smooth_path[1][1] - smooth_path[0][1]))
+        gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))- (beta*(smooth_path[1][1] - smooth_path[0][1]))
         smooth_path[0][1]=smooth_path[0][1]-(epsilon*gradient[0][1])
         
-        for i in (1,n-1):
-            smooth_path[i][0] = smooth_path[i][0] - epsilon*(alpha*(smooth_path[i][0]-original_path[i][0])+beta*(2*smooth_path[i][0]-smooth_path[i-1][0]-smooth_path[i+1][0]))
-            smooth_path[i][1] = smooth_path[i][1] - epsilon*(alpha*(smooth_path[i][1]-original_path[i][1])+beta*(2*smooth_path[i][1]-smooth_path[i-1][1]-smooth_path[i+1][1]))
+        for i in (1,n-2):
+            gradient[i][0]=(alpha*(smooth_path[i][0]-original_path[i][0]))+(beta*(2*smooth_path[i][0]-smooth_path[i-1][0]-smooth_path[i+1][0]))
+            smooth_path[i][0] = smooth_path[i][0] - (epsilon* gradient[i][0])
+            gradient[i][1]=(alpha*(smooth_path[i][1]-original_path[i][1]))+(beta*(2*smooth_path[i][1]-smooth_path[i-1][1]-smooth_path[i+1][1]))
+            smooth_path[i][1] = smooth_path[i][1] - (epsilon* gradient[i][1])
             
-        smooth_path[-1][0]=smooth_path[-1][0]-epsilon*(alpha*(smooth_path[-1][0]-xo[-1][0])+beta*(xn[-1][0]-smooth_path[-2][0]))
-        smooth_path[-1][1]=smooth_path[-1][1]-epsilon*(alpha*(smooth_path[-1][1]-yo[-1][0])+beta*(yn[-1][1]-smooth_path[-2][1]))
-    
+        gradient[-1][0]=epsilon*(alpha*(smooth_path[-1][0]-original_path[-1][0])+beta*(smooth_path[-1][0]-smooth_path[-2][0]))
+        smooth_path[-1][0]=smooth_path[-1][0]-(gradient[i][0])*epsilon
+        gradient[-1][0]=epsilon*(alpha*(smooth_path[-1][1]-original_path[-1][0])+beta*(smooth_path[-1][1]-smooth_path[-2][1]))
+        smooth_path[-1][1]=smooth_path[-1][1]-(gradient[i][1]*epsilon)
+        gradient_mag=numpy.gradient(gradient)
     return smooth_path
 
 
