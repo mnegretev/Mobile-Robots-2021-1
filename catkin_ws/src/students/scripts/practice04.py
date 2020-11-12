@@ -162,15 +162,17 @@ def get_smooth_path(original_path, alpha, beta):
 
 
     n=len(original_path)
+    #xn,yn = smooth path 
+    #xo,yo es el original_path
     while (abs(gradient_mag)> tolerance):
-        xn[0]=xn[0]-epsilon(alpha(xn[0]-xo[0])-beta(xn[1] - xn[0]))
-        yn[0]=xn[0]-epsilon(alpha(yn[0]-yo[0])-beta(yn[1] - yn[0]))
+        smooth_path[0][0]=smooth_path[0][0]-epsilon*(alpha(smooth_path[0][0]-original_path[0][0])-beta(smooth_path[1] - smooth_path[0][0]))
+        smooth_path[0][1]=smooth_path[0][1]-epsilon*(alpha(smooth_path[0][1]-original_path[0][1])-beta(smooth_path[1][1] - smooth_path[0][1]))
         for i in (1,n-1):
-            xn[i] = xn[i] - epsilon(alpha(xn[i]-xo[i])+beta(2*xn[i]-xn[i-1]-xn[i+1]))
-            yn[i] = yn[i] - epsilon(alpha(yn[i]-yo[i])+beta(2*yn[i]-yn[i-1]-yn[i+1]))
-            smooth_path[i]=[xn,yn]
-      #  xn[-1]=xn[-1]-epsilon(alpha(xn[-1]-xo[-1])+beta(xn[-1]-xn[-2]))
-      #  yn[-1]=yn[-1]-epsilon(alpha(yn[-1]-yo[-1])+beta(yn[-1]-yn[-2]))
+            smooth_path[i][0] = smooth_path[i][0] - epsilon*(alpha(smooth_path[i][0]-original_path[i][0])+beta(2*smooth_path[i]-smooth_path[i-1]-smooth_path[i+1]))
+            smooth_path[0][i] = smooth_path[0][i] - epsilon*(alpha(smooth_path[0][i]-smooth_path[0][i])+beta(2*smooth_path[i]-smooth_path[i-1]-smooth_path[i+1]))
+            
+        smooth_path[0][-1]=smooth_path[-1][0]-epsilon*(alpha(smooth_path[-1][0]-xo[-1])+beta(xn[-1][0]-smooth_path[-2][0]))
+        smooth_path[0][-1]=smooth_path[0][-1]-epsilon*(alpha(smooth_path[-1][0]-yo[-1])+beta(yn[0][-1]-smooth_path[0][-2]))
     
     return smooth_path
 
