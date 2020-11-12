@@ -11,6 +11,7 @@
 
 import sys
 import numpy 
+import numpy.linalg 
 import heapq
 import rospy
 import copy
@@ -154,12 +155,11 @@ def get_smooth_path(original_path, alpha, beta):
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y].  Variacion de una magnitud en funcion de la distancia
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
-
-    n=len(original_path)
+    n=len(smooth_path)
     #xn,yn = smooth path 
     #xo,yo es el original_path
     # gradiente es mi matriz auxiliar
-    while (gradient_mag> tolerance):
+    while gradient_mag> tolerance:
         gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))- (beta*(smooth_path[1][0] - smooth_path[0][0]))
         smooth_path[0][0]=smooth_path[0][0]-(epsilon*gradient[0][0])
         gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))- (beta*(smooth_path[1][1] - smooth_path[0][1]))
@@ -171,11 +171,11 @@ def get_smooth_path(original_path, alpha, beta):
             gradient[i][1]=(alpha*(smooth_path[i][1]-original_path[i][1]))+(beta*(2*smooth_path[i][1]-smooth_path[i-1][1]-smooth_path[i+1][1]))
             smooth_path[i][1] = smooth_path[i][1] - (epsilon* gradient[i][1])
             
-        gradient[-1][0]=epsilon*(alpha*(smooth_path[-1][0]-original_path[-1][0])+beta*(smooth_path[-1][0]-smooth_path[-2][0]))
-        smooth_path[-1][0]=smooth_path[-1][0]-(gradient[i][0])*epsilon
-        gradient[-1][0]=epsilon*(alpha*(smooth_path[-1][1]-original_path[-1][0])+beta*(smooth_path[-1][1]-smooth_path[-2][1]))
-        smooth_path[-1][1]=smooth_path[-1][1]-(gradient[i][1]*epsilon)
-        gradient_mag=numpy.gradient(gradient)
+        gradient[n-1][0]=epsilon*(alpha*(smooth_path[n-1][0]-original_path[n-1][0])+beta*(smooth_path[n-1][0]-smooth_path[n-2][0]))
+        smooth_path[n-1][0]=smooth_path[n-1][0]-((gradient[n-1][0])*epsilon)
+        gradient[n-1][0]=epsilon*(alpha*(smooth_path[n-1][1]-original_path[n-1][0])+beta*(smooth_path[n-1][1]-smooth_path[n-2][1]))
+        smooth_path[n-1][1]=smooth_path[n-1][1]-((gradient[n-1][1])*epsilon)
+        gradient_mag=numpy.linalg.norm(gradient)
     return smooth_path
 
 
