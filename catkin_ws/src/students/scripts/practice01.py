@@ -7,7 +7,7 @@
 # Write the code necessary to plan a path using two search algorithms:
 # Breadth first search and Depth first search
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
-#
+#HOLA MUNDO
 
 import sys
 import numpy
