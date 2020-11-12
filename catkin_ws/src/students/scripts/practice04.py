@@ -151,7 +151,7 @@ def get_smooth_path(original_path, alpha, beta):
     smooth_path  = copy.deepcopy(original_path)            # At the beginnig, the smooth path is the same than the original path.
     tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
-    gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
+    gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y].  Variacion de una magnitud en funcion de la distancia
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
 
@@ -160,8 +160,11 @@ def get_smooth_path(original_path, alpha, beta):
     #xo,yo es el original_path
     # gradiente es mi matriz auxiliar
     while (abs(gradient_mag)> tolerance):
-        smooth_path[0][0]=smooth_path[0][0]-epsilon*(alpha*(smooth_path[0][0]-original_path[0][0])-beta*(smooth_path[1][0] - smooth_path[0][0]))
-        smooth_path[0][1]=smooth_path[0][1]-epsilon*(alpha*(smooth_path[0][1]-original_path[0][1])-beta*(smooth_path[1][1] - smooth_path[0][1]))
+        gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))-(beta*(smooth_path[1][0] - smooth_path[0][0]))
+        smooth_path[0][0]=smooth_path[0][0]-(epsilon*gradient[0][0])
+        gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))-(beta*(smooth_path[1][1] - smooth_path[0][1]))
+        smooth_path[0][1]=smooth_path[0][1]-(epsilon*gradient[0][1])
+        
         for i in (1,n-1):
             smooth_path[i][0] = smooth_path[i][0] - epsilon*(alpha*(smooth_path[i][0]-original_path[i][0])+beta*(2*smooth_path[i][0]-smooth_path[i-1][0]-smooth_path[i+1][0]))
             smooth_path[i][1] = smooth_path[i][1] - epsilon*(alpha*(smooth_path[i][1]-original_path[i][1])+beta*(2*smooth_path[i][1]-smooth_path[i-1][1]-smooth_path[i+1][1]))
