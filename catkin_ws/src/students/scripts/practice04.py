@@ -148,19 +148,6 @@ def get_smooth_path(original_path, alpha, beta):
     # Write an algorithm to smooth the 'original_path' and return the new path.
     # The path is given as a set of points [x,y] in the form:
     # [[x0,y0], [x1,y1], ..path)            # At the beginnig, the smooth path is the same than the original path.
-    tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
-    gradient_mag = tolerance + 1                           # we have reached the local minimum.
-    gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
-    epsilon      = 0.5                                     # This variable will weight the calculated gradient.
-
-
-    n=len(original_path)., [xn,ym]].
-    # Example. The following line of code
-    # [xo_i,yo_i] = original_path[i]
-    # stores the x,y coordinates of the i-th point of the original path
-    # in the variables xo_i and yo_i respectively. 
-    #
-    #
     smooth_path  = copy.deepcopy(original_path)            # At the beginnig, the smooth path is the same than the original path.
     tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
