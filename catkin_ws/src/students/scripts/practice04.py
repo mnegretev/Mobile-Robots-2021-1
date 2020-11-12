@@ -161,7 +161,7 @@ def get_smooth_path(original_path, alpha, beta):
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
 
-
+    n=len(original_path)
     while (abs(gradient_mag)> tolerance):
         xn[0]=xn[0]-epsilon(alpha(xn[0]-xo[0])-beta(xn[1] - xn[0]))
         yn[0]=xn[0]-epsilon(alpha(yn[0]-yo[0])-beta(yn[1] - yn[0]))
