@@ -155,7 +155,13 @@ def get_smooth_path(original_path, alpha, beta):
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y].  Variacion de una magnitud en funcion de la distancia
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
-    
+    [xo_i, yo_i] = original_path[0]
+    [xn_i, yn_i] = smooth_path[0]
+    [xn_in, xn_in] = smooth_path[1]
+    grad_x = alpha*(xn_i - xo_i) - beta*(xn_in - xn_i)
+    grad_y = alpha*(yn_i - yo_i) + beta*(yn_in - yn_i)
+    gradient[0] = [grad_x,grad_y]
+    return smooth_path
 
 
 def get_maps():
