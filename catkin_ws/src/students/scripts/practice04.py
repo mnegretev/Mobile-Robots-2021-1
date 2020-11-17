@@ -155,30 +155,7 @@ def get_smooth_path(original_path, alpha, beta):
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y].  Variacion de una magnitud en funcion de la distancia
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
-    n=len(smooth_path)
-    #xn,yn = smooth path 
-    #xo,yo es el original_path
-    # gradiente es mi matriz auxiliar
-    while gradient_mag> tolerance:
-        #aqui marca error en el indice de la lista
-        gradient[0][0]=(alpha*(smooth_path[0][0]-original_path[0][0]))- (beta*(smooth_path[1][0] - smooth_path[0][0]))
-        smooth_path[0][0]=smooth_path[0][0]-(epsilon*gradient[0][0])
-        gradient[0][1]=(alpha*(smooth_path[0][1]-original_path[0][1]))- (beta*(smooth_path[1][1] - smooth_path[0][1]))
-        smooth_path[0][1]=smooth_path[0][1]-(epsilon*gradient[0][1])
-        
-        for i in (1,n-2):
-            gradient[i][0]=(alpha*(smooth_path[i][0]-original_path[i][0]))+(beta*(2*smooth_path[i][0]-smooth_path[i-1][0]-smooth_path[i+1][0]))
-            smooth_path[i][0] = smooth_path[i][0] - (epsilon* gradient[i][0])
-            gradient[i][1]=(alpha*(smooth_path[i][1]-original_path[i][1]))+(beta*(2*smooth_path[i][1]-smooth_path[i-1][1]-smooth_path[i+1][1]))
-            smooth_path[i][1] = smooth_path[i][1] - (epsilon* gradient[i][1])
-            
-        gradient[n-1][0]=epsilon*(alpha*(smooth_path[n-1][0]-original_path[n-1][0])+beta*(smooth_path[n-1][0]-smooth_path[n-2][0]))
-        smooth_path[n-1][0]=smooth_path[n-1][0]-((gradient[n-1][0])*epsilon)
-        gradient[n-1][0]=epsilon*(alpha*(smooth_path[n-1][1]-original_path[n-1][0])+beta*(smooth_path[n-1][1]-smooth_path[n-2][1]))
-        smooth_path[n-1][1]=smooth_path[n-1][1]-((gradient[n-1][1])*epsilon)
-        gradient_mag=numpy.linalg.norm(gradient)
-        gradient_mag=abs(gradient_mag)
-    return smooth_path
+    
 
 
 def get_maps():
@@ -255,8 +232,8 @@ def callback_a_star(req):
     return generic_callback(req, 'a_star')
 
 def main():
-    print "PRACTICE 02 - " + NAME
-    rospy.init_node("practice02")
+    print "PRACTICE 04 - " + NAME
+    rospy.init_node("practice04")
     rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
     rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
     rospy.wait_for_service('/static_map')
