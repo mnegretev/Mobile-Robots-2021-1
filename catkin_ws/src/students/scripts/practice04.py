@@ -161,6 +161,30 @@ def get_smooth_path(original_path, alpha, beta):
     grad_x = alpha*(xn_i - xo_i) - beta*(xn_in - xn_i)
     grad_y = alpha*(yn_i - yo_i) + beta*(yn_in - yn_i)
     gradient[0] = [grad_x,grad_y]
+
+    for i in range(1 , len(original_path)-1):
+        [xo_i, yo_i] = original_path[i]
+        [xn_i, yn_i] = smooth_path[i]
+        [xn_sig, yn_sig] = smooth_path[i+1]
+        [xn_ant, yn_ant] = smooth_path[i-1]
+        grad_x = alpha * (xn_i - xo_i) + beta*(2*xn_i - xn_ant - xn_sig)
+        grad_y = alpha * (yn_i - yo_i) + beta*(2*yn_i - yn_ant - xn_sig)
+        gradient[i] = [grad_x,grad_y]
+
+    n= len(original_path)-1
+    [xo_i, yo_i] = original_path[n]
+    [xn_i, yn_i] = smooth_path[n]
+    [xn_ant,yn_ant] = smooth_path[n-1]
+    grad_x = alpha * (xn_i - xo_i) + beta*(- xn_ant + xn_i)
+    grad_y = alpha * (yn_i - yo_i) + beta*(- yn_ant + xn_i)
+    gradient[n] = [grad_x,grad_y]
+
+    for i in range(0,n+1):
+        smooth_path[i][0] -=epsilon*gradien[i][0]
+        smooth_path[i][1] -=epsilon*gradient[i][1]
+    gradient_mag=0
+    for i in range(0,n+1):
+        gradient_mag += abs(gradient[i][0]) + abs(gradient[i][1]))
     return smooth_path
 
 
