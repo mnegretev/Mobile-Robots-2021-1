@@ -141,45 +141,22 @@ def get_smooth_path(original_path, alpha, beta):
     tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
-    epsilon      = 0.6                                  # This variable will weight the calculated gradient.
-    tab_path	 = copy.deepcopy(original_path)
+    epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
-    tab = True 
-    cont = 0
-    while tab: 
-       	cont += 1
-	for i in range(len(original_path)):
-	     for j in [0,1]:
-		smooth_path[i][j] = 0.5*((smooth_path[i][j] - original_path[i][j])**2) 
-        for i in range(1,len(original_path)):
-	     for j in [0,1]:
-		tab_path[i][j] = 0.5*((smooth_path[i][j]-smooth_path[i-1][j])**2)
-    
-	for i in range(1,len(original_path)):
-	     for j in [0,1]:
-		smooth_path[i][j] = tab_path[i][j]+smooth_path[i][j]
-
-        for i in range(len(original_path)):  ###########################  gradiente:
+    while gradient_mag > tolerance: 
+        for i in range(0,len(original_path)):  # gradiente:
 	      for j in [0,1]:
-		   if i == 0: # x0
+		   if i == 0: #x0
 		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) - beta*(smooth_path[i+1][j] - smooth_path[i][j])
 	       	   elif i == len(original_path)-1:# xn
 		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) + beta*(smooth_path[i][j] - smooth_path[i-1][j])
 		   else:# xi
 		     gradient[i][j] = alpha*(smooth_path[i][j] - original_path[i][j]) + beta*(2*smooth_path[i][j] - smooth_path[i-1][j] - smooth_path[i+1][j])
-	    
-        #print(numpy.linalg.norm(gradient,numpy.inf))
+	   
 	for i in range(len(original_path)):
 	     for j in [0,1]:
 		 smooth_path[i][j] = smooth_path[i][j] - epsilon*gradient[i][j] 
-        if (numpy.linalg.norm(gradient,numpy.inf) < tolerance) or (cont == 1000):
-		tab = False
-		#print(cont)
-    
-    #print(len(original_path))
-    #print(len(smooth_path))
-    #print(len(gradient))          
-    print('Se obtubo una ruta nueva ')
+        gradient_mag = numpy.linalg.norm(gradient,numpy.inf)
     return smooth_path
 
 def get_maps():
