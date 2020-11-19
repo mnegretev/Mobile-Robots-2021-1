@@ -7,7 +7,11 @@
 # Write the code necessary to plan a path using two search algorithms:
 # Breadth first search and Depth first search
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
+<<<<<<< HEAD
 #
+=======
+#HOLA MUNDO
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
 
 import sys
 import numpy
@@ -17,7 +21,11 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
+<<<<<<< HEAD
 NAME = "ARJONA JIMENEZ GERARDO"
+=======
+NAME = "FERNANDEZ MORA JOSE ENRIQUE"
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
 
 static_map = None
 grid_map   = None
@@ -43,7 +51,11 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
+<<<<<<< HEAD
         [r,c] = open_list.popleft()  ######## HINT
+=======
+        [r,c] = open_list.popleft()  ######## QUEUE
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -77,7 +89,11 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     # If path cannot be found, return an empty tuple []
     #
     execution_steps=0
+<<<<<<< HEAD
     open_list      = [] ############ HINT
+=======
+    open_list      = deque() ############ HINT
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
@@ -89,7 +105,11 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
+<<<<<<< HEAD
         [r,c] = open_list.pop()  ######## HINT
+=======
+        [r,c] = open_list.pop()  ######## STACK
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -105,7 +125,11 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
+<<<<<<< HEAD
         print "Cannot calculate path by Depth First Search:'("
+=======
+        print "Cannot calculate path by Breadth First Search:'("
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -114,7 +138,10 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
         [r,c] = parent_nodes[r,c]
     return path
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
 def generic_callback(req, algorithm):
     [start_x, start_y] = [req.start.pose.position.x, req.start.pose.position.y]
     [goal_x,  goal_y ] = [req.goal.pose.position.x , req.goal.pose.position.y ]
@@ -168,3 +195,7 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
+<<<<<<< HEAD
+=======
+    
+>>>>>>> c3fe4591c16fca74a4c4050530c42bb69e5fe225
