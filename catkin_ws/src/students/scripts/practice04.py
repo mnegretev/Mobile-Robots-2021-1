@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 #
 # AUTONOMOUS MOBILE ROBOTS - UNAM, FI, 2021-1
-# PRACTICE 2 - PATH PLANNING BY DIJKSTRA AND A-STAR
+# PRACTICE 4 - PATH SMOOTHING BY GRADIENT DESCEND
 #
 # Instructions:
-# Write the code necessary to plan a path using two search algorithms:
-# Dijkstra and A*
+# Write the code necessary to smooth a path using the gradient descend algorithm.
+# Re-use the practice02 codes to implement the Dijkstra and A* algorithm.
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
 #
-# Correcciones para correr la practica 3
 
 import sys
 import numpy
 import heapq
 import rospy
-import math
+import copy
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Path
 from nav_msgs.srv import *
@@ -32,6 +31,7 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     # Hint: Use a priority queue to implement the open list. 
     # Documentation to implement priority queues in python can be found in
     # https://docs.python.org/2/library/heapq.html
+    #
     execution_steps=0
     open_list      = []
     in_open_list   = numpy.full(grid_map.shape, False)
@@ -133,7 +133,63 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
         [r,c] = parent_nodes[r,c]
     return path
 
-    
+
+def get_smooth_path(original_path, alpha, beta):
+    #
+    # TODO:
+    # Write an algorithm to smooth the 'original_path' and return the new path.
+    # The path is given as a set of points [x,y] in the form:
+    # [[x0,y0], [x1,y1], ..., [xn,ym]].
+    # Example. The following line of code
+    # [xo_i,yo_i] = original_path[i]
+    # stores the x,y coordinates of the i-th point of the original path
+    # in the variables xo_i and yo_i respectively. 
+    #
+    #
+    smooth_path  = copy.deepcopy(original_path)            # At the beginnig, the smooth path is the same than the original path.
+    tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
+    gradient_mag = tolerance + 1                           # we have reached the local minimum.
+    gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
+    epsilon      = 0.5                                     # This variable will weight the calculated gradient.
+    N = len(smooth_path) - 1
+    if(N > 0):
+        while gradient_mag > tolerance:
+	    #Utilice nombres de variables parecidas a las vistas en la clase, especialmente para evitar perderme al tratar de traducir el pseudocodigo a python
+	    [xo_0,yo_0] = original_path[0]
+	    [xn_0,yn_0] = smooth_path[0]
+	    [xn_1,yn_1] = smooth_path[1]
+	    #x
+	    gradient[0][0] = alpha * (xn_0 - xo_0) - beta * (xn_1 - xn_0)
+	    smooth_path[0][0] = xn_0 - epsilon * (gradient[0][0])
+	    #y
+	    gradient[0][1] = alpha * (yn_0 - yo_0) - beta * (yn_1 - yn_0)
+	    smooth_path[0][1] = yn_0 - epsilon * (gradient[0][1])
+
+	    for i in range(1, N - 1):
+		[xn_i,yn_i] = smooth_path[i]
+		[xn_im1, yn_im1] = smooth_path[i-1]
+		[xn_iM1, yn_iM1] = smooth_path[i+1]
+		[xo_i,yo_i] = original_path[i]		
+		#x
+		gradient[i][0] = alpha * (xn_i - xo_i) + beta * (2 * xn_i - xn_im1 - xn_iM1)
+		smooth_path[i][0] = xn_i - epsilon * (gradient[i][0])
+		#y
+		gradient[i][1] = alpha * (yn_i - yo_i) + beta * (2 * yn_i - yn_im1 - yn_iM1)
+		smooth_path[i][1] = yn_i - epsilon * (gradient[i][1])
+
+	    [xo_N,yo_N] = original_path[N]
+	    [xn_N,yn_N] = smooth_path[N]
+	    [xn_Nm1,yn_Nm1] = smooth_path[N-1]	
+	    #x
+	    gradient[N][0] = alpha * (xn_N - xo_N) + beta * (xn_N - xn_Nm1)
+	    smooth_path[N][0] = xn_N - epsilon * (gradient[N][0])
+	    #y
+	    gradient[N][1] = alpha * (xn_N - xo_N) + beta * (xn_N - xn_Nm1)
+	    smooth_path[N][1] = xn_N - epsilon * (gradient[N][1])
+	    gradient_mag = numpy.linalg.norm(gradient)
+	    #print(gradient_mag)
+    return smooth_path
+
 
 def get_maps():
     clt_static_map = rospy.ServiceProxy("/static_map"  , GetMap)
@@ -153,7 +209,7 @@ def get_maps():
         cost_map = clt_cost_map()
         cost_map = cost_map.map
     except:
-        cost_map = static_map
+        cost_map = inflated_map
         print("Cannot get cost map. Using static map instead")
     cost_map = numpy.asarray(cost_map.data)
     cost_map = numpy.reshape(cost_map, (static_map.info.height, static_map.info.width))
@@ -174,13 +230,28 @@ def generic_callback(req, algorithm):
     else:
         print("Calculating path by A* from " + str([start_x, start_y])+" to "+str([goal_x, goal_y]))
         path = a_star(start_r, start_c, goal_r, goal_c, inflated_map, cost_map)
-    
+
+    smooth_path = []
+    for [r,c] in path:
+        x = c*static_map.info.resolution + static_map.info.origin.position.x
+        y = r*static_map.info.resolution + static_map.info.origin.position.y
+        smooth_path.append([x,y])
+    if rospy.has_param("/navigation/path_planning/smoothing_alpha"):
+        alpha = rospy.get_param("/navigation/path_planning/smoothing_alpha")
+    else:
+        alpha = 0.5
+    if rospy.has_param("/navigation/path_planning/smoothing_beta"):
+        beta = rospy.get_param("/navigation/path_planning/smoothing_beta")
+    else:
+        beta = 0.5
+    smooth_path = get_smooth_path(smooth_path, alpha, beta)
+        
     msg_path = Path()
     msg_path.header.frame_id = "map"
-    for [r,c] in path:
+    for [x,y] in smooth_path:
         p = PoseStamped()
-        p.pose.position.x = c*static_map.info.resolution + static_map.info.origin.position.x
-        p.pose.position.y = r*static_map.info.resolution + static_map.info.origin.position.y
+        p.pose.position.x = x
+        p.pose.position.y = y
         msg_path.poses.append(p)
     pub_path = rospy.Publisher('/navigation/calculated_path', Path, queue_size=10)
     pub_path.publish(msg_path)
@@ -194,8 +265,8 @@ def callback_a_star(req):
     return generic_callback(req, 'a_star')
 
 def main():
-    print "PRACTICE 02 - " + NAME
-    rospy.init_node("practice02")
+    print "PRACTICE 04 - " + NAME
+    rospy.init_node("practice04")
     rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
     rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
     rospy.wait_for_service('/static_map')
