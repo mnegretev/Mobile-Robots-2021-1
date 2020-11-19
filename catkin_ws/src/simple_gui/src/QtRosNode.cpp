@@ -136,9 +136,9 @@ void QtRosNode::set_param_inflation_radius(float inflation_radius)
     n->setParam("/navigation/path_planning/inflation_radius", inflation_radius);
 }
 
-void QtRosNode::set_param_nearness_radius(float nearness_radius)
+void QtRosNode::set_param_cost_radius(float cost_radius)
 {
-    n->setParam("/navigation/path_planning/nearness_radius",  nearness_radius);
+    n->setParam("/navigation/path_planning/cost_radius",  cost_radius);
 }
 
 void QtRosNode::set_param_smoothing_alpha(float smoothing_alpha)
