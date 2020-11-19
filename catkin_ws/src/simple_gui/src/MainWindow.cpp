@@ -282,7 +282,7 @@ void MainWindow::txtSmoothingReturnPressed()
     if(!(ssNearness >> nearness_radius))
 	this->ui->navTxtNearness->setText("Invalid");
     else
-	qtRosNode->set_param_nearness_radius(nearness_radius);
+	qtRosNode->set_param_cost_radius(nearness_radius);
     if(!(ssSmoothAlpha >> smoothing_alpha))
 	this->ui->navTxtSmoothAlpha->setText("Invalid");
     else
