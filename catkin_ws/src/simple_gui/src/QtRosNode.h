@@ -45,7 +45,7 @@ public:
     void set_param_control_type(std::string control_type);
 
     void set_param_inflation_radius(float inflation_radius);
-    void set_param_nearness_radius(float nearness_radius);
+    void set_param_cost_radius(float cost_radius);
     void set_param_smoothing_alpha(float smoothing_alpha);
     void set_param_smoothing_beta(float  smoothing_beta);
 
