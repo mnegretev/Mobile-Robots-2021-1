@@ -7,7 +7,7 @@
 # Write the code necessary to plan a path using two search algorithms:
 # Breadth first search and Depth first search
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
-#
+
 
 import sys
 import numpy
@@ -18,6 +18,7 @@ from nav_msgs.srv import *
 from collections import deque
 
 NAME = "Martinez-Fadul-Jesus"
+
 
 static_map = None
 grid_map   = None
@@ -44,6 +45,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
         [r,c] = open_list.popleft()  ######## HINT
+
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -90,6 +92,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
         [r,c] = open_list.pop()  ######## HINT
+
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -167,4 +170,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-    
