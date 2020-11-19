@@ -212,7 +212,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>Nearness:</string>
+      <string>Cost:</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="navTxtNearness">
@@ -225,7 +225,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>1.0</string>
+      <string>0.5</string>
      </property>
     </widget>
     <widget class="QLabel" name="navLblInflate">
@@ -277,7 +277,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>0.9</string>
+      <string>0.1</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="navTxtSmoothBeta">
@@ -290,7 +290,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>0.1</string>
+      <string>0.9</string>
      </property>
     </widget>
     <widget class="QLabel" name="navLblSmoothBeta">
@@ -329,7 +329,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>O&amp;mnidirectional</string>
+      <string>Omnidirec&amp;tional</string>
      </property>
     </widget>
     <widget class="QRadioButton" name="navRbDifferential">
@@ -342,7 +342,7 @@ Path</string>
       </rect>
      </property>
      <property name="text">
-      <string>Differential</string>
+      <string>&amp;Differential</string>
      </property>
     </widget>
    </widget>
