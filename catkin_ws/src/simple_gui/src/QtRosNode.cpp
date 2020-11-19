@@ -138,10 +138,7 @@ void QtRosNode::set_param_inflation_radius(float inflation_radius)
 
 void QtRosNode::set_param_cost_radius(float cost_radius)
 {
-
     n->setParam("/navigation/path_planning/cost_radius",  cost_radius);
-
-}
 
 void QtRosNode::set_param_smoothing_alpha(float smoothing_alpha)
 {
