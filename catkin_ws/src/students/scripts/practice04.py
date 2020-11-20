@@ -146,22 +146,28 @@ def get_smooth_path(original_path, alpha, beta):
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
     epsilon      = 0.5                                    # This variable will weight the calculated gradient.
 
-    # return original_path
+    return original_path
 
     while gradient_mag > tolerance:
+		#Gradient X0
         gradient[0][0] = alpha*(smooth_path[0][0] - original_path[0][0])- beta*(smooth_path[1][0] - smooth_path[0][0])
         smooth_path[0][0] = smooth_path[0][0] - (epsilon * gradient[0][0])
+		#Gradient Y0
         gradient[0][1] = alpha*(smooth_path[0][1] - original_path[0][1])- beta*(smooth_path[1][1] - smooth_path[0][1])
         smooth_path[0][1] = smooth_path[0][1] - (epsilon * gradient[0][1])
 
-        for i in range(0, len(gradient)-1):
+        for i in range(1, len(original_path)-1):
+		#Gradient X
             gradient[i][0] = alpha*(smooth_path[i][0] - original_path[i][0])+ beta*(2*smooth_path[i][0] - smooth_path[i-1][0]-smooth_path[i+1][0])
             smooth_path[i][0] = smooth_path[i][0] - (epsilon * gradient[i][0])
+		#Gradient Y
             gradient[i][1] = alpha*(smooth_path[i][1] - original_path[i][1])+ beta*(2*smooth_path[i][1] - smooth_path[i-1][1])-smooth_path[i+1][0]
             smooth_path[i][1] = smooth_path[i][1] - (epsilon * gradient[i][1])
 
+		#Gradient Xn
         gradient[-1][0] = alpha*(smooth_path[-1][0] - original_path[-1][0])+ beta*(smooth_path[-1][0] - smooth_path[-2][0])
         smooth_path[-1][0] = smooth_path[-1][0] - (epsilon * gradient[-1][0])
+		#Gradient Yn
         gradient[-1][1] = alpha*(smooth_path[-1][1] - original_path[-1][1])+ beta*(smooth_path[-1][1] - smooth_path[-2][1])
         smooth_path[-1][1] = smooth_path[-1][1] - (epsilon * gradient[-1][1])
 
