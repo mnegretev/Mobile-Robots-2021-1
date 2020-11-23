@@ -251,7 +251,7 @@ def callback_a_star(req):
 
 def main():
     print "PRACTICE 04 - " + NAME
-    rospy.init_node("practice02")
+    rospy.init_node("practice04")
     rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
     rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
     rospy.wait_for_service('/static_map')
