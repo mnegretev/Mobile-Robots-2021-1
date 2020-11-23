@@ -250,7 +250,7 @@ def callback_a_star(req):
     return generic_callback(req, 'a_star')
 
 def main():
-    print "PRACTICE 02 - " + NAME
+    print "PRACTICE 04 - " + NAME
     rospy.init_node("practice02")
     rospy.Service('/navigation/path_planning/dijkstra_search', GetPlan, callback_dijkstra)
     rospy.Service('/navigation/path_planning/a_star_search'  , GetPlan, callback_a_star)
