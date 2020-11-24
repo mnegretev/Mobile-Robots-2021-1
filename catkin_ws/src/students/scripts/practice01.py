@@ -43,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft()  ######## HINT
+        [r,c] = open_list.popleft()  ######## QUEUE
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -70,6 +70,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
 
 def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     #
+    # TODO:
     # Write a breadth first search algorithm to find a path in an occupancy grid map given the start cell
     # [start_r, start_c], the goal cell [goal_r, goal_c] and the map 'grid_map'.
     # Return the set of points of the form [[start_r, start_c], [r1,c1], [r2,c2], ..., [goal_r, goal_c]]
@@ -104,7 +105,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
             execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by Depth First Search:'("
+        print "Cannot calculate path by Breadth First Search:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
@@ -166,3 +167,4 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
+    
