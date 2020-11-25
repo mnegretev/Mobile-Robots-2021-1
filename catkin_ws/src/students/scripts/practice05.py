@@ -69,6 +69,12 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
+    while (abs(q-qg)>tolerance):
+        Fr=Fa+1/N 
+        for i in range (0,N)
+            Fr[0]
+        Pl=Pr-epsilon(Fr)
+        [v,w]= control(Pr,Pl)
     return
     
 def callback_global_goal(msg):
