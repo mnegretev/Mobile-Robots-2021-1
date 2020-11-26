@@ -94,6 +94,7 @@ def follow_path(path):
     #
     if len(path) > 0:
 
+
         i=0
         tolerance = 0.01
 
