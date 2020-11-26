@@ -8,7 +8,6 @@
 # Consider a differential base. Max linear and angular speeds
 # must be 0.8 and 1.0 respectively.
 #
-
 import sys
 import rospy
 import tf
@@ -24,7 +23,7 @@ NAME = "ARGUELLES MACOSAY"
 pub_cmd_vel = None
 loop        = None
 listener    = None
-pos         = 0
+
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
     
@@ -42,10 +41,17 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    alpha=1
-    beta=1
-    v = v_max*math.exp(-error_a*error_a/alpha)
-    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
+    # Max linear and angular speeds
+    # must be 0.8 and 1.0 respectively.
+    #
+    v_max   = 0.8
+    w_max   = 1.0
+    alpha   = 1
+    beta    = 1
+    error_a = 0.5
+
+    v = v_max * math.exp(-error_a * error_a/alpha)
+    w = w_max * (2/(1 + math.exp(-error_a/beta)) - 1)
 
     cmd_vel.linear.x = v
     cmd_vel.angular.z = w
@@ -75,10 +81,12 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-  
+    tolerance = 0.00001
+    pos       = 0
 
-    [x_lg,y_lg]= path[0] #local 
-    [x_gg,y_gg]= path[-1] #global
+  
+    [x_lg,y_lg] = path[0] #local 
+    [x_gg,y_gg] = path[-1] #global
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     
     dif_global_x = x_gg - robot_x
@@ -89,7 +97,7 @@ def follow_path(path):
     dif_local_y = y_lg - robot_y
     error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
 
-    while (error_global>tolerance and rospy.is_shutdown()==False):
+    while (error_global>tolerance and not rospy.is_shutdown()):
         pos += 1
         pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,x_gg,y_gg))
         loop.sleep()
@@ -99,13 +107,16 @@ def follow_path(path):
         dif_local_y = y_lg - robot_y
         error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
 
-        if( error_local > 0.3 )
+        if( error_local < 0.3 ):
             [x_lg,y_lg] = path[pos]
         
         dif_global_x = x_gg - robot_x
         dif_global_y = y_gg - robot_y
         error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
 
+        dif_local_x = x_lg - robot_x
+        dif_local_y = y_lg - robot_y
+        error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
     return
     
 def callback_global_goal(msg):
