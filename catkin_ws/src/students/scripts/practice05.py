@@ -46,8 +46,8 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     #
     v_max   = 0.8
     w_max   = 1.0
-    alpha   = 0.9
-    beta    = 0.1
+    alpha   = 0.5
+    beta    = 0.5
 
     dif_x = goal_x - robot_x
     dif_y = goal_y - robot_y
@@ -57,7 +57,7 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
         error_a = error_a - 2*math.pi
         print("pi llego a ser mayor")
     if (error_a < -math.pi):
-        error_a += 2*math.pi
+        error_a = error_a + 2*math.pi
         print("pi llego a ser menor")
     v = v_max * math.exp(-error_a * error_a/alpha)
     w = w_max * (2/(1 + math.exp(-error_a/beta)) - 1)
@@ -90,7 +90,8 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    tolerance = 0.03
+    cmd_vel   = Twist()
+    tolerance = 0.3
     pos       = 0
 
   
@@ -109,7 +110,7 @@ def follow_path(path):
 
     
     while ((error_global>tolerance) and (not rospy.is_shutdown())):
-        pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,x_gg,y_gg))
+        pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,x_lg,y_lg))
         loop.sleep()
         [robot_x, robot_y, robot_a] = get_robot_pose(listener)
 
@@ -125,10 +126,10 @@ def follow_path(path):
         dif_global_y = y_gg - robot_y
         error_global= math.sqrt( math.pow(dif_global_x , 2) + math.pow(dif_global_y , 2) )
 
-        cmd_vel = Twist()
-        cmd_vel.linear.x = 0
-        cmd_vel.angular.z = 0
-        pub_cmd_vel.publish(cmd_vel)
+    
+    cmd_vel.linear.x = 0
+    cmd_vel.angular.z = 0
+    pub_cmd_vel.publish(cmd_vel)
     return
     
 def callback_global_goal(msg):
