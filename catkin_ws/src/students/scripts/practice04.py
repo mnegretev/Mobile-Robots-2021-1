@@ -156,7 +156,7 @@ def get_smooth_path(original_path, alpha, beta):
     tam=len(smooth_path)-1
 
     while gradient_mag>tolerance:
-        [x0_i, yo_i]=original_path[0]
+        [x0_i, y0_i]=original_path[0]
         [xn_i, yn_i]=smooth_path[0]
         [xn_in, yn_in]=smooth_path[1]
         grad_x=alpha*(xn_i-x0_i)-beta*(xn_in-xn_i)
@@ -168,7 +168,7 @@ def get_smooth_path(original_path, alpha, beta):
         #smooth_path[0][1] = smooth_path[0][1] - epsilon*gradient[0][1]
         
         for i in range(1,tam):
-           [x0_i, yo_i]=original_path[i]
+           [x0_i, y0_i]=original_path[i]
            [xn_i, yn_i]=smooth_path[i]
            [in_xp, in_yp]=smooth_path[i-1]
            [xn_in, yn_in]=smooth_path[i+1]
@@ -181,7 +181,7 @@ def get_smooth_path(original_path, alpha, beta):
            #smooth_path[i][0] = smooth_path[i][0] - epsilon*gradient[i][0]
            #smooth_path[i][1] = smooth_path[i][1] - epsilon*gradient[i][1]
         
-        [x0_i, yo_i]=original_path[tam]
+        [x0_i, y0_i]=original_path[tam]
         [xn_i, yn_i]=smooth_path[tam]
         [xn_ip, yn_ip]=smooth_path[tam-1]
         grad_x=alpha*(xn_i-x0_i)+beta*(-xn_ip+xn_i)
