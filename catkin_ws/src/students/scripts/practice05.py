@@ -53,9 +53,9 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     dif_y = goal_y - robot_y
     error_a= math.sqrt( pow(dif_x , 2) + pow(dif_y , 2) )
 
-    if (error_a > math.pi || error_a < -math.pi){
+    if (error_a > math.pi | error_a < -math.pi):
         print("error") #falta manejar el condicional
-    }
+    
 
     v = v_max * math.exp(-error_a * error_a/alpha)
     w = w_max * (2/(1 + math.exp(-error_a/beta)) - 1)
@@ -118,7 +118,7 @@ def follow_path(path):
             [x_lg,y_lg] = path[pos]
         
         loop.sleep()
-        
+
         dif_global_x = x_gg - robot_x
         dif_global_y = y_gg - robot_y
         error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
