@@ -170,7 +170,7 @@ def get_smooth_path(original_path, alpha, beta):
         for i in range(1,tam):
            [x0_i, y0_i]=original_path[i]
            [xn_i, yn_i]=smooth_path[i]
-           [xn_xp, yn_yp]=smooth_path[i-1]
+           [xn_ip, yn_ip]=smooth_path[i-1]
            [xn_in, yn_in]=smooth_path[i+1]
            grad_x=alpha*(xn_i-x0_i)+beta*(2*xn_i-xn_ip-xn_in)
            grad_y=alpha*(yn_i-y0_i)+beta*(2*yn_i-yn_ip-xn_in)
