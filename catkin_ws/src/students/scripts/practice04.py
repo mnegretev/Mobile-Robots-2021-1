@@ -199,7 +199,7 @@ def get_smooth_path(original_path, alpha, beta):
            smooth_path[i][1] -= epsilon*gradient[i][1]
         gradient_mag=0
 
-        for i in range(0,tam+1):
+        for i in range(0,len(smooth_path)):
            gradient_mag+=abs(gradient[i][0])+abs(gradient[i][1])
 
     return smooth_path
