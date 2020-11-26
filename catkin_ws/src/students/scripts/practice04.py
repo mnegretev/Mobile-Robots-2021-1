@@ -162,11 +162,7 @@ def get_smooth_path(original_path, alpha, beta):
         grad_x=alpha*(xn_i-x0_i)-beta*(xn_in-xn_i)
         grad_y=alpha*(yn_i-y0_i)+beta*(yn_in-yn_i)
         gradient[0]=[grad_x,grad_y]
-        #gradient[0][0] = alpha*(smooth_path[0][0] - original_path[0][0]) - beta*(smooth_path[1][0] - smooth_path[0][0])
-        #gradient[0][1] = alpha*(smooth_path[0][1] - original_path[0][1]) - beta*(smooth_path[1][1] - smooth_path[0][1])
-        #smooth_path[0][0] = smooth_path[0][0] - epsilon*gradient[0][0]
-        #smooth_path[0][1] = smooth_path[0][1] - epsilon*gradient[0][1]
-        
+
         for i in range(1,tam):
            [x0_i, y0_i]=original_path[i]
            [xn_i, yn_i]=smooth_path[i]
@@ -176,10 +172,7 @@ def get_smooth_path(original_path, alpha, beta):
            grad_y=alpha*(yn_i-y0_i)+beta*(2*yn_i-yn_ip-xn_in)
            gradient[i]=[grad_x,grad_y]
 
-           #gradient[i][0] = alpha*(smooth_path[i][0] - original_path[i][0]) + beta*((2*smooth_path[i][0])-(smooth_path[i-1][0])-(smooth_path[i+1][0]))
-           #gradient[i][1] = alpha*(smooth_path[i][1] - original_path[i][1]) + beta*((2*smooth_path[i][1])-(smooth_path[i-1][1])-(smooth_path[i+1][1]))
-           #smooth_path[i][0] = smooth_path[i][0] - epsilon*gradient[i][0]
-           #smooth_path[i][1] = smooth_path[i][1] - epsilon*gradient[i][1]
+
         
         [x0_i, y0_i]=original_path[tam]
         [xn_i, yn_i]=smooth_path[tam]
@@ -188,12 +181,7 @@ def get_smooth_path(original_path, alpha, beta):
         grad_y=alpha*(yn_i-y0_i)+beta*(-yn_ip+yn_i)
         gradient[tam]=[grad_x,grad_y]
 
-        #gradient[tam][0] = alpha*(smooth_path[tam][0] - original_path[tam][0]) + beta*(smooth_path[tam][0] - smooth_path[tam-1][0])
-        #gradient[tam][1] = alpha*(smooth_path[tam][1] - original_path[tam][1]) + beta*(smooth_path[tam][1] - smooth_path[tam-1][1])
-        #smooth_path[tam][0] = smooth_path[tam][0] - epsilon*(alpha*(smooth_path[tam][0] - original_path[tam][0]) + beta*(smooth_path[tam][0] - smooth_path[tam-1][0]))
-        #smooth_path[tam][1] = smooth_path[tam][1] - epsilon*(alpha*(smooth_path[tam][1] - original_path[tam][1]) + beta*(smooth_path[tam][1] - smooth_path[tam-1][1]))
-        #gradient_mag = numpy.linalg.norm(gradient)
-        
+
         for i in range(0,tam):
            smooth_path[i][0] -= epsilon*gradient[i][0]
            smooth_path[i][1] -= epsilon*gradient[i][1]
