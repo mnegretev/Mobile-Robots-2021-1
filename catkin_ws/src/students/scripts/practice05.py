@@ -51,7 +51,8 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
 
     dif_x = goal_x - robot_x
     dif_y = goal_y - robot_y
-    error_a= math.sqrt( pow(dif_x , 2) + pow(dif_y , 2) )
+    error_a = math.sqrt( pow(dif_x , 2) + pow(dif_y , 2) ) - robot_a
+    
 
     if (error_a > math.pi): 
         error_a += -2*math.pi
