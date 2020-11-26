@@ -96,16 +96,18 @@ def follow_path(path):
   
     [x_lg,y_lg] = path[0] #local 
     [x_gg,y_gg] = path[-1] #global
-    [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     
+    [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+
     dif_global_x = x_gg - robot_x
     dif_global_y = y_gg - robot_y
-    error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
+    error_global= math.sqrt( math.pow(dif_global_x , 2) + math.pow(dif_global_y , 2) )
 
     dif_local_x = x_lg - robot_x
     dif_local_y = y_lg - robot_y
-    error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
+    error_local= math.sqrt( math.pow(dif_local_x , 2) + math.pow(dif_local_y , 2) )
 
+    
     while ((error_global>tolerance) and (not rospy.is_shutdown())):
         pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,x_gg,y_gg))
         loop.sleep()
@@ -113,17 +115,15 @@ def follow_path(path):
 
         dif_local_x = x_lg - robot_x
         dif_local_y = y_lg - robot_y
-        error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
+        error_local= math.sqrt( math.pow(dif_local_x , 2) + math.pow(dif_local_y , 2) )
 
         if( error_local < tolerance ):
             pos += 1
             [x_lg,y_lg] = path[pos]
-        
-        loop.sleep()
 
         dif_global_x = x_gg - robot_x
         dif_global_y = y_gg - robot_y
-        error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
+        error_global= math.sqrt( math.pow(dif_global_x , 2) + math.pow(dif_global_y , 2) )
 
         cmd_vel = Twist()
         cmd_vel.linear.x = 0
