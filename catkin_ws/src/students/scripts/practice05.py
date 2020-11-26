@@ -118,9 +118,10 @@ def follow_path(path):
         dif_local_y = y_lg - robot_y
         error_local= math.sqrt( math.pow(dif_local_x , 2) + math.pow(dif_local_y , 2) )
 
-        if( error_local < tolerance ):
+        if(( error_local < tolerance) and (pos != len(path)-1 )):
             pos += 1
             [x_lg,y_lg] = path[pos]
+
 
         dif_global_x = x_gg - robot_x
         dif_global_y = y_gg - robot_y
