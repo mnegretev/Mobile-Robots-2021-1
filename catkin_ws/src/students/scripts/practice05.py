@@ -47,20 +47,17 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     alpha=0.01
     beta=0.1
 
-    th_g=math.atan2(goal_y-robot_y,goal_x-robot_x)
+    th_g=math.atan2(goal_y,goal_x)
     error_a=th_g-robot_a
 
+    v = v_max*math.exp(-error_a*error_a/alpha)
+    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
 
-    if error_a > math.pi:
-        error_a=error_a-(2*math.pi)
+    cmd_vel = Twist()
+    cmd_vel.linear.y = v*math.sin(robot_a)
+    cmd_vel.linear.x = v*math.cos(robot_a)
+    cmd_vel.angular.z = w
 
-    if error_a < -math.pi:
-        error_a=error_a+(2*math.pi)
-
-    cmd_vel.linear.x=v
-    cmd_vel.angular.z=w
-
-    
     return cmd_vel
 
 def follow_path(path):
@@ -87,30 +84,34 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    i=0
-    local_g=path[i]
-    global_g=path[len(path)-1]
-    [r_x,r_y,r_a]=get_robot_pose(listener)
-    e_local=( (r_x - local_g[0])**2 + (r_y - local_g[1])**2 )**0.5
-    e_global=( (r_x - global_g[0])**2 + (r_y - global_g[1])**2 )**0.5
+    tol = 0.1
+    i = 0
+    epsilon = 0.5
 
-    while e_global > 0.2 and not rospy.is_shutdown():
+    local_goal = path[0]
+    global_goal = path[len(path)-1]
+    [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+    e_local = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
+    e_global = math.sqrt((robot_x - global_goal[0])**2 + (robot_y - global_goal[1])**2)
 
-        pub_cmd_vel.publish(calculate_control(r_x,r_y,r_a,local_g[0],local_g[1]))
+    while e_global > tol and not rospy.is_shutdown():
+        print('entra al while')
+	pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal[0], local_goal[1]))
+	loop.sleep()
+        [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+        e_local = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
+	if e_local < epsilon:
+            i += 1
+	    local_goal = path[i]
+            print(i)
+        e_global = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
 
-        if e_local<0.2:
-            i=i+1
-            local_g=path[i]
-
-        loop.sleep()
-        [r_x,r_y,r_a]=get_robot_pose(listener)
-        e_local=( (r_x - local_g[0])**2 + (r_y - local_g[1])**2 )**0.5
-        e_global=( (r_x - global_g[0])**2 + (r_y - global_g[1])**2 )**0.5
-
-    cmd_vel.linear.x=0.0
-    cmd_vel.angular.z=0.0
-    pub_cmd_vel.publish(cmd_vel)
-
+        if i >= len(path)-1:
+	    cmd_vel = Twist()
+    	    cmd_vel.linear.y = 0
+    	    cmd_vel.linear.x = 0
+    	    cmd_vel.angular.z = 0
+ 	    pub_cmd_vel.publish(cmd_vel)
     return
     
 def callback_global_goal(msg):
