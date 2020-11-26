@@ -19,7 +19,7 @@ from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "Medina Fernandez Armando"
 
 pub_cmd_vel = None
 loop        = None
