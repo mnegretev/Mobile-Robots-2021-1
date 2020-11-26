@@ -42,7 +42,13 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    
+    alpha=1
+    beta=1
+    v = v_max*math.exp(-error_a*error_a/alpha)
+    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
+
+    cmd_vel.linear.x = v
+    cmd_vel.angular.z = w
     return cmd_vel
 
 def follow_path(path):
@@ -69,12 +75,17 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    while (abs(q-qg)>tolerance):
-        Fr=Fa+1/N 
-        for i in range (0,N)
-            Fr[0]
-        Pl=Pr-epsilon(Fr)
-        [v,w]= control(Pr,Pl)
+    [x_lg,y_lg]= path[0] #local 
+    [x_gg,y_gg]= path[-1] #global
+    [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+    
+    dif_global_x = x_gg - robot_x
+    dif_global_y = y_gg - robot_y
+    error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
+
+    dif_global_x = x_lg - robot_x
+    dif_global_y = y_lg - robot_y
+    error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
     return
     
 def callback_global_goal(msg):
