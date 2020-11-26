@@ -46,8 +46,8 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     #
     v_max   = 0.8
     w_max   = 1.0
-    alpha   = 1
-    beta    = 1
+    alpha   = 0.9
+    beta    = 0.1
 
     dif_x = goal_x - robot_x
     dif_y = goal_y - robot_y
@@ -125,6 +125,7 @@ def follow_path(path):
         dif_global_y = y_gg - robot_y
         error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
 
+        cmd_vel = Twist()
         cmd_vel.linear.x = 0
         cmd_vel.angular.z = 0
         pub_cmd_vel.publish(cmd_vel)
