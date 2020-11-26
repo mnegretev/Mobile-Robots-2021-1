@@ -24,7 +24,7 @@ NAME = "ARGUELLES MACOSAY"
 pub_cmd_vel = None
 loop        = None
 listener    = None
-
+pos         = 0
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
     
@@ -75,6 +75,8 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
+  
+
     [x_lg,y_lg]= path[0] #local 
     [x_gg,y_gg]= path[-1] #global
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
@@ -83,9 +85,27 @@ def follow_path(path):
     dif_global_y = y_gg - robot_y
     error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
 
-    dif_global_x = x_lg - robot_x
-    dif_global_y = y_lg - robot_y
+    dif_local_x = x_lg - robot_x
+    dif_local_y = y_lg - robot_y
     error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
+
+    while (error_global>tolerance and rospy.is_shutdown()==False):
+        pos += 1
+        pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,x_gg,y_gg))
+        loop.sleep()
+        [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+
+        dif_local_x = x_lg - robot_x
+        dif_local_y = y_lg - robot_y
+        error_local= math.sqrt( pow(dif_local_x , 2) + pow(dif_local_y , 2) )
+
+        if( error_local > 0.3 )
+            [x_lg,y_lg] = path[pos]
+        
+        dif_global_x = x_gg - robot_x
+        dif_global_y = y_gg - robot_y
+        error_global= math.sqrt( pow(dif_global_x , 2) + pow(dif_global_y , 2) )
+
     return
     
 def callback_global_goal(msg):
