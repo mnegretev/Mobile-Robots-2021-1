@@ -78,7 +78,7 @@ def rejection_force(robot_x, robot_y, robot_a, laser_readings):
     # where force_x and force_y are the X and Y components
     # of the resulting rejection force w.r.t. map.
     #
-    beta=5
+    beta=4  
 
     Fx=0
     Fy=0
@@ -151,8 +151,8 @@ def callback_pot_fields_goal(msg):
         pub_cmd_vel.publish(msg_cmd_vel)
         draw_force_markers(r_x, r_y, fax, fay, frx, fry, Fx, Fy, pub_markers)
 
-        print(Fx)
-        print(Fy)
+        #print(Fx)
+        #print(Fy)
 
         loop.sleep()
         [r_x,r_y,r_a]=get_robot_pose(listener)
