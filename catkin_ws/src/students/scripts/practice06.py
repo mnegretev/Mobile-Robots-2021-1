@@ -104,6 +104,7 @@ def rejection_force(robot_x, robot_y, robot_a, laser_readings):
 	        force_y += beta * math.sqrt(1/d - 1/distance) * (math.sin(angle + robot_a))
         force_x = force_x/N 
         force_y = force_y/N
+    #print(force_x, " ",force_y)
     return [force_x, force_y]
 
 def callback_pot_fields_goal(msg):
@@ -158,7 +159,7 @@ def callback_pot_fields_goal(msg):
 	loop.sleep()
 	robot_x, robot_y, robot_a = get_robot_pose(listener)
 	distance_to_goal_point = math.sqrt((goal_x - robot_x)**2 + (goal_y - robot_y)**2)
-        print(distance_to_goal_point)
+        #print(distance_to_goal_point)
     pub_cmd_vel.publish(calculate_control(0, 0, 0, 0, 0))
     print("Goal point reached")
 
