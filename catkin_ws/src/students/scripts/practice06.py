@@ -160,6 +160,7 @@ def callback_pot_fields_goal(msg):
     pub_cmd_vel.publish(cmd_vel)																	# Publish Message
     
     print("Goal point reached")
+    #new comment
 
 def get_robot_pose(listener):
     try:
