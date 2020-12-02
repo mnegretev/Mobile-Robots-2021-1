@@ -74,7 +74,7 @@ def attraction_force(robot_x, robot_y, goal_x, goal_y):
     # of the resulting attraction force w.r.t. map.
     #
     force_x, force_y = [0, 0]
-    alpha = 1
+    alpha = 0.1
     modulo = math.sqrt(math.pow(robot_x - goal_x,2) + math.pow(robot_y - goal_y,2))
     force_x = alpha * ((robot_x - goal_x)/modulo)
     force_y = alpha * ((robot_y - goal_y)/modulo)
@@ -94,7 +94,7 @@ def rejection_force(robot_x, robot_y, robot_a, laser_readings):
     #
     force_x, force_y = [0, 0]
     N = len(laser_readings)
-    beta = 5
+    beta = 1.0
     d = 0.5
     if (N > 0):
 	for i in range(N - 1):
