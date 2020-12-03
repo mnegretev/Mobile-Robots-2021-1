@@ -93,24 +93,23 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-
-    tolerance = 0.1
     
-    local_goal = path[0]
     i = 0
+    local_goal = path[0]
     global_goal = path[len(path) - 1]
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     e_local = math.sqrt(math.pow(robot_x - local_goal[0], 2) + math.pow(robot_y - local_goal[1], 2))
     e_global = math.sqrt(math.pow(robot_x - global_goal[0], 2) + math.pow(robot_y - global_goal[1], 2))
     
-    while e_global > tolerance and not rospy.is_shutdown():
+    while e_global > 0.3 and not rospy.is_shutdown():
         pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal[0], local_goal[1]))
-        loop.sleep()
-        [robot_x, robot_y, robot_a] = get_robot_pose(listener)
-        e_local = math.sqrt(math.pow(robot_x - local_goal[0], 2) + math.pow(robot_y - local_goal[1], 2))
+
         if e_local < 0.3:
             i += 1
             local_goal = path[i]
+        loop.sleep()
+        [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+        e_local = math.sqrt(math.pow(robot_x - local_goal[0], 2) + math.pow(robot_y - local_goal[1], 2))
         e_global = math.sqrt(math.pow(robot_x - global_goal[0], 2) + math.pow(robot_y - global_goal[1], 2))
     
     cmd_vel.linear.x = 0
