@@ -42,26 +42,24 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    v_max = 0.1
-    w_max = 0.1
+    v_max = 0.2
+    w_max = 0.2
     alpha = 1
     beta = 1
     th_g = math.atan2(goal_y,goal_x)
     error_a = th_g - robot_a
-    """
+
     if error_a >= math.pi:
 	error_a = 2*math.pi - error_a
     elif error_a < -math.pi:
 	error_a = 2*math.pi + error_a
-    """
-    v = v_max*math.exp(-error_a*error_a/alpha)
+   
+    v = v_max*math.exp(-(error_a**2)/alpha)
     w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
 
-    cmd_vel = Twist()
     cmd_vel.linear.y = v*math.sin(robot_a)
     cmd_vel.linear.x = v*math.cos(robot_a)
     cmd_vel.angular.z = w
-    
     return cmd_vel
 
 def follow_path(path):
@@ -90,34 +88,28 @@ def follow_path(path):
     #
     tol = 0.1
     i = 0
-    epsilon = 0.5
-
+    epsilon = 0.3
+    
     local_goal = path[0]
     global_goal = path[len(path)-1]
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
-    e_local = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
-    e_global = math.sqrt((robot_x - global_goal[0])**2 + (robot_y - global_goal[1])**2)
-
-    while e_global > tol and not rospy.is_shutdown():
-        print('entra al while')
+    e_local = math.sqrt((local_goal[0] - robot_x)**2 + (local_goal[1] - robot_y)**2)
+    e_global = math.sqrt((global_goal[0] - robot_x)**2 + (global_goal[1] - robot_y)**2)
+    
+    while e_global > tol and not rospy.is_shutdown() and e_local < 0.5 :
+	print(e_local)
 	pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal[0], local_goal[1]))
 	loop.sleep()
         [robot_x, robot_y, robot_a] = get_robot_pose(listener)
-        e_local = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
+        e_local = math.sqrt((local_goal[0] - robot_x)**2 + (local_goal[1] - robot_y)**2)
 	if e_local < epsilon:
             i += 1
 	    local_goal = path[i]
             print(i)
-        e_global = math.sqrt((robot_x - local_goal[0])**2 + (robot_y - local_goal[1])**2)
-
-        if i >= len(path)-1:
-	    cmd_vel = Twist()
-    	    cmd_vel.linear.y = 0
-    	    cmd_vel.linear.x = 0
-    	    cmd_vel.angular.z = 0
- 	    pub_cmd_vel.publish(cmd_vel)
-    
-            
+        e_global = math.sqrt((global_goal[0] - robot_x)**2 + (global_goal[1] - robot_y)**2)
+        
+    cmd_vel = Twist()
+    pub_cmd_vel.publish(cmd_vel)
     print('termino el programa')
     return
     
