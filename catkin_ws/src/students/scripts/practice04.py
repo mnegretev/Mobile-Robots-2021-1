@@ -143,6 +143,12 @@ def get_smooth_path(original_path, alpha, beta):
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
 
     while gradient_mag > tolerance:
+        """
+        [xo_i, yo_i]   = original_path[0]
+        [xn, yn]   = smooth_path  [0]
+        [xn_sig, yn_sig] = smooth_path[1]
+        gradient[0] = [alpha*(xn-xo_i) - beta*(xn_sig - xn), alpha*(yn-yo_i) - beta*(yn_sig - yn)]
+        """
         for i in range(1, len(original_path)-1):
             [xo_i, yo_i]   = original_path[i] # Obtener el iesimo punto original
             [xn, yn]   = smooth_path  [i] # Se trabaja sobre la nueva ruta
@@ -150,11 +156,21 @@ def get_smooth_path(original_path, alpha, beta):
             [xn_ant, yn_ant] = smooth_path[i-1] # y para obtener el anterior punto
             # Se calcula el gradiente
             gradient[i] = [alpha*(xn-xo_i) + beta*(2*xn-xn_ant-xn_sig), alpha*(yn-yo_i) + beta*(2*yn-yn_ant-yn_sig)]
+            smooth_path[i][0] -= epsilon*gradient[i][0]
+            smooth_path[i][1] -= epsilon*gradient[i][1]
+        """
+        [xo_i, yo_i]   = original_path[len(original_path)-1]
+        [xn, yn]   = smooth_path  [len(original_path)-1]
+        [xn_ant, yn_ant] = smooth_path[len(original_path)-2]
+        gradient[0] = [alpha*(xn-xo_i) - beta*(xn - xn_ant), alpha*(yn-yo_i) - beta*(yn - yn_ant)]
+        # Se actualiza el valor de la magnitud del gradiente
+
+        for i in range(1, len(original_path)-1):
             # Se calcula el punto de la ruta corregida
             smooth_path[i][0] -= epsilon*gradient[i][0]
             smooth_path[i][1] -= epsilon*gradient[i][1]
-
-        # Se actualiza el valor de la magnitud del gradiente
+        """
+        # Actualizar la magnitud del gradiente
         gradient_mag = 0
         for i in range(len(gradient)):
             gradient_mag += abs(gradient[i][0]) + abs(gradient[i][1])
