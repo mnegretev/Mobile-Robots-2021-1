@@ -42,24 +42,21 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    v_max = 0.2
-    w_max = 0.2
-    alpha = 1
-    beta = 1
-    th_g = math.atan2(goal_y,goal_x)
-    error_a = th_g - robot_a
-
-    if error_a >= math.pi:
-	error_a = 2*math.pi - error_a
-    elif error_a < -math.pi:
-	error_a = 2*math.pi + error_a
+    v_max = 0.8
+    w_max = 1.0
+    alpha = 1.0
+    beta = 0.1
+    [error_x,error_y] = [goal_x - robot_x, goal_y - robot_y]
+    th_e = math.atan2(error_y,error_x) - robot_a
+    error_d = math.sqrt(error_x**2+error_y**2)
+    
+    if th_e > math.pi:
+	th_e = th_e - 2*math.pi
+    elif th_e <= -math.pi:
+	th_e = th_e + 2*math.pi
    
-    v = v_max*math.exp(-(error_a**2)/alpha)
-    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
-
-    cmd_vel.linear.y = v*math.sin(robot_a)
-    cmd_vel.linear.x = v*math.cos(robot_a)
-    cmd_vel.angular.z = w
+    cmd_vel.linear.x = min(v_max,error_d)*math.exp(-(th_e**2)/alpha)
+    cmd_vel.angular.z = w_max*(2/(1 + math.exp(-th_e/beta)) - 1)
     return cmd_vel
 
 def follow_path(path):
@@ -70,7 +67,7 @@ def follow_path(path):
     # The publisher for the twist message is already declared as 'pub_cmd_vel'
     # You can use the following steps to perform the path tracking:
     #
-    # Set local goal point as the first point of the path
+    # Set local goal point as the first point of the path  ***** 80
     # Set global goal point as the last point of the path
     # Get robot position with [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     # Calculate global error as the magnitude of the vector from robot pose to global goal point
@@ -87,7 +84,7 @@ def follow_path(path):
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
     tol = 0.1
-    i = 0
+    current_point = 0
     epsilon = 0.3
     
     local_goal = path[0]
@@ -96,23 +93,18 @@ def follow_path(path):
     e_local = math.sqrt((local_goal[0] - robot_x)**2 + (local_goal[1] - robot_y)**2)
     e_global = math.sqrt((global_goal[0] - robot_x)**2 + (global_goal[1] - robot_y)**2)
     
-    while e_global > tol and not rospy.is_shutdown() and e_local < 0.5 :
+    while e_global > tol and not rospy.is_shutdown():
 	print(e_local)
 	pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal[0], local_goal[1]))
 	loop.sleep()
         [robot_x, robot_y, robot_a] = get_robot_pose(listener)
         e_local = math.sqrt((local_goal[0] - robot_x)**2 + (local_goal[1] - robot_y)**2)
-	if e_local < epsilon:
-            i += 1
-	    local_goal = path[i]
-            print(i)
+	if e_local<epsilon:
+        	current_point = min(current_point+1,len(path)-1)
+	local_goal = path[current_point]
         e_global = math.sqrt((global_goal[0] - robot_x)**2 + (global_goal[1] - robot_y)**2)
-        
-    cmd_vel = Twist()
-    pub_cmd_vel.publish(cmd_vel)
-    print('termino el programa')
-    return
-    
+    pub_cmd_vel.publish(Twist())
+
 def callback_global_goal(msg):
     print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
