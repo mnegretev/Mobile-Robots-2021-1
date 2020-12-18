@@ -141,7 +141,7 @@ def callback_pot_fields_goal(msg):
         [fax, fay] = attraction_force(r_x, r_y, goal_x, goal_y)
         [frx, fry] = rejection_force (r_x, r_y, r_a, laser_readings)
  
-        Fx=fax+frx
+        Fx=fax+frx 
         Fy=fay+fry
 
         px=r_x-epsilon*Fx
