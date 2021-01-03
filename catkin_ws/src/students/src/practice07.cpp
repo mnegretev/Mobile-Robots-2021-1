@@ -17,7 +17,7 @@
 #include "geometry_msgs/Pose2D.h"
 #include "tf/transform_broadcaster.h"
 
-#define NOMBRE "APELLIDO_PATERNO_APELLIDO_MATERNO"
+#define NOMBRE "ROLDAN_RIVERA"
 
 #define LASER_DOWNSAMPLING  10
 #define SENSOR_NOISE        0.1
@@ -47,6 +47,16 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
      * For the Euler angles (roll, pitch, yaw) = (0,0,theta) the corresponding quaternion is
      * given by (0,0,sin(theta/2), cos(theta/2)). 
      */
+    
+    for (size_t i = 0; i < N; i++){
+        //Position
+        particles.poses[i].position.x = rnd.uniformReal(min_x, max_x);
+        particles.poses[i].position.y = rnd.uniformReal(min_y, max_y);
+        //Orientation
+        float angle = rnd.uniformReal(min_a, max_a);
+        particles.poses[i].orientation.z = sin(angle/2);
+        particles.poses[i].orientation.w = cos(angle/2);
+    }
     
     return particles;
 }
@@ -92,6 +102,26 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      * is the orientation of the i-th particle.
      * Add gaussian noise to each new position. Use MOVEMENT_NOISE as covariances. 
      */
+    for (size_t i = 0; i < particles.poses.size(); i++)
+    {
+        //Angle Transformation
+        float z = particles.poses[i].orientation.z;
+        float w = particles.poses[i].orientation.w;
+        float angle = atan2(z, w)*2;        //Transformation
+
+        //Position
+        float dx = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
+    	float dy = delta_x * sin(angle) + delta_y * cos(angle);		
+
+        particles.poses[i].position.x += dx + MOVEMENT_NOISE;   //Add noise x
+        particles.poses[i].position.y += dy + MOVEMENT_NOISE;   //Add noise y
+
+        //Orientation
+        angle += delta_t + MOVEMENT_NOISE;  //Add noise angle
+            //Angle Transformation
+        particles.poses[i].orientation.z = sin(angle/2);    //Transformation
+        particles.poses[i].orientation.w = cos(angle/2);    //Transformation
+    }   
 }
 
 bool check_displacement(geometry_msgs::Pose2D& robot_pose, geometry_msgs::Pose2D& delta_pose)
@@ -233,7 +263,8 @@ int main(int argc, char** argv)
              *
              * Move all particles a displacement given by delta_pose (Pose2D message) by calling the move_particles function.
              */
-            
+            move_particles(particles, delta_pose.x, delta_pose.y, delta_pose.theta);
+
             pub_particles.publish(particles);
             map_to_odom_transform = get_map_to_odom_transform(robot_odom, get_robot_pose_estimation(particles));
         }
