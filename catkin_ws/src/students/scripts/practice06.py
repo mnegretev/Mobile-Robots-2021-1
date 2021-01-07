@@ -18,12 +18,13 @@ from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from sensor_msgs.msg import LaserScan
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "ARGUELLES_MACOSAY"
 listener    = None
 pub_cmd_vel = None
 pub_markers = None
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
+    cmd_vel = Twist()
     #
     # TODO:
     # Implement the control law given by:
@@ -38,7 +39,26 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    
+    v_max   = 0.6
+    w_max   = 1.0
+    alpha   = 0.5
+    beta    = 0.5
+
+    dif_x = goal_x - robot_x
+    dif_y = goal_y - robot_y
+    error_a = math.atan2( goal_y - robot_y , goal_x - robot_x ) - robot_a
+
+    if (error_a > math.pi): 
+        error_a = error_a - 2*math.pi
+        print("pi llego a ser mayor")
+    if (error_a < -math.pi):
+        error_a = error_a + 2*math.pi
+        print("pi llego a ser menor")
+    v = v_max * math.exp(-error_a * error_a/alpha)
+    w = w_max * (2/(1 + math.exp(-error_a/beta)) - 1)
+
+    cmd_vel.linear.x = v
+    cmd_vel.angular.z = w
     return cmd_vel
 
 def attraction_force(robot_x, robot_y, goal_x, goal_y):
@@ -49,6 +69,15 @@ def attraction_force(robot_x, robot_y, goal_x, goal_y):
     # where force_x and force_y are the X and Y components
     # of the resulting attraction force w.r.t. map.
     #
+    #Clase 17/11/2020 17:29
+    A= 1
+
+    d_x= (robot_x-goal_x)
+    d_y= (robot_y-goal_y)
+    normal_d_xy= math.sqrt(math.pow(d_x,2)+math.pow(d_y,2)) 
+    force_x=A*d_x/normal_d_xy
+    force_y=A*d_y/normal_d_xy
+
     return [force_x, force_y]
 
 def rejection_force(robot_x, robot_y, robot_a, laser_readings):
@@ -63,6 +92,31 @@ def rejection_force(robot_x, robot_y, robot_a, laser_readings):
     # where force_x and force_y are the X and Y components
     # of the resulting rejection force w.r.t. map.
     #
+    #Clase 17/11/2020 42:59 forula de fuerza repulsiva 35:29
+    #Clase 9/11/2020 18:21
+    # laser_readings 24/11/20 6:20
+
+    dist0=1
+    N = len(laser_readings)
+    B=6
+    force_x=0
+    force_y=0
+    force_x_sum=0
+    force_y_sum=0
+    for i in range(N):
+        [dist,ang] = laser_readings[i]
+        if (dist<dist0 and dist>0):
+            Fr= B*math.sqrt(1/dist-1/dist0)
+            force_x_aux = Fr * math.cos(robot_a+ang)
+            force_y_aux = Fr * math.sin(robot_a+ang)
+        else:
+            force_x_aux=0
+            force_y_aux=0
+        force_x_sum+=force_x_aux
+        force_y_sum+=force_y_aux
+    force_x=force_x_sum/N
+    force_y=force_y_sum/N
+
     return [force_x, force_y]
 
 def callback_pot_fields_goal(msg):
@@ -98,7 +152,29 @@ def callback_pot_fields_goal(msg):
     #     Update robot position by calling robot_x, robot_y, robot_a = get_robot_pose(listener)
     #     Recalculate distance to goal position
     #  Publish a zero speed (to stop robot after reaching goal point)
-    
+    #Clase 19/11/2020 8:44 inicio de expliccion en pseudocodigo
+    cmd_vel = Twist
+    tolerancia=0.1
+    E= 0.5
+    [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+    distance_to_goal = math.sqrt((goal_x - robot_x)**2 + (goal_y - robot_y)**2)
+    while distance_to_goal > tolerancia and not rospy.is_shutdown():
+        [fax, fay] = attraction_force(robot_x, robot_y, goal_x, goal_y)
+        [frx, fry] = rejection_force(robot_x, robot_y, robot_a, laser_readings)
+        F = [(fax+frx), (fay+fry)]
+        px = robot_x-(E*F[0])
+        py = robot_y-(E*F[1])
+
+        msg_cmd_vel = calculate_control(robot_x, robot_y, robot_a, px, py)
+        pub_cmd_vel.publish(msg_cmd_vel)
+        draw_force_markers(robot_x, robot_y, fax, fay, frx, fry, F[0], F[1], pub_markers)  #to draw all forces
+
+        loop.sleep()
+        [robot_x, robot_y, robot_a] = get_robot_pose(listener)
+        distance_to_goal= math.sqrt((goal_x - robot_x)**2 + (goal_y - robot_y)**2)
+
+    pub_cmd_vel.publish(Twist())
+
     print("Goal point reached")
 
 def get_robot_pose(listener):
