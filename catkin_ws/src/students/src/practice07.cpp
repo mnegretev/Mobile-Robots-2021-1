@@ -53,8 +53,8 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
         particles.poses[i].position.x = rnd.uniformReal(min_x, max_x); 
         particles.poses[i].position.y = rnd.uniformReal(min_y, max_y);
         //euler
-        particles.poses[i].orientation.z= sin((rnd.uniformReal(min_a,min_a))/2);
-        particles.poses[i].orientation.w= cos((rnd.uniformReal(min_a,min_a))/2);
+        particles.poses[i].orientation.z= sin((rnd.uniformReal(min_a,max_a))/2);
+        particles.poses[i].orientation.w= cos((rnd.uniformReal(min_a,max_a))/2);
     }
     return particles;
 }
