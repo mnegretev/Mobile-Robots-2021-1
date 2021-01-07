@@ -364,7 +364,7 @@ int main(int argc, char** argv)
              */            
             move_particles(particles,delta_pose.x,delta_pose.y,delta_pose.theta);
             simulate_scans=simulate_particle_scans(particles, static_map);
-            weights=calculate_particle_weights(simulated_scans, real_scan);
+            particle_weights=calculate_particle_weights(simulated_scans, real_scan);
             particles=resample_particles( particles, weights);
             pub_particles.publish(particles);
             map_to_odom_transform = get_map_to_odom_transform(robot_odom, get_robot_pose_estimation(particles));
