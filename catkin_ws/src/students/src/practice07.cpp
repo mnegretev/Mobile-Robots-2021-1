@@ -113,8 +113,9 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
         float dx = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
     	float dy = delta_x * sin(angle) + delta_y * cos(angle);		
 
-        particles.poses[i].position.x += dx + MOVEMENT_NOISE;   //Add noise x
-        particles.poses[i].position.y += dy + MOVEMENT_NOISE;   //Add noise y
+        //Random noise generation
+        particles.poses[i].position.x += dx + rnd.gaussian (0, RESAMPLING_NOISE);   //Add noise x
+        particles.poses[i].position.y += dy + rnd.gaussian (0, RESAMPLING_NOISE);   //Add noise y
 
         //Orientation
         angle += delta_t + MOVEMENT_NOISE;  //Add noise angle

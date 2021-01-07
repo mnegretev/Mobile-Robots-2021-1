@@ -1,3 +1,5 @@
 *~
 *.pyc
 *.user
+catkin_ws/.vscode/c_cpp_properties.json
+catkin_ws/.vscode/settings.json
