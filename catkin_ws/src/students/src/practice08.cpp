@@ -50,7 +50,7 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
     int i=0;
     for(i=0;i<N;i++){
         //linerares
-        particles.poses[i].position.x = rnd.uniformReal(min_x, max_x); 
+        particles.poses[i].position.x = rnd.uniformReal(min_x, max_x);
         particles.poses[i].position.y = rnd.uniformReal(min_y, max_y);
         //euler
         particles.poses[i].orientation.z= sin((rnd.uniformReal(min_a,max_a))/2);
@@ -103,7 +103,7 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * ensure both simulated and real ranges are finite values. 
      */
     //el parametro alfa es la insertidumbre del laser si el error es grande el alfa sera mayor
-    float diffs=0,simulated=0,real=0,weight_sum=0,similarity=0;
+    float diffs=0,simulated=0,real=0,similarity=0;
     int alpha=0.05;
     for (int i=0;i<particles.poses.size();i++)
     {
@@ -117,11 +117,11 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
         diffs /= simulated_scans[i].ranges.size();
         similarity= exp(-(pow(diffs,2)/alpha));
         //normalizar, suma de todos los pesos entre la suma de los pesos ??????? 
-        weight_sum+ = simility;
+        weight_sum += similarity;
         weights[i]= similarity;
     }
-    for(i=0;i<particle.poses.size();i++){
-        weight[i] = weight[i]/weight_sum;
+    for(int i=0;i<particles.poses.size();i++){
+        weights[i] = weights[i]/weight_sum;
     }
     return weights;
 
@@ -138,7 +138,7 @@ int random_choice(std::vector<float>& weights)
      * Probability of picking an integer 'i' is given by the corresponding weights[i] value.
      * Return the chosen integer. 
      */
-    float x=rnd.uniformReal(0,1);
+    double x=rnd.gaussian(0,1);
     int N= weights.size();
     for(int i=0;i<N-1;i++){
         if(x<weights[i]){
@@ -173,7 +173,7 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      int i=0;
      float x,y,z,w,t,theta;
      for (i=0;i<N;i++){
-        int random_partile = random_choise(particle);
+        int random_particle = random_choice(weights);
         z   = resampled_particles.poses[i].orientation.z;
         w   = resampled_particles.poses[i].orientation.w;
         theta = atan2(z, w)*2;
@@ -209,7 +209,7 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
         z   = particles.poses[i].orientation.z;
         w   = particles.poses[i].orientation.w;
         theta = atan2(z, w)*2;
-        x =  delta_x*cos(theta) + delta_y*sin(theta);
+        x =  delta_x*cos(theta) - delta_y*sin(theta);
         y = -delta_x*sin(theta) + delta_y*cos(theta);
         t = delta_t;
         particles.poses[i].position.x += x + MOVEMENT_NOISE; 
@@ -363,9 +363,9 @@ int main(int argc, char** argv)
              * Resample particles by calling the resample_particles function
              */            
             move_particles(particles,delta_pose.x,delta_pose.y,delta_pose.theta);
-            simulate_scans=simulate_particle_scans(particles, static_map);
+            simulated_scans=simulate_particle_scans(particles, static_map);
             particle_weights=calculate_particle_weights(simulated_scans, real_scan);
-            particles=resample_particles( particles, weights);
+            particles=resample_particles( particles, particle_weights);
             pub_particles.publish(particles);
             map_to_odom_transform = get_map_to_odom_transform(robot_odom, get_robot_pose_estimation(particles));
         }

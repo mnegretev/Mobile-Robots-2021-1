@@ -108,7 +108,7 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
         z   = particles.poses[i].orientation.z;
         w   = particles.poses[i].orientation.w;
         theta = atan2(z, w)*2;
-        x =  delta_x*cos(theta) + delta_y*sin(theta);
+        x =  delta_x*cos(theta) - delta_y*sin(theta);
         y = -delta_x*sin(theta) + delta_y*cos(theta);
         t = delta_t;
         particles.poses[i].position.x += x + MOVEMENT_NOISE; 
