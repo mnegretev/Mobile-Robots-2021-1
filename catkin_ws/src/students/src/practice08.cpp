@@ -111,10 +111,8 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     float simulated = 0;
     float real = 0;
 
-    for(int i=0;simulated_scans.size();i++)
+    for(int i=0;i<simulated_scans.size();i++)
     {
-        std::cout <<simulated_scans[i].ranges.size() << std::endl;
-        std::cout << "SIZEEEEEEEEEEEEEEEEE" << std::endl;
         for(size_t j=0; j<simulated_scans[i].ranges.size();j++)
         {
             if(simulated_scans[i].ranges[j]<simulated_scans[i].range_max)
@@ -135,14 +133,10 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
             }
 
             diff += abs(real-simulated);
-            std::cout << diff << std::endl;
-            std::cout << "diff_1" << std::endl;
         }
 
 
         diff /= simulated_scans[i].ranges.size();
-        std::cout << diff << std::endl;
-        std::cout << "diff" << std::endl;
         
         weights[i]=exp (-((diff*diff)/SENSOR_NOISE));
 
@@ -155,8 +149,6 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     for(int i=0;i<simulated_scans.size();i++)
     {
         weights[i]=weights[i]/weights_sum;
-        //std::cout << weights[i] << std::endl;
-
     }
     return weights;
 }
@@ -188,8 +180,6 @@ int random_choice(std::vector<float>& weights)
         }
     }
 
-    //printf(i);
-    //return -1;
 }
 
 geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles, std::vector<float>& weights)
@@ -212,11 +202,9 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
 
-    for (int i=0; i<particles.poses.size()-1;i++)
+    for (int i=0; i<particles.poses.size();i++)
     {
         int indice = random_choice(weights);
-        //std::cout << indice << std::endl;
-        //std::cout << " ..aqui" << std::endl;
 
         resampled_particles.poses[i].position.x += particles.poses[indice].position.x+rnd.gaussian(-RESAMPLING_NOISE,RESAMPLING_NOISE);
         resampled_particles.poses[i].position.y += particles.poses[indice].position.y+rnd.gaussian(-RESAMPLING_NOISE,RESAMPLING_NOISE);
