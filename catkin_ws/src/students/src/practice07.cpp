@@ -17,7 +17,7 @@
 #include "geometry_msgs/Pose2D.h"
 #include "tf/transform_broadcaster.h"
 
-#define NOMBRE "ARGUELLES_MACOSAY"
+#define NOMBRE "ARGUELLES_MACOSAY" //Practica 07 Terminada
 
 #define LASER_DOWNSAMPLING  10
 #define SENSOR_NOISE        0.1
