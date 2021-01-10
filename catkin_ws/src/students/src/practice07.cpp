@@ -100,22 +100,21 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      * is the orientation of the i-th particle.
      * Add gaussian noise to each new position. Use MOVEMENT_NOISE as covariances. 
      */
-     int N;
+    int N;
      N= particles.poses.size();
      int i=0;
-     float x,y,z,w,t,theta;
+     float x,y,z,w,theta; 
      for (i=0;i<N;i++){
         z   = particles.poses[i].orientation.z;
         w   = particles.poses[i].orientation.w;
         theta = atan2(z, w)*2;
         x =  delta_x*cos(theta) - delta_y*sin(theta);
         y = -delta_x*sin(theta) + delta_y*cos(theta);
-        t = delta_t;
-        particles.poses[i].position.x += x + MOVEMENT_NOISE; 
-        particles.poses[i].position.y += y + MOVEMENT_NOISE;
-        theta                         += t + MOVEMENT_NOISE;
         particles.poses[i].orientation.z= sin(theta/2);
         particles.poses[i].orientation.w= cos(theta/2);
+        particles.poses[i].position.x += x + MOVEMENT_NOISE; 
+        particles.poses[i].position.y += y + MOVEMENT_NOISE;
+        theta  += delta_t + MOVEMENT_NOISE; 
      }
 }
 
