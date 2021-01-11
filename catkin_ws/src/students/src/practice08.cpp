@@ -53,8 +53,9 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
         particles.poses[i].position.x = rnd.uniformReal(min_x, max_x);
         particles.poses[i].position.y = rnd.uniformReal(min_y, max_y);
         //euler
-        particles.poses[i].orientation.z= sin((rnd.uniformReal(min_a,max_a))/2);
-        particles.poses[i].orientation.w= cos((rnd.uniformReal(min_a,max_a))/2);
+        float a=rnd.uniformReal(min_a,max_a);
+        particles.poses[i].orientation.z= sin(a/2);
+        particles.poses[i].orientation.w= cos(a/2);
     }    
     return particles;
 }
@@ -74,6 +75,7 @@ std::vector<sensor_msgs::LaserScan> simulate_particle_scans(geometry_msgs::PoseA
      * Use the variable 'real_sensor_info' (already declared as global variable) for the real sensor information
      */
     //Clase 08/12/2020 min: 59.23
+    //dos lineas de codigo
     for (size_t i=0; i<particles.poses.size(); i++){
         //allocated ...
         simulated_scans[i] = *occupancy_grid_utils::simulateRangeScan(map, particles.poses[i] ,real_sensor_info);	
@@ -120,10 +122,12 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
         diffs /= simulated_scans[i].ranges.size();
         similarity= exp(-(pow(diffs,2)/alpha));
         //normalizar, suma de todos los pesos entre la suma de los pesos ??????? 
-        weight_sum += similarity;
         weights[i] = similarity;
     }
-    for(int i=0;i<weights.size();i++){
+    for(size_t i=0;i<weights.size();i++){
+        weight_sum+=weights[i];
+    }
+    for(size_t i=0;i<weights.size();i++){
         weights[i] = weights[i]/weight_sum;
     }
     return weights;
@@ -172,23 +176,24 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * given by the quaternion (0,0,sin(theta/2), cos(theta/2)), thus, you should first
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
-     int N;
+     size_t N;
      N= particles.poses.size();
      size_t i=0;
-     float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,theta=0.0f;
+     float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,a=0.0f;
      for (i=0;i<N;i++){
         int random_particle = random_choice(weights);
-        z   = resampled_particles.poses[random_particle].orientation.z;
-        w   = resampled_particles.poses[random_particle].orientation.w;
-        theta = atan2(z, w)*2;
-        x   = resampled_particles.poses[random_particle].position.x;
-        y   = resampled_particles.poses[random_particle].position.y;
-        resampled_particles.poses[i].position.x = x + RESAMPLING_NOISE; 
-        resampled_particles.poses[i].position.y = y + RESAMPLING_NOISE;
-        theta += RESAMPLING_NOISE;
-        particles.poses[i].orientation.z= sin(theta/2);
-        particles.poses[i].orientation.w= cos(theta/2);
+        z   = particles.poses[random_particle].orientation.z;  //cuaterinion en z
+        w   = particles.poses[random_particle].orientation.w;  //cuaternion en w
+        a = atan2(z, w)*2;
+        a += RESAMPLING_NOISE;
+        x   = particles.poses[random_particle].position.x + RESAMPLING_NOISE;
+        y   = particles.poses[random_particle].position.y + RESAMPLING_NOISE;
+        resampled_particles.poses[random_particle].orientation.z = sin(a/2);
+        resampled_particles.poses[random_particle].orientation.w = cos(a/2);
+        resampled_particles.poses[random_particle].position.x = x; 
+        resampled_particles.poses[random_particle].position.y = y;
      }
+
     return resampled_particles;
 }
 
@@ -207,19 +212,20 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     int N;
      N= particles.poses.size();
      int i=0;
-     float x,y,z,w,theta; 
+     float x=0.0f,y=0.0f,z=0.0f,w=0.0f,a=0.0f; 
      for (i=0;i<N;i++){
-        z   = particles.poses[i].orientation.z;
-        w   = particles.poses[i].orientation.w;
-        theta = atan2(z, w)*2;
-        x =  delta_x*cos(theta) - delta_y*sin(theta);
-        y = -delta_x*sin(theta) + delta_y*cos(theta);
+        z   = particles.poses[i].orientation.z;  //cuaterinion en z
+        w   = particles.poses[i].orientation.w;  //cuaternion en w
+        a = atan2(z, w)*2;
+        a += delta_t + MOVEMENT_NOISE;
+        x =  delta_x*cos(a) + delta_y*sin(a) + MOVEMENT_NOISE;
+        y = -delta_x*sin(a) + delta_y*cos(a) + MOVEMENT_NOISE;
+        //pasar el angulo a cuaternion
+        particles.poses[i].orientation.z= sin(a/2);
+        particles.poses[i].orientation.w= cos(a/2);
+        particles.poses[i].position.x += x; 
+        particles.poses[i].position.y += y;
 
-        particles.poses[i].position.x += x + MOVEMENT_NOISE; 
-        particles.poses[i].position.y += y + MOVEMENT_NOISE;
-        theta  += delta_t + MOVEMENT_NOISE; 
-        particles.poses[i].orientation.z= sin(theta/2);
-        particles.poses[i].orientation.w= cos(theta/2);
      }
 }
 
