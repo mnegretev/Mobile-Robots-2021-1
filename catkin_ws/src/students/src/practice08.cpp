@@ -47,7 +47,7 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
      * For the Euler angles (roll, pitch, yaw) = (0,0,theta) the corresponding quaternion is
      * given by (0,0,sin(theta/2), cos(theta/2)). 
      */
-    int i=0;
+    size_t i=0;
     for(i=0;i<N;i++){
         //linerares
         particles.poses[i].position.x = rnd.uniformReal(min_x, max_x);
@@ -73,7 +73,9 @@ std::vector<sensor_msgs::LaserScan> simulate_particle_scans(geometry_msgs::PoseA
      * http://docs.ros.org/groovy/api/occupancy_grid_utils/html/namespaceoccupancy__grid__utils.html
      * Use the variable 'real_sensor_info' (already declared as global variable) for the real sensor information
      */
-    for (int i=0; i<particles.poses.size(); i++){
+    //Clase 08/12/2020 min: 59.23
+    for (size_t i=0; i<particles.poses.size(); i++){
+        //allocated ...
         simulated_scans[i] = *occupancy_grid_utils::simulateRangeScan(map, particles.poses[i] ,real_sensor_info);	
     }
     
@@ -99,10 +101,12 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      */
     //el parametro alfa es la insertidumbre del laser si el error es grande el alfa sera mayor
     float diffs=0.0f,simulated=0.0f,real=0.0f,similarity=0.0f,weight_sum=0.0f;
-    int alpha=0.05;
-    for (int i=0;i<weights.size();i++)
+    int alpha=0.1;
+    bool infinito=false;
+    for (size_t i=0;i<weights.size();i++)
     {
-        for(int j=0;j<simulated_scans[i].ranges.size();j++)
+        diffs = 0.0f;
+        for(size_t j=0;j<simulated_scans[i].ranges.size();j++)
         {
             simulated = simulated_scans[i].ranges[j];
             real = real_scan.ranges[j*LASER_DOWNSAMPLING];
@@ -133,15 +137,16 @@ int random_choice(std::vector<float>& weights)
      * Probability of picking an integer 'i' is given by the corresponding weights[i] value.
      * Return the chosen integer. 
      */
-    double x=rnd.gaussian(0,1);
-    int N= weights.size();
+    double x=rnd.gaussian01();
+    size_t N= weights.size();
     for(int i=0;i<N-1;i++){
         if(x<weights[i]){
             return i;
         }
-        x -= weights[i];
+        else{
+            x -= weights[i];
+        }
     }
-    return -1;
 }
 
 geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles, std::vector<float>& weights)
@@ -165,7 +170,7 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      */
      int N;
      N= particles.poses.size();
-     int i=0;
+     size_t i=0;
      float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,theta=0.0f;
      for (i=0;i<N;i++){
         int random_particle = random_choice(weights);
