@@ -99,7 +99,7 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * IMPORTANT NOTE 2. Both, simulated an real scans, can have infinite ranges. Thus, when comparing readings,
      * ensure both simulated and real ranges are finite values. 
      */
-    //el parametro alfa es la insertidumbre del laser si el error es grande el alfa sera mayor
+    //el parametro alfa es la insertidumbre del laser si el error es grande el alfa debera ser mayor
     float diffs=0.0f,simulated=0.0f,real=0.0f,similarity=0.0f,weight_sum=0.0f;
     int alpha=0.1;
     bool infinito=false;
@@ -110,8 +110,12 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
         {
             simulated = simulated_scans[i].ranges[j];
             real = real_scan.ranges[j*LASER_DOWNSAMPLING];
-
-            diffs += fabs(real - simulated);
+            float diffs_r =fabs(real - simulated);
+            bool one_loop=true;
+            if(diffs_r>real_scan.range_max && one_loop==true){
+                diffs += diffs_r;
+                one_loop =false;
+            }
         }
         diffs /= simulated_scans[i].ranges.size();
         similarity= exp(-(pow(diffs,2)/alpha));
