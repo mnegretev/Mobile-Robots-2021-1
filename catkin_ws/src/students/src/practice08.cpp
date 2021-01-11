@@ -73,12 +73,8 @@ std::vector<sensor_msgs::LaserScan> simulate_particle_scans(geometry_msgs::PoseA
      * http://docs.ros.org/groovy/api/occupancy_grid_utils/html/namespaceoccupancy__grid__utils.html
      * Use the variable 'real_sensor_info' (already declared as global variable) for the real sensor information
      */
-    for (size_t i=0; i<particles.poses.size(); i++){
-        simulated_scans[i]=occupancy_grid_utils::simulateRangeScan(map, poses[i] ,real_sensor_info);
-        //simulateRangeScan(const nm::OccupancyGrid &grid, 
-        //                  const gm::Pose &sensor_pose, 
-        //                  const sm::LaserScan &scanner_info, 
-        //                  const bool unknown_obstacles)
+    for (int i=0; i<particles.poses.size(); i++){
+        simulated_scans[i] = *occupancy_grid_utils::simulateRangeScan(map, particles.poses[i] ,real_sensor_info);	
     }
     
     return simulated_scans;
@@ -87,7 +83,6 @@ std::vector<sensor_msgs::LaserScan> simulate_particle_scans(geometry_msgs::PoseA
 std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan>& simulated_scans, sensor_msgs::LaserScan& real_scan)
 {
     std::vector<float> weights;
-    std::vector<float> weight_sum;
     weights.resize(simulated_scans.size());
     /*
      * TODO:
@@ -103,9 +98,9 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * ensure both simulated and real ranges are finite values. 
      */
     //el parametro alfa es la insertidumbre del laser si el error es grande el alfa sera mayor
-    float diffs=0,simulated=0,real=0,similarity=0;
+    float diffs=0.0f,simulated=0.0f,real=0.0f,similarity=0.0f,weight_sum=0.0f;
     int alpha=0.05;
-    for (int i=0;i<particles.poses.size();i++)
+    for (int i=0;i<weights.size();i++)
     {
         for(int j=0;j<simulated_scans[i].ranges.size();j++)
         {
@@ -118,9 +113,9 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
         similarity= exp(-(pow(diffs,2)/alpha));
         //normalizar, suma de todos los pesos entre la suma de los pesos ??????? 
         weight_sum += similarity;
-        weights[i]= similarity;
+        weights[i] = similarity;
     }
-    for(int i=0;i<particles.poses.size();i++){
+    for(int i=0;i<weights.size();i++){
         weights[i] = weights[i]/weight_sum;
     }
     return weights;
@@ -174,15 +169,14 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,theta=0.0f;
      for (i=0;i<N;i++){
         int random_particle = random_choice(weights);
-        z   = resampled_particles.poses[i].orientation.z;
-        w   = resampled_particles.poses[i].orientation.w;
+        z   = resampled_particles.poses[random_particle].orientation.z;
+        w   = resampled_particles.poses[random_particle].orientation.w;
         theta = atan2(z, w)*2;
-        x   = resampled_particles.poses[i].position.x;
-        y   = resampled_particles.poses[i].position.y;
-        t = delta_t;
-        resampled_particles.poses[i].position.x += x + RESAMPLING_NOISE; 
-        resampled_particles.poses[i].position.y += y + RESAMPLING_NOISE;
-        theta                         += t + RESAMPLING_NOISE;
+        x   = resampled_particles.poses[random_particle].position.x;
+        y   = resampled_particles.poses[random_particle].position.y;
+        resampled_particles.poses[i].position.x = x + RESAMPLING_NOISE; 
+        resampled_particles.poses[i].position.y = y + RESAMPLING_NOISE;
+        theta += RESAMPLING_NOISE;
         particles.poses[i].orientation.z= sin(theta/2);
         particles.poses[i].orientation.w= cos(theta/2);
      }
@@ -204,17 +198,17 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     int N;
      N= particles.poses.size();
      int i=0;
-     float x,y,z,w,t,theta;
+     float x,y,z,w,theta; 
      for (i=0;i<N;i++){
         z   = particles.poses[i].orientation.z;
         w   = particles.poses[i].orientation.w;
         theta = atan2(z, w)*2;
         x =  delta_x*cos(theta) - delta_y*sin(theta);
         y = -delta_x*sin(theta) + delta_y*cos(theta);
-        t = delta_t;
+
         particles.poses[i].position.x += x + MOVEMENT_NOISE; 
         particles.poses[i].position.y += y + MOVEMENT_NOISE;
-        theta                         += t + MOVEMENT_NOISE;
+        theta  += delta_t + MOVEMENT_NOISE; 
         particles.poses[i].orientation.z= sin(theta/2);
         particles.poses[i].orientation.w= cos(theta/2);
      }
