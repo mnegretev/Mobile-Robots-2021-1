@@ -103,19 +103,20 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     int N;
      N= particles.poses.size();
      int i=0;
-     float x,y,z,w,theta; 
+     float x=0.0f,y=0.0f,z=0.0f,w=0.0f,a=0.0f; 
      for (i=0;i<N;i++){
-        z   = particles.poses[i].orientation.z;
-        w   = particles.poses[i].orientation.w;
-        theta = atan2(z, w)*2;
-        x =  delta_x*cos(theta) - delta_y*sin(theta);
-        y = -delta_x*sin(theta) + delta_y*cos(theta);
+        z   = particles.poses[i].orientation.z;  //cuaterinion en z
+        w   = particles.poses[i].orientation.w;  //cuaternion en w
+        a = atan2(z, w)*2;
+        a += delta_t + MOVEMENT_NOISE;
+        x =  delta_x*cos(a) + delta_y*sin(a) + MOVEMENT_NOISE;
+        y = -delta_x*sin(a) + delta_y*cos(a) + MOVEMENT_NOISE;
+        //pasar el angulo a cuaternion
+        particles.poses[i].orientation.z= sin(a/2);
+        particles.poses[i].orientation.w= cos(a/2);
+        particles.poses[i].position.x += x; 
+        particles.poses[i].position.y += y;
 
-        particles.poses[i].position.x += x + MOVEMENT_NOISE; 
-        particles.poses[i].position.y += y + MOVEMENT_NOISE;
-        theta  += delta_t + MOVEMENT_NOISE; 
-        particles.poses[i].orientation.z= sin(theta/2);
-        particles.poses[i].orientation.w= cos(theta/2);
      }
 }
 
