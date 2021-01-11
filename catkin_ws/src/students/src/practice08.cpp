@@ -171,7 +171,7 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      int N;
      N= particles.poses.size();
      int i=0;
-     float x,y,z,w,t,theta;
+     float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,theta=0.0f;
      for (i=0;i<N;i++){
         int random_particle = random_choice(weights);
         z   = resampled_particles.poses[i].orientation.z;
