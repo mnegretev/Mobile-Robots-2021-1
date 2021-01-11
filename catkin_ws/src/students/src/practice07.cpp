@@ -110,11 +110,12 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
         theta = atan2(z, w)*2;
         x =  delta_x*cos(theta) - delta_y*sin(theta);
         y = -delta_x*sin(theta) + delta_y*cos(theta);
-        particles.poses[i].orientation.z= sin(theta/2);
-        particles.poses[i].orientation.w= cos(theta/2);
+
         particles.poses[i].position.x += x + MOVEMENT_NOISE; 
         particles.poses[i].position.y += y + MOVEMENT_NOISE;
         theta  += delta_t + MOVEMENT_NOISE; 
+        particles.poses[i].orientation.z= sin(theta/2);
+        particles.poses[i].orientation.w= cos(theta/2);
      }
 }
 
