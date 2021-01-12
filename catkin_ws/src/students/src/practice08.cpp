@@ -182,15 +182,16 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
 
     for (int i = 0; i < particles.poses.size(); i++)
     {
-    	rnd_index = random_choice(weights);																									/* Select 1 particle */
+    	rnd_index = random_choice(weights);																														/* Select 1 particle */
+    	float rndNoise = rnd.gaussian(0, RESAMPLING_NOISE);
 
-    	resampled_particles.poses[i].position.x = particles.poses[rnd_index].position.x + RESAMPLING_NOISE;									/* Position X + noise */
-    	resampled_particles.poses[i].position.y = particles.poses[rnd_index].position.y + RESAMPLING_NOISE;									/* Position Y + noise */
+    	resampled_particles.poses[i].position.x = particles.poses[rnd_index].position.x + rnd.uniformReal(0, RESAMPLING_NOISE);									/* Position X + noise */
+    	resampled_particles.poses[i].position.y = particles.poses[rnd_index].position.y + rnd.uniformReal(0, RESAMPLING_NOISE);									/* Position Y + noise */
 
-    	float angle = (atan2(particles.poses[rnd_index].orientation.z, particles.poses[rnd_index].orientation.w) * 2) + RESAMPLING_NOISE;	/* Euler Angle */
+    	float angle = (atan2(particles.poses[rnd_index].orientation.z, particles.poses[rnd_index].orientation.w) * 2) + rnd.uniformReal(0, RESAMPLING_NOISE);	/* Euler Angle */
 
-    	resampled_particles.poses[i].orientation.z = sin(angle/2);																			/* Transform to Quaternion*/
-    	resampled_particles.poses[i].orientation.w = cos(angle/2);																			/* Transform to Quaternion*/
+    	resampled_particles.poses[i].orientation.z = sin(angle/2);																								/* Transform to Quaternion*/
+    	resampled_particles.poses[i].orientation.w = cos(angle/2);																								/* Transform to Quaternion*/
     }	
     
     return resampled_particles;
@@ -211,15 +212,16 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
 
     for (size_t i = 0; i < particles.poses.size(); i++)
     {
+    	
     	float angle = atan2(particles.poses[i].orientation.z, particles.poses[i].orientation.w) * 2;		/* Euler Angle of i-th particle */
     	float xi = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
     	float yi = delta_x * sin(angle) + delta_y * cos(angle);												/* Y position of i-th particle */
 
-    	angle += delta_t + MOVEMENT_NOISE;																	/* Euler Angle + Noise */
+    	angle += delta_t + rnd.uniformReal(0, MOVEMENT_NOISE);												/* Euler Angle + Noise */
 
 
-    	particles.poses[i].position.x += xi + MOVEMENT_NOISE;												/* Move particles on X-axis */
-    	particles.poses[i].position.y += yi + MOVEMENT_NOISE;												/* Move particles on Y-axis */
+    	particles.poses[i].position.x += xi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on X-axis */
+    	particles.poses[i].position.y += yi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on Y-axis */
     	particles.poses[i].orientation.z += sin(angle/2);													/* Back to Quaternion */
     	particles.poses[i].orientation.w += cos(angle/2);													/* Back to Quaternion */
     }

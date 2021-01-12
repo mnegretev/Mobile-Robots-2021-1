@@ -110,11 +110,11 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     	float xi = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
     	float yi = delta_x * sin(angle) + delta_y * cos(angle);												/* Y position of i-th particle */
 
-    	angle += delta_t + MOVEMENT_NOISE;																	/* Euler Angle + Noise */
+    	angle += delta_t + rnd.gaussian(0, MOVEMENT_NOISE);													/* Euler Angle + Noise */
 
 
-    	particles.poses[i].position.x += xi + MOVEMENT_NOISE;												/* Move particles on X-axis */
-    	particles.poses[i].position.y += yi + MOVEMENT_NOISE;												/* Move particles on Y-axis */
+    	particles.poses[i].position.x += xi + rnd.gaussian(0, MOVEMENT_NOISE);								/* Move particles on X-axis */
+    	particles.poses[i].position.y += yi + rnd.gaussian(0, MOVEMENT_NOISE);								/* Move particles on Y-axis */
     	particles.poses[i].orientation.z += sin(angle/2);													/* Back to Quaternion */
     	particles.poses[i].orientation.w += cos(angle/2);													/* Back to Quaternion */
     }
