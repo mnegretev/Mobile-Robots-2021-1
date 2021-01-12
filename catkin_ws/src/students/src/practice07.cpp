@@ -107,13 +107,12 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      int i=0;
      float x=0.0f,y=0.0f,z=0.0f,w=0.0f,a=0.0f; 
      for (i=0;i<N;i++){
-        float random_noice=rnd.gaussian(0,MOVEMENT_NOISE);
         z   = particles.poses[i].orientation.z;  //cuaterinion en z
         w   = particles.poses[i].orientation.w;  //cuaternion en w
         a = atan2(z, w)*2;
-        a += delta_t + random_noice;
-        x =  delta_x*cos(a) + delta_y*sin(a) + random_noice;
-        y = -delta_x*sin(a) + delta_y*cos(a) + random_noice;
+        a += delta_t + rnd.gaussian(0,MOVEMENT_NOISE);
+        x =  delta_x*cos(a) + delta_y*sin(a) + rnd.gaussian(0,MOVEMENT_NOISE);
+        y = -delta_x*sin(a) + delta_y*cos(a) + rnd.gaussian(0,MOVEMENT_NOISE);
         //pasar el angulo a cuaternion
         particles.poses[i].orientation.z= sin(a/2);
         particles.poses[i].orientation.w= cos(a/2);
