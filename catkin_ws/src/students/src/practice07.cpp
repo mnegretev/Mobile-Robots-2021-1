@@ -98,6 +98,8 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      * is the orientation of the i-th particle.
      * Add gaussian noise to each new position. Use MOVEMENT_NOISE as covariances. 
      */
+
+
     for(size_t i=0; i<particles.poses.size(); i++)
     {float a=atan2(particles.poses[i].orientation.z,particles.poses[i].orientation.w)*2;
      a += delta_t+rnd.uniformReal(-MOVEMENT_NOISE,MOVEMENT_NOISE);
