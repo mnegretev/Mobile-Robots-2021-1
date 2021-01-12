@@ -105,8 +105,8 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     for(size_t i=0; i<particles.poses.size(); i++){
         a = atan2(particles.poses[i].orientation.z, particles.poses[i].orientation.w)*2;
         particles.poses[i].position.x += delta_x*cos(a) - delta_y*sin(a) + rnd.gaussian(0, MOVEMENT_NOISE);
-       particles.poses[i].position.y += delta_x*sin(a) + delta_y*cos(a) + rnd.gaussian(0, MOVEMENT_NOISE);
-       a += delta_t + rnd.gaussian(0, MOVEMENT_NOISE);
+        particles.poses[i].position.y += delta_x*sin(a) + delta_y*cos(a) + rnd.gaussian(0, MOVEMENT_NOISE);
+        a += delta_t + rnd.gaussian(0, MOVEMENT_NOISE);
         particles.poses[i].orientation.z = sin(a/2);
         particles.poses[i].orientation.w = cos(a/2);
     }
@@ -176,7 +176,7 @@ tf::Transform get_map_to_odom_transform(geometry_msgs::Pose2D odom, geometry_msg
 int main(int argc, char** argv)
 {
     std::cout << "PRACTICE 07 - " << NOMBRE << std::endl;
-    ros::init(argc, argv, "practice08");
+    ros::init(argc, argv, "practice07");
     ros::NodeHandle n("~");
     ros::Rate loop(20);
     ros::Subscriber sub_scan      = n.subscribe("/scan", 1, callback_laser_scan);
