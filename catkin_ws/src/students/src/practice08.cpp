@@ -96,7 +96,31 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * IMPORTANT NOTE 2. Both, simulated an real scans, can have infinite ranges. Thus, when comparing readings,
      * ensure both simulated and real ranges are finite values. 
      */
+    float weights_sum=0;
+
+    float diff = 0;
+    float simulated = 0;
+    float real = 0;
+
+    for(int i=0;i<simulated_scans.size();i++)
+    {for(size_t j=0; j<simulated_scans[i].ranges.size();j++)
+        {if(simulated_scans[i].ranges[j]<simulated_scans[i].range_max)
+               {simulated=simulated_scans[i].ranges[j];}
+            else
+               {simulated=simulated_scans[i].range_max;}
+            if(real_scan.ranges[j*LASER_DOWNSAMPLING]<real_scan.range_max)
+               {real=real_scan.ranges[j*LASER_DOWNSAMPLING];}
+            else
+               {real=real_scan.range_max;}
+        diff += abs(real-simulated);}
+
+        diff /= simulated_scans[i].ranges.size();
+        weights[i]=exp (-((diff*diff)/SENSOR_NOISE));
+        weights_sum+=weights[i];
+    diff=0;}
     
+    for(int i=0;i<simulated_scans.size();i++)
+    {weights[i]=weights[i]/weights_sum;}
     
     return weights;
 }
@@ -112,7 +136,16 @@ int random_choice(std::vector<float>& weights)
      * Probability of picking an integer 'i' is given by the corresponding weights[i] value.
      * Return the chosen integer. 
      */
-    
+    float x = rnd.uniformReal(0,1);
+
+    for(int i=0; i<weights.size();i++)
+    {if(x<weights[i])
+        {return i;}
+        else
+        {x-= weights[i];}
+    }
+}
+
     return -1;
 }
 
@@ -135,6 +168,17 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * given by the quaternion (0,0,sin(theta/2), cos(theta/2)), thus, you should first
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
+    for (int i=0; i<particles.poses.size();i++)
+       {int indice = random_choice(weights);
+
+        resampled_particles.poses[i].position.x += particles.poses[indice].position.x+rnd.gaussian(-RESAMPLING_NOISE,RESAMPLING_NOISE);
+        resampled_particles.poses[i].position.y += particles.poses[indice].position.y+rnd.gaussian(-RESAMPLING_NOISE,RESAMPLING_NOISE);
+        
+        float a=atan2(particles.poses[indice].orientation.z,particles.poses[indice].orientation.w)*2;
+        a +=rnd.gaussian(-RESAMPLING_NOISE,RESAMPLING_NOISE);
+
+        resampled_particles.poses[i].orientation.z=sin(a/2);
+        resampled_particles.poses[i].orientation.w=cos(a/2);}
     
     return resampled_particles;
 }
@@ -151,6 +195,18 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      * is the orientation of the i-th particle.
      * Add gaussian noise to each new position. Use MOVEMENT_NOISE as covariances. 
      */
+    for(size_t i=0; i<particles.poses.size(); i++)
+
+       {float a=atan2(particles.poses[i].orientation.z,particles.poses[i].orientation.w)*2;
+        a += delta_t+rnd.uniformReal(-MOVEMENT_NOISE,MOVEMENT_NOISE);
+
+        particles.poses[i].position.x += cos(a)*delta_x - sin(a)*delta_y;
+        particles.poses[i].position.y += sin(a)*delta_x + cos(a)*delta_y;      
+        
+
+        particles.poses[i].orientation.z=sin(a/2);
+        particles.poses[i].orientation.w=cos(a/2);}
+}
 }
 
 bool check_displacement(geometry_msgs::Pose2D& robot_pose, geometry_msgs::Pose2D& delta_pose)
@@ -294,7 +350,10 @@ int main(int argc, char** argv)
              * Get the set of simulated scans for each particles. Use the simulate_particle_scans function.
              * Get the set of weights by calling the calculate_particle_weights function
              * Resample particles by calling the resample_particles function
-             */            
+             */    
+ 
+            move_particles(particles, delta_pose.x, delta_pose.y, delta_pose.theta);  
+
             pub_particles.publish(particles);
             map_to_odom_transform = get_map_to_odom_transform(robot_odom, get_robot_pose_estimation(particles));
         }
