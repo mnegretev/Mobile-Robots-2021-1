@@ -106,32 +106,45 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     int alpha=0.1;
     for (size_t i=0;i<weights.size();i++)
     {
-        diffs = 0.0f;
         for(size_t j=0;j<simulated_scans[i].ranges.size();j++)
         {
             simulated = simulated_scans[i].ranges[j];
             real = real_scan.ranges[j*LASER_DOWNSAMPLING];
-            printf("\n simulated = %f \n",simulated);
-            printf("\n real = %f \n",real);
-            max_real = real_scan.range_max;
-            printf("\n rango maximo = %f \n",max_real);
-            //max_simulated= simulated_scans.range_max; no hay maximo simulado.
-            if(simulated<=max_real && real<= max_real){
+            //printf("\n simulated = %f \n",simulated);
+            //printf("\n real = %f \n",real);
+            if(simulated <= simulated_scans[i].range_max && real <= real_scan.range_max){
                 diffs += fabs(simulated-real);
             }
+            else{
+                if(simulated <= simulated_scans[i].range_max){
+                    real = real_scan.range_max;
+                    diffs += fabs(simulated-real);
+                }
+
+                if(real <= real_scan.range_max){
+                    simulated = simulated_scans[i].range_max;
+                    diffs += fabs(simulated-real);
+                }
+            }
         }
+        //printf(" \n diffs = %f \n", diffs);
         diffs /= simulated_scans[i].ranges.size();
-        similarity= exp(-((pow(diffs,2))/alpha)); // aqui marca cero 
+        
+        similarity= expf(-(diffs*diffs)/alpha); // aqui marca cero 
         printf("\n similitud = %f \n",similarity);
-        //normalizar, suma de todos los pesos entre la suma de los pesos ??????? 
+        diffs =0.0f;
+        //normalizar, suma de todos los pesos entre la suma de los pesos  
         weights[i] = similarity;
-    }
-    for(size_t i=0;i<weights.size();i++){
         weight_sum+=weights[i];
+        printf("\n suma de pesos = %f \n",weight_sum);
     }
-    printf("\n suma de pesos = %f \n",weight_sum);
     for(size_t i=0;i<weights.size();i++){
-        weights[i] = weights[i]/weight_sum;
+        if (weight_sum<=0){
+            weights[i] = weights[i]/weight_sum;
+        }
+        else{
+            weights[i]=0;
+        }
     }
     return weights;
 
@@ -148,9 +161,9 @@ int random_choice(std::vector<float>& weights)
      * Probability of picking an integer 'i' is given by the corresponding weights[i] value.
      * Return the chosen integer. 
      */
-    double x=rnd.gaussian01();
+    float x=rnd.uniformReal(0,1);
     size_t N= weights.size();
-    for(int i=0;i<N-1;i++){
+    for(int i=0;i<N;i++){
         if(x<weights[i]){
             return i;
         }
@@ -183,14 +196,15 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      N= particles.poses.size();
      size_t i=0;
      float x=0.0f,y=0.0f,z=0.0f,w=0.0f,t=0.0f,a=0.0f;
-     for (i=0;i<N-1;i++){
+     for (i=0;i<N;i++){
         int random_particle = random_choice(weights);
+        float random_noice=rnd.gaussian(0,RESAMPLING_NOISE);
         z   = particles.poses[random_particle].orientation.z;  //cuaterinion en z
         w   = particles.poses[random_particle].orientation.w;  //cuaternion en w
         a = atan2(z, w)*2;
-        a += RESAMPLING_NOISE;
-        x   = particles.poses[random_particle].position.x + RESAMPLING_NOISE;
-        y   = particles.poses[random_particle].position.y + RESAMPLING_NOISE;
+        a += random_noice;
+        x   = particles.poses[random_particle].position.x + random_noice;
+        y   = particles.poses[random_particle].position.y + random_noice;
         resampled_particles.poses[i].orientation.z = sin(a/2);
         resampled_particles.poses[i].orientation.w = cos(a/2);
         resampled_particles.poses[i].position.x = x; 
@@ -200,9 +214,9 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
     return resampled_particles;
 }
 
-void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float delta_y, float delta_a)
+void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float delta_y, float delta_t)
 {
-    // Cambir deta_t por delta_a 
+
     random_numbers::RandomNumberGenerator rnd;
     /*
      * TODO:
@@ -218,12 +232,13 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
      int i=0;
      float x=0.0f,y=0.0f,z=0.0f,w=0.0f,a=0.0f; 
      for (i=0;i<N;i++){
+        float random_noice=rnd.gaussian(0,MOVEMENT_NOISE);
         z   = particles.poses[i].orientation.z;  //cuaterinion en z
         w   = particles.poses[i].orientation.w;  //cuaternion en w
         a = atan2(z, w)*2;
-        a += delta_a + MOVEMENT_NOISE;
-        x =  delta_x*cos(a) + delta_y*sin(a) + MOVEMENT_NOISE;
-        y = -delta_x*sin(a) + delta_y*cos(a) + MOVEMENT_NOISE;
+        a += delta_t + random_noice;
+        x =  delta_x*cos(a) + delta_y*sin(a) + random_noice;
+        y = -delta_x*sin(a) + delta_y*cos(a) + random_noice;
         //pasar el angulo a cuaternion
         particles.poses[i].orientation.z= sin(a/2);
         particles.poses[i].orientation.w= cos(a/2);
