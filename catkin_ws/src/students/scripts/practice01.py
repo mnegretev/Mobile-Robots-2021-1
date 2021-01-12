@@ -7,7 +7,7 @@
 # Write the code necessary to plan a path using two search algorithms:
 # Breadth first search and Depth first search
 # MODIFY ONLY THE SECTIONS MARKED WITH THE 'TODO' COMMENT
-#
+#HOLA MUNDO
 
 import sys
 import numpy
@@ -17,7 +17,7 @@ from nav_msgs.msg import Path
 from nav_msgs.srv import *
 from collections import deque
 
-NAME = "MEDINA FERNANDEZ ARMANDO"
+NAME = "FERNANDEZ MORA JOSE ENRIQUE"
 
 static_map = None
 grid_map   = None
@@ -43,7 +43,7 @@ def breadth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.popleft()  ######## HINT
+        [r,c] = open_list.popleft()  ######## QUEUE
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
@@ -89,7 +89,7 @@ def depth_first_search(start_r, start_c, goal_r, goal_c, grid_map):
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = open_list.pop()  ######## HINT
+        [r,c] = open_list.pop()  ######## STACK
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
         dist = distances[r,c] + 1
