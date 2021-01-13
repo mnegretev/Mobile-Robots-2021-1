@@ -44,7 +44,7 @@ def segment_by_color(img_bgr, points):
     #cv2.circle(imag, (int(img_c), int(img_r)), 20, [0, 0, 255], thickness=3)
 
     #print('something')
-    z,x,y,_=points[int(img_c)][int(img_r)]
+    x,y,z,_=points[int(img_r)][int(img_c)]
 
     #return [1,1,1,1,1]
     return [img_c, img_r, x,y,z]
