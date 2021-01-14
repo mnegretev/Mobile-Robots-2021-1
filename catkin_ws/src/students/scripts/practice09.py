@@ -34,8 +34,13 @@ def segment_by_color(img_bgr, points):
     # [img_c, img_r] is the centroid of the segmented region in image coordinates.
     # [x,y,z] is the centroid of the segmented region in cartesian coordinate. 
     #
+    image_HSV = cv2.cvtColor(img_bgr,cv2.COLOR_BGR2HSV)
+    mask=cvs.inRange(image_HSV,(21,212,114), (21,217,234))
     
-    return [img_c, img_r, x,y,z]
+    print(img_bgr[290,324])
+    print(points[290,324])
+    return[1,1,0,0,0]
+    #return [img_c, img_r, x,y,z]
 
 def callback_point_cloud(msg):
     global pub_point
