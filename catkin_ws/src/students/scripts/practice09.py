@@ -35,10 +35,15 @@ def segment_by_color(img_bgr, points):
     # [x,y,z] is the centroid of the segmented region in cartesian coordinate. 
     #
     image_HSV = cv2.cvtColor(img_bgr,cv2.COLOR_BGR2HSV)
-    mask=cvs.inRange(image_HSV,(21,212,114), (21,217,234))
-    
-    print(img_bgr[290,324])
-    print(points[290,324])
+    #print(image_HSV[203,343])
+    HSV_LOW=numpy.array((15,188,142))
+    HSV_HIGH=numpy.array((15,255,226))
+    mask = cv2.inRange(image_HSV,HSV_LOW, HSV_HIGH)
+    mask_non_zero = cv2.findNonZero(mask)
+    centroid = cv2.mean(mask_non_zero)
+    print(centroid) 
+    #print(img_bgr[207,352])
+    #print(points[207,352])
     return[1,1,0,0,0]
     #return [img_c, img_r, x,y,z]
 
