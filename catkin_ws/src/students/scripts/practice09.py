@@ -42,10 +42,10 @@ def segment_by_color(img_bgr, points):
     mask_non_zero = cv2.findNonZero(mask)
     centroid = cv2.mean(mask_non_zero)
     [img_c,img_r]=centroid[0],centroid[1]
-    print([img_c,img_r])
-    #print(img_bgr[207,352])
+    #print([img_c,img_r])
+    [x,y,z,w]=points[int(img_c),int(img_r)]
     #return[1,1,0,0,0]
-    return [img_c, img_r, 0,0,0]
+    return [img_c, img_r, x,y,z]
 
 def callback_point_cloud(msg):
     global pub_point
