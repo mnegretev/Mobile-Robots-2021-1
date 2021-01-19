@@ -36,18 +36,21 @@ def segment_by_color(img_bgr, points):
     #
     image_HSV = cv2.cvtColor(img_bgr,cv2.COLOR_BGR2HSV)
     #print(image_HSV[203,343])
-    HSV_LOW=numpy.array((15,188,142))
-    HSV_HIGH=numpy.array((15,255,226))
+    HSV_LOW=numpy.array((15,190,170))
+    HSV_HIGH=numpy.array((15,200,198))
     mask = cv2.inRange(image_HSV,HSV_LOW, HSV_HIGH)
     mask_non_zero = cv2.findNonZero(mask)
     centroid = cv2.mean(mask_non_zero)
     [img_c,img_r]=centroid[0],centroid[1]
     #print([img_c,img_r])
     coord=points[int(img_r),int(img_c)]
-    for i in range (len(coord)):
-        print("entro a nan")
+    numpy.array(coord)
+    
+    for i in range(len(coord)):
         if(numpy.isnan(coord[i])):
-            return[1,1,0,0,0]
+            return[1,1,-1,-1,1] 
+            # se manda a la esquina superior como si no hubiese encontrado el rango de color
+    #print(coord)
     return [img_c, img_r,coord[0],coord[1],coord[2]]
 
 def callback_point_cloud(msg):
