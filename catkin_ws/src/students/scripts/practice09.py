@@ -43,10 +43,12 @@ def segment_by_color(img_bgr, points):
     centroid = cv2.mean(mask_non_zero)
     [img_c,img_r]=centroid[0],centroid[1]
     #print([img_c,img_r])
-    [x,y,z,w]=points[int(img_r),int(img_c)]
-    #return[1,1,0,0,0]
-    print(x,y,z)
-    return [img_c, img_r, x,y,z]
+    coord=points[int(img_r),int(img_c)]
+    for i in range (len(coord)):
+        print("entro a nan")
+        if(numpy.isnan(coord[i])):
+            return[1,1,0,0,0]
+    return [img_c, img_r,coord[0],coord[1],coord[2]]
 
 def callback_point_cloud(msg):
     global pub_point
