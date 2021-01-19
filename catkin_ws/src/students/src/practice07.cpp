@@ -271,4 +271,8 @@ int main(int argc, char** argv)
         loop.sleep();
     }
     return 0;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 52898ae77e0e755256ae18cc63b1f6eef9463e4a
