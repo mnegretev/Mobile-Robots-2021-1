@@ -72,39 +72,40 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     #las lineas comentadas fueron las modificadas para este algoritmo
 
     execution_steps=0
-    in_open_list   = [] #open_list      = deque()
-    heapq.heapify(open_list) # Add this line
+    open_list      = []
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
-    heapq.heappush(open_list, (0, [start_r, start_c])) 
+    heapq.heappush(open_list, [0, 0, start_r, start_c])   ##### Indice 0 es el valor f. Indice 1 es el valor g
     in_open_list[start_r, start_c] = True
     distances   [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)[1]  #r,c] = open_list.pop()
+        r_temp = open_list[0][2]
+        c_temp = open_list[0][3]
+        heapq.heappop(open_list)    ###### Sacar el menor elemento de la lista
+        [r,c]  = [r_temp,c_temp]
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-        # dist = distances[r,c] + 1
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-            g = distances[r,c] + 1 + cost_map[nr][nc]
-            h = abs(goal_r - nr) + abs(goal_c - nc) # Manhattan Distance
-            f = g + h 
-            if g < distances[nr,nc]:
+            g         = distances[r,c] + 1 + cost_map[nr,nc]     #### Calculo de g
+            manhattan = abs(nr-goal_r) + abs(nc-goal_c)    ##### Distancia de Manhattan
+            f         = g + manhattan
+            if g < distances[nr,nc]:     
                 distances[nr,nc]    = g
                 parent_nodes[nr,nc] = [r,c]
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
-                heapq.heappush(open_list, (f, [nr, nc])) # open_list.append([nr,nc])
-            execution_steps += 1        
+                heapq.heappush(open_list, [f, g, nr, nc])     #### Anadir a la open_list con valor f
+            execution_steps += 1
 
     if [r,c] != [goal_r, goal_c]:
-        print "Cannot calculate path by A Star :'("
+        print "Cannot calculate path by A*:'("
         return []
     print "Path calculated after " + str(execution_steps) + " steps."
     path = []
