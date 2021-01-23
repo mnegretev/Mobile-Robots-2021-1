@@ -99,17 +99,23 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * IMPORTANT NOTE 2. Both, simulated an real scans, can have infinite ranges. Thus, when comparing readings,
      * ensure both simulated and real ranges are finite values.
     */
+    double weights_sum = 0;
     for(size_t i=0; i<simulated_scans.size(); i++)
     {
-      float diferecia = 0;
+      weights[i] = 0;
       for(size_t j=0; j < simulated_scans[i].ranges.size(); j++)
       {
         if(simulated_scans[i].ranges[j] < real_scan.range_max && real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max)
-          diferecia += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
+          weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
+        else
+          weights[i] += real_scan.range_max;
       }
-      diferecia /= simulated_scans[i].ranges.size();
-      weights[i] = exp(-diferecia*diferecia/SENSOR_NOISE);
+      weights[i] /= simulated_scans[i].ranges.size();
+      weights[i] = exp(-weights[i]*weights[i]/SENSOR_NOISE);
+      weights_sum += weights[i];
     }
+    for(int i=0; i<weights.size(); i++)
+      weights[i] /= weights_sum;
 
     return weights;
 }
@@ -126,12 +132,13 @@ int random_choice(std::vector<float>& weights)
      * Return the chosen integer.
      */
 
-    float num_aleatorio = rnd.uniformReal(0,weights.size());
+    float num_aleatorio = rnd.uniformReal(0, 1);
     for (int i = 0; i < weights.size(); i++)
     {
         if(num_aleatorio < weights[i])
-            return i;
-        num_aleatorio -= weights[i];
+          return i;
+        else
+          num_aleatorio -= weights[i];
     }
 
     return -1;
@@ -157,9 +164,9 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
 
-     for (int i = 0; i < particles.poses.size(); i++)
+     for (size_t i = 0; i < particles.poses.size(); i++)
      {
-       int indice_aleatorio = rnd.uniformReal(0,weights.size());
+       int indice_aleatorio = random_choice(weights);
        resampled_particles.poses[i].position.x = particles.poses[indice_aleatorio].position.x + rnd.gaussian(0,RESAMPLING_NOISE);
        resampled_particles.poses[i].position.y = particles.poses[indice_aleatorio].position.y + rnd.gaussian(0,RESAMPLING_NOISE);
 
@@ -339,8 +346,8 @@ int main(int argc, char** argv)
              * Resample particles by calling the resample_particles function
              */
             move_particles(particles, delta_pose.x, delta_pose.y, delta_pose.theta);
-            simulate_particle_scans(particles, static_map);
-            calculate_particle_weights(simulated_scans, real_scan);
+            simulated_scans = simulate_particle_scans(particles, static_map);
+            particle_weights = calculate_particle_weights(simulated_scans, real_scan);
             particles = resample_particles(particles, particle_weights);
             pub_particles.publish(particles);
             map_to_odom_transform = get_map_to_odom_transform(robot_odom, get_robot_pose_estimation(particles));
