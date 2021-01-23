@@ -216,10 +216,12 @@ def generic_callback(req, algorithm):
         smooth_path.append([x,y])
     if rospy.has_param("/navigation/path_planning/smoothing_alpha"):
         alpha = rospy.get_param("/navigation/path_planning/smoothing_alpha")
+        #print("HOLA, SI TENGO PARAMETRO DE ALPHA Y ES DE: " + str(alpha))
     else:
         alpha = 0.5
     if rospy.has_param("/navigation/path_planning/smoothing_beta"):
         beta = rospy.get_param("/navigation/path_planning/smoothing_beta")
+        #print("HOLA, SI TENGO PARAMETRO DE BETA Y ES DE: " + str(beta))
     else:
         beta = 0.5
     smooth_path = get_smooth_path(smooth_path, alpha, beta)

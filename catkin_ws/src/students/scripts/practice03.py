@@ -125,8 +125,10 @@ def main():
         if counter == 0:
             if rospy.has_param("/navigation/path_planning/cost_radius"):
                 cost_radius = rospy.get_param("/navigation/path_planning/cost_radius")
+                #print("HOLA, SI TENGO PARAMETRO DE COST_RADIUS Y ES DE: " + str(cost_radius))
             if rospy.has_param("/navigation/path_planning/inflation_radius"):
                 new_inflation_radius = rospy.get_param("/navigation/path_planning/inflation_radius")
+                #print("HOLA, SI TENGO PARAMETRO DE INFLATION_RADIUS Y ES DE: " + str(new_inflation_radius))
                 if new_inflation_radius != inflation_radius:
                     inflation_radius = new_inflation_radius
                     pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
