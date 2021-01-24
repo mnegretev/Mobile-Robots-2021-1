@@ -128,7 +128,7 @@ def get_smooth_path(original_path, alpha, beta):
 
 
     while gradient_mag>tolerance:
-        print(gradient_mag)
+        #print(gradient_mag)
 
         gradient[0][0] = alpha*(smooth_path[0][0]-original_path[0][0])-beta*(smooth_path[1][0]-smooth_path[0][0])
         gradient[0][1] = alpha*(smooth_path[0][1]-original_path[0][1])-beta*(smooth_path[1][1]-smooth_path[0][1])
@@ -162,7 +162,7 @@ def get_smooth_path(original_path, alpha, beta):
         gradient_mag=numpy.linalg.norm(gradient)
         #print(aux)
 
-    print("done")
+    #print("done")
     return smooth_path
 
 

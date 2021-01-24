@@ -1,0 +1,16 @@
+<launch>
+  <!-- <param name="proyecto_jmf" textfile="$(find students)/scripts/practice03.py" />-->
+  <node name="proyecto_p3" pkg="students" type="practice03.py" output="screen"/>
+
+  <node name="proyecto_p4" pkg="students" type="practice04.py" output="screen"/>
+
+  <node name="proyecto_p5" pkg="students" type="practice05.py" output="screen"/>
+
+</launch>
+
+    <!--
+    practica  3
+              4
+              5
+              8
+  -->
