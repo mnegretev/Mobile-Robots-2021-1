@@ -62,17 +62,23 @@ def train_perceptron(weights, images, labels, desired_digit):
     #     attempts = attempts - 1
     #     
     #gradiente es un arreglo de 785 valores resolucion+umbral
-    gradient_mag = 0.5 
+    gradient_mag = 2 
+    print("magnitud inicial: " + str(gradient_mag))
+    print("espera mientras el perceptron aprende...")
     while gradient_mag > tol and attempts > 0 and not rospy.is_shutdown():
         gradient = numpy.zeros(len(weights))
+        index=0
         for i in inputs:
             y_hat = evaluate(weights,i)
-            y= 1 if labels[i]==desired_digit else 0
+            y= 1 if labels[index]==desired_digit else 0
             g_j= (y_hat-y)*(y_hat*(1-y_hat))* i
             gradient=gradient+g_j
+            index+=1
         weights = weights - epsilon *gradient
         attempts = attempts - 1
-
+        gradient_mag= numpy.linalg.norm(gradient)
+    print("intentos restantes = " + str(attempts) + "   final gradient magnitude  = " + str(gradient_mag))
+        
     return weights
 
 def load_dataset_digit(file_name):
