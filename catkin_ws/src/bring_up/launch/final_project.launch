@@ -15,6 +15,7 @@
   <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find bring_up)/maps/appartment.yaml"/>
 
 <group ns="practices">
+    <node name="practice08" pkg="students" type="practice08" output="screen"/>
     <node name="practice03" pkg="students" type="practice03.py" output="screen"/>
       <param name="/navigation/path_planning/cost_radius" value="0.5"/>
       <param name="/navigation/path_planning/inflation_radius" value="0.15"/>
@@ -22,7 +23,6 @@
       <param name="/navigation/path_planning/smoothing_alpha" value="0.9"/>
       <param name="/navigation/path_planning/smoothing_beta" value="0.01"/>
     <node name="practice06" pkg="students" type="practice06.py" output="screen"/>
-      <node name="practice08" pkg="students" type="practice08" output="screen"/>
   </group>
 
 </launch>
