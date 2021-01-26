@@ -17,7 +17,7 @@ import rospy
 import rospkg
 from cv_bridge import CvBridge, CvBridgeError
 
-NAME = "APELLIDO_PATERNO_APELLIDO_MATERNO"
+NAME = "ARGUELLES_MACOSAY"
 
 def evaluate(weights, image):
     #
@@ -25,8 +25,12 @@ def evaluate(weights, image):
     # Calculate the output of perceptron given an image.
     # Use of numpy.dot is strongly recommended to save execution time.
     # Return perceptron output.
-    #    
-    return 0.5
+    #   
+    t = numpy.dot(weights,image)
+    # pasar el proucto punto por una sigmoide 
+    #P(t)=1/1+e a la menos t
+    output = 1/(1+(numpy.exp(-t)))
+    return output
 
 def train_perceptron(weights, images, labels, desired_digit):
     print "Training perceptron for digit " + str(desired_digit) + " with " + str(len(images)) + " images. "
@@ -45,7 +49,7 @@ def train_perceptron(weights, images, labels, desired_digit):
     epsilon  = 0.2/len(weights)                        #Constant to ponderate gradient
     weights  = numpy.asarray(weights)                  #Array of perceptron's weights
     inputs   = [numpy.asarray(d+[-1]) for d in images] #Threshold is a weight whose corresponding input is always -1
-
+    # numpy.dot es para el producto punto de dos vectores
     #
     # WHILE |gradient| > tol and attempts > 0 and not rospy.is_shutdown():
     #     Set gradient to vector zero
@@ -57,6 +61,18 @@ def train_perceptron(weights, images, labels, desired_digit):
     #     weights = weights - epsilon*gradient
     #     attempts = attempts - 1
     #     
+    #gradiente es un arreglo de 785 valores resolucion+umbral
+    gradient_mag = 0.5 
+    while gradient_mag > tol and attempts > 0 and not rospy.is_shutdown():
+        gradient = numpy.zeros(len(weights))
+        for i in inputs:
+            y_hat = evaluate(weights,i)
+            y= 1 if labels[i]==desired_digit else 0
+            g_j= (y_hat-y)*(y_hat*(1-y_hat))* i
+            gradient=gradient+g_j
+        weights = weights - epsilon *gradient
+        attempts = attempts - 1
+
     return weights
 
 def load_dataset_digit(file_name):
