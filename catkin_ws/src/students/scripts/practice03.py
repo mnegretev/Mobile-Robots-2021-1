@@ -39,7 +39,7 @@ NAME = "rangel_navarro"
 static_map = None
 
 def get_inflated_map(static_map, inflation_cells):
-    print("Inflating map by " + str(inflation_cells) + " cells")
+    #print("Inflating map by " + str(inflation_cells) + " cells")
     inflated = numpy.copy(static_map)
     [height, width] = static_map.shape
     #515      492
@@ -55,12 +55,12 @@ def get_inflated_map(static_map, inflation_cells):
 			for k1 in range(i-inflation_cells,i+inflation_cells+1):
 				for k2 in range(j-inflation_cells,j+inflation_cells+1):
 					inflated[k1,k2] = 100
-    print('se ejecuto correctamente el inflado del mapa')
+    #print('se ejecuto correctamente el inflado del mapa')
     
     return inflated
 
 def get_cost_map(static_map, cost_radius):
-    print "Calculating cost map with " +str(cost_radius) + " cells"
+    #print "Calculating cost map with " +str(cost_radius) + " cells"
     cost_map = numpy.copy(static_map)
     [height, width] = static_map.shape
     #
@@ -79,7 +79,7 @@ def get_cost_map(static_map, cost_radius):
 				for k2 in range(-cost_radius,cost_radius+1):
 					cost = cost_radius - max(abs(k1), abs(k2)) +1
 					cost_map[i+k1,j+k2] = max(cost,cost_map[i+k1,j+k2])
-    print('El mapa de costo se ejecuto correctamente')
+    #print('El mapa de costo se ejecuto correctamente')
     return cost_map
 
 def callback_inflated_map(req):
@@ -120,17 +120,12 @@ def main():
     loop = rospy.Rate(10)
     
     counter = 0
-    cost_radius = 0.5
-    inflation_radius = 0.3
+    cost_radius = 0.4
+    inflation_radius = 0.2
+
     while not rospy.is_shutdown():
-        if counter == 0:
-            if rospy.has_param("/navigation/path_planning/cost_radius"):
-                cost_radius = rospy.get_param("/navigation/path_planning/cost_radius")
-            if rospy.has_param("/navigation/path_planning/inflation_radius"):
-                new_inflation_radius = rospy.get_param("/navigation/path_planning/inflation_radius")
-                if new_inflation_radius != inflation_radius:
-                    inflation_radius = new_inflation_radius
-                    pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
+	if counter == 0:
+             pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
         counter = (counter + 1) % 10
         loop.sleep()
 
