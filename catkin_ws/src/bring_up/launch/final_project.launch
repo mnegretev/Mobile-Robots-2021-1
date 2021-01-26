@@ -15,7 +15,7 @@
   <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find bring_up)/maps/appartment.yaml"/>
   <node name="amcl" pkg="amcl" type="amcl" output="screen"/>
   <node name="practice03" pkg="students" type="practice0301.py"/>
-  <node name="practice05" pkg="students" type="practice05.py"/>
-  <node name="practice08" pkg="students" type="practice08"/>
-  <node name="practice09" pkg="students" type="practice09.py"/>
+  <node name="practice05" pkg="students" type="practice04.py"/>
+  <node name="practice08" pkg="students" type="practice05.py"/>
+  <node name="practice09" pkg="students" type="practice08"/>
 </launch>
