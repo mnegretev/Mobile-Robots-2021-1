@@ -40,26 +40,29 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
+    #open_list.append([start_r, start_c])
+    #heapq.heapify(open_list)
     heapq.heappush(open_list,(0,[start_r, start_c]))
     in_open_list[start_r, start_c] = True
+    #distances   [start_r, start_c] = 0
+    g_values [start_r, start_c] = 0
 
     while len(open_list) > 0 and [r,c] != [goal_r, goal_c]:
-        [r,c] = heapq.heappop(open_list)[1]
+        [r,c] = heapq.heappop(open_list)[1]#open_list.popleft() 
         in_closed_list[r,c] = True
         neighbors = [[r+1, c],  [r,c+1],  [r-1, c],  [r,c-1]]
-
+        #g = distances[r,c] + 1
+	#g = distances[r,c] + 1 + cost_map[nr,nc]
         for [nr,nc] in neighbors:
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
-
 	    g_value = g_values[r,c] + 1 + cost_map[nr,nc]
-
             if g_value < g_values[nr,nc]:
                 g_values[nr,nc]    = g_value
                 parent_nodes[nr,nc] = [r,c]
-
             if not in_open_list[nr,nc]:
                 in_open_list[nr,nc] = True
+                #open_list.append([nr,nc])
 		heapq.heappush(open_list,(g_value, [nr,nc]))
             execution_steps += 1
 
@@ -95,6 +98,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
     parent_nodes   = numpy.full((grid_map.shape[0], grid_map.shape[1], 2), -1)
 
     [r,c] = [start_r, start_c]
+    #heapq.heapify(open_list)
     heapq.heappush(open_list,(0,[start_r, start_c]))
     in_open_list[start_r, start_c] = True
     g_values   [start_r, start_c] = 0
@@ -107,6 +111,7 @@ def a_star(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
             if grid_map[nr,nc] > 40 or grid_map[nr,nc] < 0 or in_closed_list[nr,nc]:
                 continue
 	    g = g_values[r,c] + 1 + cost_map[nr,nc]
+	    #h = math.sqrt((goal_r - r)*(goal_r - r)+(goal_c - c)*(goal_c - c))
             h = abs(nr - goal_r) + abs(nc - goal_c)
             f = g + h
             if g < g_values[nr,nc]:
@@ -146,37 +151,43 @@ def get_smooth_path(original_path, alpha, beta):
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
     epsilon      = 0.5                                     # This variable will weight the calculated gradient.
-    
-    while gradient_mag > tolerance:
-        [xo_i,yo_i] = original_path[0]
-	[xn_i,yn_i] = smooth_path[0]
-        [xn_in,yn_in] = smooth_path[1]
-        grad_x = alpha * (xn_i - xo_i) - beta * (xn_in - xn_i)
-        grad_y = alpha * (yn_i - yo_i) + beta * (yn_in - yn_i)
-	gradient[0] = [grad_x, grad_y]
-    
-        for i in range(1, len(original_path)-1):
-            [xo_i,yo_i] = original_path[i]
-	    [xn_i,yn_i] = smooth_path[i]
-	    [xn_ip,yn_ip] = smooth_path[i-1]
-            [xn_in,yn_in] = smooth_path[i+1]
-	    grad_x = beta * (xn_i - xo_i) + alpha * (2*xn_i - xn_ip - xn_in)
-            grad_y = beta * (yn_i - yo_i) + alpha * (2*yn_i - yn_ip - yn_in)
-	    gradient[i] = [grad_x, grad_y]
+    N = len(smooth_path) - 1
+    if(N > 0):
+        while gradient_mag > tolerance:
+	    #Utilice nombres de variables parecidas a las vistas en la clase, especialmente para evitar perderme al tratar de traducir el pseudocodigo a python
+	    [xo_0,yo_0] = original_path[0]
+	    [xn_0,yn_0] = smooth_path[0]
+	    [xn_1,yn_1] = smooth_path[1]
+	    #x
+	    gradient[0][0] = alpha * (xn_0 - xo_0) - beta * (xn_1 - xn_0)
+	    smooth_path[0][0] = xn_0 - epsilon * (gradient[0][0])
+	    #y
+	    gradient[0][1] = alpha * (yn_0 - yo_0) - beta * (yn_1 - yn_0)
+	    smooth_path[0][1] = yn_0 - epsilon * (gradient[0][1])
 
-	[xo_i,yo_i] = original_path[len(original_path)-1]
-	[xn_i,yn_i] = smooth_path[len(original_path)-1]
-        [xn_ip,yn_ip] = smooth_path[len(original_path)-1-1]
-        grad_x = alpha * (xn_i - xo_i) + beta * (-xn_ip + xn_i)
-        grad_y = alpha * (yn_i - yo_i) + beta * (-yn_ip + yn_i)
-        gradient[len(original_path)-1] = [grad_x, grad_y]
-        
-        for i in range(0, len(original_path)):
-            smooth_path[i][0] -= epsilon*gradient[i][0]
-            smooth_path[i][1] -= epsilon*gradient[i][1]
-        gradient_mag = 0
-        for i in range(0, len(original_path)):
-            gradient_mag += abs(gradient[i][0]) + abs(gradient[i][1])
+	    for i in range(1, N - 1):
+		[xn_i,yn_i] = smooth_path[i]
+		[xn_im1, yn_im1] = smooth_path[i-1]
+		[xn_iM1, yn_iM1] = smooth_path[i+1]
+		[xo_i,yo_i] = original_path[i]		
+		#x
+		gradient[i][0] = alpha * (xn_i - xo_i) + beta * (2 * xn_i - xn_im1 - xn_iM1)
+		smooth_path[i][0] = xn_i - epsilon * (gradient[i][0])
+		#y
+		gradient[i][1] = alpha * (yn_i - yo_i) + beta * (2 * yn_i - yn_im1 - yn_iM1)
+		smooth_path[i][1] = yn_i - epsilon * (gradient[i][1])
+
+	    [xo_N,yo_N] = original_path[N]
+	    [xn_N,yn_N] = smooth_path[N]
+	    [xn_Nm1,yn_Nm1] = smooth_path[N-1]	
+	    #x
+	    gradient[N][0] = alpha * (xn_N - xo_N) + beta * (xn_N - xn_Nm1)
+	    smooth_path[N][0] = xn_N - epsilon * (gradient[N][0])
+	    #y
+	    gradient[N][1] = alpha * (xn_N - xo_N) + beta * (xn_N - xn_Nm1)
+	    smooth_path[N][1] = xn_N - epsilon * (gradient[N][1])
+	    gradient_mag = numpy.linalg.norm(gradient)
+	    #print(gradient_mag)
     return smooth_path
 
 
