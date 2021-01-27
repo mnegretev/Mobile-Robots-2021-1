@@ -1,0 +1,13 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar similar to kws example
+ */
+
+grammar proyecto_voice_cmd;
+
+<move> = ROBOT [<polite>] GO TO <place>;
+
+<place> = THE KITCHEN | THE LIVING ROOM | THE DINING ROOM | (THE | MY) BEDROOM;
+
+<polite> = PLEASE | COULD YOU;
