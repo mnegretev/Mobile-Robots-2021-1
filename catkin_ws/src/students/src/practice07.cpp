@@ -108,20 +108,18 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
         float z = particles.poses[i].orientation.z;
         float w = particles.poses[i].orientation.w;
         float angle = atan2(z, w)*2;        //Transformation
+        angle += delta_t + rnd.gaussian(0,MOVEMENT_NOISE);  //Add noise angle
 
         //Position
-        float dx = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
-    	float dy = delta_x * sin(angle) + delta_y * cos(angle);		
+        float dx =  delta_x*cos(angle) - delta_y*sin(angle) + rnd.gaussian(0,MOVEMENT_NOISE);
+	    float dy =  delta_x*sin(angle) + delta_y*cos(angle) + rnd.gaussian(0,MOVEMENT_NOISE);
 
-        //Random noise generation
-        particles.poses[i].position.x += dx + rnd.gaussian (0, RESAMPLING_NOISE);   //Add noise x
-        particles.poses[i].position.y += dy + rnd.gaussian (0, RESAMPLING_NOISE);   //Add noise y
 
-        //Orientation
-        angle += delta_t + MOVEMENT_NOISE;  //Add noise angle
-            //Angle Transformation
-        particles.poses[i].orientation.z = sin(angle/2);    //Transformation
-        particles.poses[i].orientation.w = cos(angle/2);    //Transformation
+       //Angle tranformation
+	    particles.poses[i].orientation.z= sin(angle/2);
+	    particles.poses[i].orientation.w= cos(angle/2);
+	    particles.poses[i].position.x += dx; 
+	    particles.poses[i].position.y += dy;
     }   
 }
 
