@@ -8,7 +8,6 @@
 # Consider a differential base. Max linear and angular speeds
 # must be 0.8 and 1.0 respectively.
 #
-
 import sys
 import rospy
 import tf
@@ -26,11 +25,12 @@ loop        = None
 listener    = None
 
 #Constants
-v_max = 0.75
-w_max = 1.5
+v_max = 0.8
+w_max = 1
 alpha = 0.5 #V
-beta = 0.8  #W
-tolerance = 0.05
+beta = 0.5  #W
+tolerance = 0.3 
+
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
@@ -49,26 +49,31 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
+    # Max linear and angular speeds
+    # must be 0.8 and 1.0 respectively.
+    #
+    v_max   = 0.8
+    w_max   = 1.0
+    alpha   = 0.5
+    beta    = 0.5
+
     deltaX = goal_x - robot_x
     deltaY = goal_y - robot_y
-    goal_a = math.atan2(deltaY, deltaX) #Goal angle
-    error_a = goal_a - robot_a
+    error_a = math.atan2( deltaY , deltaX) - robot_a 
 
-    #Fix angle (-pi to pi)
     if (error_a < -math.pi):
         error_a += 2*math.pi
-    elif (error_a > math.pi):
+    if (error_a > math.pi): 
         error_a -= 2*math.pi
-
-    v = v_max*math.exp(-error_a*error_a/alpha)
-    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
+    
+    v = v_max * math.exp(-error_a * error_a/alpha)
+    w = w_max * (2/(1 + math.exp(-error_a/beta)) - 1)
 
     cmd_vel.linear.x = v
     cmd_vel.angular.z = w
     return cmd_vel
 
 def follow_path(path):
-    cmd_vel = Twist()
     #
     # TODO:
     # Use the calculate_control function to move the robot along the path.
@@ -93,29 +98,33 @@ def follow_path(path):
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
 
-    #Initial information
-    pathSize = len(path)                                    #Number of points
-    [local_goalX, local_goalY] = path[0]                    #First Point
-    [global_goalX, global_goalY] = path[pathSize - 1]       #Last Point
+    #Initial information 
+    cmd_vel = Twist()
+    i = 0 #To Count the path element in loop 
+
+    [local_goalX,local_goalY] = path[0]                     #First Point 
+    [global_goalX,global_goalY] = path[-1]                  #Last Point
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)  #Get robot position and angle
+
     #Initial errors
     print((robot_y - global_goalX)**2)
     global_error = math.sqrt((robot_x - global_goalX)**2 + (robot_y - global_goalY)**2)
     local_error = math.sqrt((robot_x - local_goalX)**2 + (robot_y - local_goalY)**2)
-    i=0 #To Count the path element in loop
 
-    while ((global_error > tolerance) and (not rospy.is_shutdown())):
-        pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goalX, local_goalY))
+    
+    while ((global_error>tolerance) and (not rospy.is_shutdown())):
+        pub_cmd_vel.publish(calculate_control(robot_x,robot_y,robot_a,local_goalX,local_goalY))
         loop.sleep()
         [robot_x, robot_y, robot_a] = get_robot_pose(listener)
-        local_error = math.sqrt((robot_x - local_goalX)**2 + (robot_y - local_goalY)**2)
-        if (local_error < tolerance):
+        local_error = math.sqrt((robot_x - local_goalX)**2 + (robot_y - local_goalY)**2) 
+        if(( local_error < tolerance) and (i != len(path)-1 )):
             i += 1
-            [local_goalX, local_goalY] = path[i]
-            global_error = math.sqrt((robot_x - global_goalX)**2 + (robot_y - global_goalY)**2)
+            [local_goalX,local_goalY] = path[i]
+        global_error = math.sqrt((robot_x - global_goalX)**2 + (robot_y - global_goalY)**2) 
 
-    cmd_vel.linear.x = cmd_vel.linear.y = cmd_vel.linear.z = 0
-    cmd_vel.angular.x = cmd_vel.angular.y = cmd_vel.angular.z = 0
+    
+    cmd_vel.linear.x = 0
+    cmd_vel.angular.z = 0
     pub_cmd_vel.publish(cmd_vel)
     return
     
@@ -145,7 +154,7 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    return None
+    return [0,0,0]
 
 def main():
     global pub_cmd_vel, loop, listener
@@ -155,7 +164,7 @@ def main():
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 
