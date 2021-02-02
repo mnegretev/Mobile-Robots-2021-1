@@ -110,7 +110,7 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    tolerance = 0.2
+    tolerance = 0.5
     epsilon = 0.1
 
     local_goal = path[0]
@@ -164,8 +164,8 @@ def callback_global_goal(msg):
     voice.sound = -3
     voice.command = 1
     voice.volume=1.0
-    voice.arg='Ya llegue'
-    voice.arg2='voice_el_diphone'
+    voice.arg='I have arrived'
+    voice.arg2='voice_kal_diphone'
     pub_voice.publish(voice)
 
 def get_robot_pose(listener):
