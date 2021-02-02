@@ -10,6 +10,7 @@
 #
 
 import sys
+import numpy
 import rospy
 import tf
 import math
@@ -18,38 +19,24 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
+from sound_play.msg import SoundRequest
 
-NAME = "MARTINEZ_FADUL"
+NAME = "OLIVAS_DIAZ"
 
 pub_cmd_vel = None
 loop        = None
 listener    = None
+pub_voice   = None
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
-    
-    v_max=1
-    w_max=0.5
-    alpha=0.01
-    beta=0.1
 
-    th_g=math.atan2(goal_y-robot_y,goal_x-robot_x)
-    error_a=th_g-robot_a
-
-
-    if error_a > math.pi:
-        error_a=error_a-(2*math.pi)
-
-    if error_a < -math.pi:
-        error_a=error_a+(2*math.pi)
     #
     # TODO:
     # Implement the control law given by:
     #
     # v = v_max*math.exp(-error_a*error_a/alpha)
-    v = v_max*math.exp(-error_a*error_a/alpha)
     # w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
-    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
     #
     # where error_a is the angle error and
     # v and w are the linear and angular speeds taken as input signals
@@ -58,14 +45,48 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    cmd_vel.linear.x=v
-    cmd_vel.angular.z=w
+    alpha   = 0.01 #-> exacta
+    beta    = 0.1 #-> exacta
+    #alpha   = 100 #-> aprox
+    #beta    = 1  #-> aprox
+    v_max   = 0.5
+    w_max   = 0.5
 
-    
+    goal_a = math.atan2(goal_y-robot_y,goal_x-robot_x)
+    #goal_a = math.atan2(goal_y,goal_x)
+    error_a = goal_a - robot_a
+
+    if error_a >math.pi:
+        error_a -=2*math.pi
+    if error_a <-math.pi:
+        error_a += 2*math.pi
+
+    #if goal_a >math.pi:
+    #    goal_a -=2*math.pi
+    #if goal_a <-math.pi:
+    #    goal_a += 2*math.pi
+
+    #print(robot_a)
+
+    v = v_max*math.exp(-error_a*error_a/alpha)
+    w = w_max*(2/(1 + math.exp(-error_a/beta)) - 1)
+
+    #cmd_vel.linear.x = 0
+    cmd_vel.linear.y = 0
+    #cmd_vel.angular= w
+    cmd_vel.linear.x = v #* math.cos(goal_a)
+    #cmd_vel.linear.y = v * math.sin(goal_a)
+    cmd_vel.linear.z = 0
+
+    cmd_vel.angular.x=0
+    cmd_vel.angular.y=0
+    cmd_vel.angular.z=w
+    #print ('DONE')
+    #print(cmd_vel)
     return cmd_vel
 
 def follow_path(path):
-    cmd_vel = Twist()
+    cmd_vel1 = Twist()
     #
     # TODO:
     # Use the calculate_control function to move the robot along the path.
@@ -89,33 +110,44 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
+    tolerance = 0.2
+    epsilon = 0.1
+
+    local_goal = path[0]
+    global_goal = path[len(path)-1]
+
+    [robot_x,robot_y,robot_a] = get_robot_pose(listener)
+    Pr = [robot_x,robot_y,robot_a]
+    e_local = math.sqrt(math.pow(Pr[0] - local_goal[0],2) + math.pow(Pr[1] - local_goal[1],2))
+    e_global = math.sqrt(math.pow(Pr[0] - global_goal[0],2) + math.pow(Pr[1] - global_goal[1],2))
     i=0
-    local_g=path[i]
-    global_g=path[len(path)-1]
-    [r_x,r_y,r_a]=get_robot_pose(listener)
-    e_local=( (r_x - local_g[0])**2 + (r_y - local_g[1])**2 )**0.5
-    e_global=( (r_x - global_g[0])**2 + (r_y - global_g[1])**2 )**0.5
-
-    while e_global > 0.2 and not rospy.is_shutdown():
-
-        pub_cmd_vel.publish(calculate_control(r_x,r_y,r_a,local_g[0],local_g[1]))
-
-        if e_local<0.2:
-            i=i+1
-            local_g=path[i]
-
+    while e_global > tolerance and not(rospy.is_shutdown()):
+        #[v,w] = calculate_control(Pr[0],Pr[1],robot_a,local_goal[0],local_goal[1])
+        #print(math.atan2(local_goal[1],local_goal[0]))
+        pub_cmd_vel.publish(calculate_control(Pr[0],Pr[1],Pr[2],local_goal[0],local_goal[1]))
+        #print(calculate_control(Pr[0],Pr[1],Pr[2],local_goal[0],local_goal[1]))
+        #pub_cmd_vel.publish(calculate_control(Pr[0],Pr[1],Pr[2],global_goal[0],global_goal[1]))
         loop.sleep()
-        [r_x,r_y,r_a]=get_robot_pose(listener)
-        e_local=( (r_x - local_g[0])**2 + (r_y - local_g[1])**2 )**0.5
-        e_global=( (r_x - global_g[0])**2 + (r_y - global_g[1])**2 )**0.5
+        [robot_x,robot_y,robot_a] = get_robot_pose(listener)
+        Pr = [robot_x,robot_y,robot_a]
+        #for i in range(1,len(path)-1):
+        #print(calculate_control(Pr[0],Pr[1],robot_a,local_goal[0],local_goal[1]))
+        #pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        if e_local < epsilon:
+            local_goal = path[i+1]
+            i=i+1
+            #print("LOGRADO")
 
-    cmd_vel.linear.x=0.0
-    cmd_vel.angular.z=0.0
-    pub_cmd_vel.publish(cmd_vel)
+        e_local = math.sqrt(math.pow(Pr[0] - local_goal[0],2) + math.pow(Pr[1] - local_goal[1],2))
+        e_global = math.sqrt(math.pow(Pr[0] - global_goal[0],2) + math.pow(Pr[1] - global_goal[1],2))
 
-    return
-    
+    cmd_vel1.linear.x=0
+    cmd_vel1.angular.z=0
+    pub_cmd_vel.publish(cmd_vel1)
+
+
 def callback_global_goal(msg):
+    voice = SoundRequest()
     print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
@@ -129,6 +161,12 @@ def callback_global_goal(msg):
     path =[[p.pose.position.x, p.pose.position.y] for p in path.poses]
     follow_path(path)
     print "Global goal point reached"
+    voice.sound = -3
+    voice.command = 1
+    voice.volume=1.0
+    voice.arg='Ya llegue'
+    voice.arg2='voice_el_diphone'
+    pub_voice.publish(voice)
 
 def get_robot_pose(listener):
     try:
@@ -141,18 +179,18 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    #return None
     return [0,0,0]
 
 def main():
-    global pub_cmd_vel, loop, listener
+    global pub_cmd_vel, loop, listener, pub_voice
     print "PRACTICE 05 - " + NAME
     rospy.init_node("practice05")
     rospy.Subscriber('/move_base_simple/goal', PoseStamped, callback_global_goal)
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-    loop = rospy.Rate(20)
+    pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size=10)
+    loop = rospy.Rate(100)
     listener = tf.TransformListener()
-    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(15.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 
@@ -161,4 +199,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-    

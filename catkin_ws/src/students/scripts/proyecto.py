@@ -8,12 +8,11 @@ from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 
-import roslib; roslib.load_manifest('sound_play')
-from sound_play.libsoundplay import SoundClient 
 from sound_play.msg import SoundRequest
 
 #pub_coord = None
 pub_pose=None
+pub_voice   = None
 
 
 
@@ -23,7 +22,6 @@ def to_order(word):
     global ordenado
 
     localization = PoseStamped()
-    pub_pose = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
 
     
     if (caminando==False):
@@ -48,6 +46,7 @@ def to_order(word):
         ordenado=True
     if (caminando==True):
         print('orita no joven')
+        decir('I am busy')
 
     return 0
 
@@ -56,11 +55,14 @@ def callback_function(msg):
     to_order(orden)
 
 def decir(oracion):
-    soundhandle = SoundClient()     
-    s = " ".join(oracion)
-    print 'Saying: %s'%s
-    soundhandle.say(s)
-    rospy.sleep(1)
+    voice = SoundRequest()
+
+    voice.sound = -3
+    voice.command = 1
+    voice.volume=1.0
+    voice.arg=oracion
+    #voice.arg2='voice_el_diphone'
+    pub_voice.publish(voice)
 
 def callback_checar(msg):
     
@@ -83,6 +85,12 @@ def callback_checar(msg):
 def main():
     global caminando
     global ordenado
+    global pub_pose, pub_voice
+
+
+    pub_pose = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+    pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size=10)
+
 
     ordenado=False
     caminando=False
