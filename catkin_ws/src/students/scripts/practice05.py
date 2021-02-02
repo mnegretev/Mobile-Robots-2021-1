@@ -19,12 +19,14 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
+from sound_play.msg import SoundRequest
 
 NAME = "OLIVAS_DIAZ"
 
 pub_cmd_vel = None
 loop        = None
 listener    = None
+pub_voice   = None
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
@@ -108,7 +110,7 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    tolerance = 0.1
+    tolerance = 0.2
     epsilon = 0.1
 
     local_goal = path[0]
@@ -144,9 +146,8 @@ def follow_path(path):
     pub_cmd_vel.publish(cmd_vel1)
 
 
-    return
-
 def callback_global_goal(msg):
+    voice = SoundRequest()
     print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
@@ -160,6 +161,12 @@ def callback_global_goal(msg):
     path =[[p.pose.position.x, p.pose.position.y] for p in path.poses]
     follow_path(path)
     print "Global goal point reached"
+    voice.sound = -3
+    voice.command = 1
+    voice.volume=1.0
+    voice.arg='Ya llegue'
+    voice.arg2='voice_el_diphone'
+    pub_voice.publish(voice)
 
 def get_robot_pose(listener):
     try:
@@ -172,17 +179,18 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    return None
+    return [0,0,0]
 
 def main():
-    global pub_cmd_vel, loop, listener
+    global pub_cmd_vel, loop, listener, pub_voice
     print "PRACTICE 05 - " + NAME
     rospy.init_node("practice05")
     rospy.Subscriber('/move_base_simple/goal', PoseStamped, callback_global_goal)
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size=10)
     loop = rospy.Rate(100)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 

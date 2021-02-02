@@ -1,0 +1,15 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar similar to kws example
+ */
+
+grammar voice_cmd_proj;
+
+public <move2> = GOTO <direction> [<speed>]| STOP | I <confirm>  |  YES | NO;
+
+<confirm> = DECLINE | CONFIRM;
+
+<direction> = LIVINGROOM | KITCHEN | OUTSIDE | BEDROOM;
+
+<speed> = FULL SPEED | HALF SPEED;
