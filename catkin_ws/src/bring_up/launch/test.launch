@@ -15,12 +15,8 @@
   <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find bring_up)/maps/appartment.yaml"/>
 
   <node name="practice03" pkg="students" type="practice03.py" output="screen"/>
-    <param name="/navigation/path_planning/cost_radius" value="0.5"/>
-    <param name="/navigation/path_planning/inflation_radius" value="0.15"/>
 
   <node name="practice04" pkg="students" type="practice04.py" output="screen"/>
-    <param name="/navigation/path_planning/smoothing_alpha" value="0.9"/>
-    <param name="/navigation/path_planning/smoothing_beta" value="0.01"/>
 
   <node name="practice08" pkg="students" type="practice08" output="screen">
     <param name="min_x" value="-1.0"/>
@@ -28,10 +24,6 @@
     <param name="min_y" value="-1.0"/>
     <param name="max_y" value="1.0"/>
   </node>
-
-  <node name="sound_play" pkg="sound_play" type="soundplay_node.py" output="screen"/>
-
-  <include file="$(find bring_up)/launch/voice_test.launch"/>
 
   <node name="practice05" pkg="students" type="practice05.py" output="screen"/>
  

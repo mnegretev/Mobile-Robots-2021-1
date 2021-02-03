@@ -100,21 +100,16 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     for(size_t i = 0; i < simulated_scans.size(); i++){
 	weights[i] = 0;
         for(size_t j = 0; j < simulated_scans[i].ranges.size(); j++){
-             if(!std::isnan(real_scan.ranges[j*LASER_DOWNSAMPLING]) && std::isfinite(real_scan.ranges[j*LASER_DOWNSAMPLING]) && real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max && simulated_scans[i].ranges[j] < real_scan.range_max){
+	     if(real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max && simulated_scans[i].ranges[j] < real_scan.range_max)
                  weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
-             }else{
-                 std::cout << "real_scan.ranges["<<j<<"*LASER_DOWNSAMPLING]=" << real_scan.ranges[j*LASER_DOWNSAMPLING] << std::endl;
-             	 weights[i] += real_scan.range_max;
-             }
+             else
+                 weights[i] += real_scan.range_max;
         }
 	weights[i] /= simulated_scans[i].ranges.size();
 	weights[i] = exp(-weights[i]*weights[i]/SENSOR_NOISE);
 	weights_sum += weights[i];
     }
-    std::cout << "weights_sum=" << weights_sum << std::endl;
-    if (weights_sum == 0){
-        weights_sum = 1;
-    }
+    
     for(int i = 0; i < weights.size(); i++)
         weights[i] /= weights_sum;
     return weights;
@@ -160,10 +155,8 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * given by the quaternion (0,0,sin(theta/2), cos(theta/2)), thus, you should first
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
-
     for(size_t i = 0; i < particles.poses.size(); i++){
         int idx = random_choice(weights);
-            
         resampled_particles.poses[i].position.x = particles.poses[idx].position.x + rnd.gaussian(0, RESAMPLING_NOISE);
 
         resampled_particles.poses[i].position.y = particles.poses[idx].position.y + rnd.gaussian(0, RESAMPLING_NOISE);
