@@ -100,11 +100,13 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     for(size_t i = 0; i < simulated_scans.size(); i++){
 	weights[i] = 0;
         for(size_t j = 0; j < simulated_scans[i].ranges.size(); j++){
-             if(!std::isnan(real_scan.ranges[j*LASER_DOWNSAMPLING]) && std::isfinite(real_scan.ranges[j*LASER_DOWNSAMPLING]) && real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max && simulated_scans[i].ranges[j] < real_scan.range_max){
-                 weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
-             }else{
-                 std::cout << "real_scan.ranges["<<j<<"*LASER_DOWNSAMPLING]=" << real_scan.ranges[j*LASER_DOWNSAMPLING] << std::endl;
-             	 weights[i] += real_scan.range_max;
+            //Con esta condicion se descartan valores del tipo nan e inf
+            if(!std::isnan(real_scan.ranges[j*LASER_DOWNSAMPLING]) && std::isfinite(real_scan.ranges[j*LASER_DOWNSAMPLING])){
+                if(real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max && simulated_scans[i].ranges[j] < real_scan.range_max){
+                    weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
+                }else{
+             	    weights[i] += real_scan.range_max;
+                }
              }
         }
 	weights[i] /= simulated_scans[i].ranges.size();
