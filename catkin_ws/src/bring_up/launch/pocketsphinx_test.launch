@@ -12,4 +12,9 @@
   <node name="audio_control" pkg="pocketsphinx" type="send_audio.py" output="screen">
     <param name="input" value=":default"/>
   </node>
+
+  <node name="SoundPlay" pkg="sound_play" type="soundplay_node.py" output="screen"/>
+
+  <node name="final_project" pkg="students" type="final_project.py" output="screen"/>
+  
 </launch>

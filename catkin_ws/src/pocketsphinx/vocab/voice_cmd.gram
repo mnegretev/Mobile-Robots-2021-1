@@ -6,10 +6,10 @@
 
 grammar voice_cmd;
 
-public <move> = MOVE FORWARD;
+public <move2> = ROBOT <go> <to> <room>;
 
-public <move2> = STOP | MOVE <direction> [<speed>];
+<go> = GO;
 
-<direction> = FORWARD | BACK | LEFT | RIGHT;
+<to> = TO;
 
-<speed> = FULL SPEED | HALF SPEED;
+<room> = KITCHEN | LIVINGROOM | BATHROOM | HOME;
