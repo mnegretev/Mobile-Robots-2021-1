@@ -48,7 +48,7 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
      * given by (0,0,sin(theta/2), cos(theta/2)). 
      */
 
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < particles.poses.size(); i++)
     {
     	particles.poses[i].position.x = rnd.uniformReal(min_x, max_x);										/* Random X position */
     	particles.poses[i].position.y = rnd.uniformReal(min_y, max_y);										/* Random Y position */
@@ -77,7 +77,7 @@ std::vector<sensor_msgs::LaserScan> simulate_particle_scans(geometry_msgs::PoseA
      * Use the variable 'real_sensor_info' (already declared as global variable) for the real sensor information
      */
 
-    for (int i = 0; i < particles.poses.size(); i++)
+    for (size_t i = 0; i < particles.poses.size(); i++)
     {
     	simulated_scans[i] = *occupancy_grid_utils::simulateRangeScan(map, particles.poses[i], real_sensor_info);	/* Simulated read for each particle */
     }
@@ -92,7 +92,7 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
     //float simulated = 0;
     //float real = 0;
      
-    float sum_weights = 0.0f;
+    //float sum_weights = 0.0f;
     /*
      * TODO:
      *
@@ -107,28 +107,47 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * ensure both simulated and real ranges are finite values. 
      */
 
-    for (int i = 0; i < simulated_scans.size(); i++)
-    {
-    	float diffs = 0.0f;
-    	for (int j = 0; j < simulated_scans[i].ranges.size(); j++)
-    	{
-    		float simulated = simulated_scans[i].ranges[j];
-    		float real = real_scan.ranges[j*LASER_DOWNSAMPLING]; 
-    		if ((simulated < real_scan.range_max) && (real < real_scan.range_max))				  	/* Checking if the values simulated and real aren't infinite */
-    		{
-    			diffs += fabs(real - simulated);
-    		}
-    	}
+    //for (int i = 0; i < simulated_scans.size(); i++)
+    //{
+    	//float diffs = 0.0f;
+    	//for (int j = 0; j < simulated_scans[i].ranges.size(); j++)
+    	//{
+    		//float simulated = simulated_scans[i].ranges[j];
+    		//float real = real_scan.ranges[j*LASER_DOWNSAMPLING]; 
+    		//if ((simulated < real_scan.range_max) && (real < real_scan.range_max))				  	/* Checking if the values simulated and real aren't infinite */
+    		//{
+    			//diffs += fabs(real - simulated);
+    		//}
+    	//}
 
-    	diffs /= simulated_scans[i].ranges.size();													/* Average */
-    	float similarity = expf(-(diffs*diffs)/SENSOR_NOISE);										/* Similitary */
-    	weights[i] = similarity;
-    	sum_weights += similarity;																	/* Sum Weights */
+    	//diffs /= simulated_scans[i].ranges.size();													/* Average */
+    	//float similarity = expf(-(diffs*diffs)/SENSOR_NOISE);										/* Similitary */
+    	//weights[i] = similarity;
+    	//sum_weights += similarity;																	/* Sum Weights */
+    //}
+
+    //for (int i = 0; i < weights.size(); i++)
+    //{
+    	//weights[i] /= sum_weights;																	/* Normlizing Weights*/
+    //}
+
+    /* Correct */
+
+    double weight_sum = 0;
+    for(size_t i = 0; i < simulated_scans.size(); i++){
+    	weights[i] = 0;
+    	for(size_t j = 0; j < simulated_scans[i].ranges.size(); j++)
+    		if(real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max && simulated_scans[i].ranges[j] < real_scan.range_max)
+    			weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
+    		else
+    			weights[i] += real_scan.range_max;
+    	weights[i] /= simulated_scans[i].ranges.size();
+    	weights[i] = exp(-weights[i]*weights[i]/SENSOR_NOISE);
+    	weight_sum += weights[i];
     }
 
-    for (int i = 0; i < weights.size(); i++)
-    {
-    	weights[i] /= sum_weights;																	/* Normlizing Weights*/
+    for(int i = 0; i < weights.size(); i++){
+    	weights[i] /= weight_sum;
     }
     
     return weights;
@@ -155,7 +174,8 @@ int random_choice(std::vector<float>& weights)
     		rnd_number -= weights[i];
     	}
     }
-    
+
+    return -1;
 }
 
 geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles, std::vector<float>& weights)
@@ -180,16 +200,16 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
 
     int rnd_index = 0;
 
-    for (int i = 0; i < particles.poses.size(); i++)
+    for (size_t i = 0; i < particles.poses.size(); i++)
     {
     	rnd_index = random_choice(weights);																														/* Select 1 particle */
-    	float rndNoise = rnd.gaussian(0, RESAMPLING_NOISE);
+    	//float rndNoise = rnd.gaussian(0, RESAMPLING_NOISE);
 
-    	resampled_particles.poses[i].position.x = particles.poses[rnd_index].position.x + rnd.uniformReal(0, RESAMPLING_NOISE);									/* Position X + noise */
-    	resampled_particles.poses[i].position.y = particles.poses[rnd_index].position.y + rnd.uniformReal(0, RESAMPLING_NOISE);									/* Position Y + noise */
+    	resampled_particles.poses[i].position.x = particles.poses[rnd_index].position.x + rnd.gaussian(0, RESAMPLING_NOISE);									/* Position X + noise */
+    	resampled_particles.poses[i].position.y = particles.poses[rnd_index].position.y + rnd.gaussian(0, RESAMPLING_NOISE);									/* Position Y + noise */
 
-    	float angle = (atan2(particles.poses[rnd_index].orientation.z, particles.poses[rnd_index].orientation.w) * 2) + rnd.uniformReal(0, RESAMPLING_NOISE);	/* Euler Angle */
-
+    	float angle = atan2(particles.poses[rnd_index].orientation.z, particles.poses[rnd_index].orientation.w) * 2;											/* Euler Angle */
+    	angle += rnd.gaussian(0, RESAMPLING_NOISE);
     	resampled_particles.poses[i].orientation.z = sin(angle/2);																								/* Transform to Quaternion*/
     	resampled_particles.poses[i].orientation.w = cos(angle/2);																								/* Transform to Quaternion*/
     }	
@@ -214,16 +234,18 @@ void move_particles(geometry_msgs::PoseArray& particles, float delta_x, float de
     {
     	
     	float angle = atan2(particles.poses[i].orientation.z, particles.poses[i].orientation.w) * 2;		/* Euler Angle of i-th particle */
-    	float xi = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
-    	float yi = delta_x * sin(angle) + delta_y * cos(angle);												/* Y position of i-th particle */
+    	//float xi = delta_x * cos(angle) - delta_y * sin(angle);												/* X position of i-th particle */
+    	//float yi = delta_x * sin(angle) + delta_y * cos(angle);												/* Y position of i-th particle */
+    	particles.poses[i].position.x += delta_x * cos(angle) - delta_y * sin(angle) + rnd.gaussian(0, MOVEMENT_NOISE);
+    	particles.poses[i].position.y += delta_x * sin(angle) + delta_y * cos(angle) + rnd.gaussian(0, MOVEMENT_NOISE);
 
-    	angle += delta_t + rnd.uniformReal(0, MOVEMENT_NOISE);												/* Euler Angle + Noise */
+    	angle += delta_t + rnd.gaussian(0, MOVEMENT_NOISE);												/* Euler Angle + Noise */
 
 
-    	particles.poses[i].position.x += xi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on X-axis */
-    	particles.poses[i].position.y += yi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on Y-axis */
-    	particles.poses[i].orientation.z += sin(angle/2);													/* Back to Quaternion */
-    	particles.poses[i].orientation.w += cos(angle/2);													/* Back to Quaternion */
+    	//particles.poses[i].position.x += xi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on X-axis */
+    	//particles.poses[i].position.y += yi + rnd.uniformReal(0, MOVEMENT_NOISE);							/* Move particles on Y-axis */
+    	particles.poses[i].orientation.z = sin(angle/2);													/* Back to Quaternion */
+    	particles.poses[i].orientation.w = cos(angle/2);													/* Back to Quaternion */
     }
 }
 
@@ -250,10 +272,17 @@ geometry_msgs::Pose2D get_robot_odometry(tf::TransformListener& listener)
 {
     tf::StampedTransform t;
     geometry_msgs::Pose2D pose;
-    listener.lookupTransform("odom", "base_link", ros::Time(0), t);
-    pose.x = t.getOrigin().x();
-    pose.y = t.getOrigin().y();
-    pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;
+    try{
+    	listener.lookupTransform("odom", "base_link", ros::Time(0), t);
+    	pose.x = t.getOrigin().x();
+    	pose.y = t.getOrigin().y();
+    	pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;	
+    }
+    catch(std::exception &e){
+    	pose.x = 0;
+    	pose.y = 0;
+    	pose.theta = 0;
+    }
     return pose;
 }
 
@@ -339,6 +368,7 @@ int main(int argc, char** argv)
      * Sentences for getting the static map, info about real lidar sensor,
      * and initialization of corresponding arrays.
      */
+    ros::service::waitForService("/static_map", ros::Duration(20));
     ros::service::call("/static_map", srv_get_map);
     static_map = srv_get_map.response.map;
     real_scan = *ros::topic::waitForMessage<sensor_msgs::LaserScan>("/scan");
