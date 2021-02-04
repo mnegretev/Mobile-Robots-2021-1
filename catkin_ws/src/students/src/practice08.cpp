@@ -227,10 +227,18 @@ geometry_msgs::Pose2D get_robot_odometry(tf::TransformListener& listener)
 {
     tf::StampedTransform t;
     geometry_msgs::Pose2D pose;
-    listener.lookupTransform("odom", "base_link", ros::Time(0), t);
-    pose.x = t.getOrigin().x();
-    pose.y = t.getOrigin().y();
-    pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;
+    try{
+        listener.lookupTransform("odom", "base_link", ros::Time(0), t);
+        pose.x = t.getOrigin().x();
+        pose.y = t.getOrigin().y();
+        pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;
+    }
+    catch(std::exception & e)
+    {
+        pose.x = 0;
+        pose.y = 0;
+        pose.theta = 0;
+    }
     return pose;
 }
 
@@ -316,6 +324,7 @@ int main(int argc, char** argv)
      * Sentences for getting the static map, info about real lidar sensor,
      * and initialization of corresponding arrays.
      */
+    ros::service::waitForService("/static_map", ros::Duration(20)); //Esperar a que este disponible el mapa
     ros::service::call("/static_map", srv_get_map);
     static_map = srv_get_map.response.map;
     real_scan = *ros::topic::waitForMessage<sensor_msgs::LaserScan>("/scan");

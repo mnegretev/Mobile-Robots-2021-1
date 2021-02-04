@@ -14,8 +14,15 @@
   <node name="mobile_base" pkg="mobile_base_simul" type="mobile_base_simul.py"/>
   <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find bring_up)/maps/appartment.yaml"/>
   
-  <node name ="Localizacion" pkg = "students" type = "practice08"/>
+  <node name ="Localizacion" pkg = "students" type = "practice08">
+    <param name = "min_x" value = "-0.5" />
+    <param name = "max_x" value = "0.5" />
+    <param name = "min_y" value = "-0.5" />
+    <param name = "max_y" value = "0.5" />
+  </node>
   <node name ="Inflado" pkg = "students" type = "practice03.py"/>
   <node name ="Ruta" pkg = "students" type = "practice04.py"/>
   <node name ="Control" pkg = "students" type = "practice05.py"/>
+  <node name = "Sonido" pkg = "sound_play" type = "soundplay_node.py"/>
+  
 </launch>
