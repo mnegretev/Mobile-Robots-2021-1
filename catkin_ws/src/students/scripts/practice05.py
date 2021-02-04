@@ -25,8 +25,8 @@ loop        = None
 listener    = None
 
 #Constants
-v_max = 0.9
-w_max = 0.6
+v_max = 0.3
+w_max = 0.5
 alpha = 0.5 #V
 beta = 0.5  #W
 tolerance = 0.3 

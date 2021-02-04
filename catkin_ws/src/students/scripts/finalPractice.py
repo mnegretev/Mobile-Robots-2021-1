@@ -31,7 +31,7 @@ poseStampedPub = None
 soundRequest = SoundRequest()
 
 #Places
-KITCHEN = [6, 1]
+KITCHEN = [5.5, 2]
 OFFICE = [3, 3]
 ENTRANCE = [3, 0]
 LIVINGROOM = [8, 5]
@@ -79,6 +79,11 @@ def readVoiceCommand(data):
             print "going to the LIVINGROOM"
             robotSay("Im going to the livingroom")
             goalPosition = LIVINGROOM
+        elif(data.data == "ROBOT EXECUTE ORDER SIXTY SIX"):
+            #set the goal position = LIVINGROOM
+            print "Here you die, jedi"
+            robotSay("Here you die, jedi, free holy those")
+            return 0
         
         robotIsMoving = True
         #publish the 2D movement arrow
@@ -139,7 +144,7 @@ def main():
             globalErrory = actualPosition[1] - goalPosition[1]
             globalError = math.sqrt(globalErrorX**2 + globalErrory**2)
 
-            print globalError
+            #print globalError
             if(globalError < tolerance):
                 #Sat that i arrived
                 print("I arrived")

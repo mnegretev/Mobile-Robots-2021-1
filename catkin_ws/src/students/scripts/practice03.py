@@ -119,7 +119,7 @@ def main():
     loop = rospy.Rate(10)
     
     counter = 0
-    cost_radius = 0.5
+    cost_radius = 0.6
     inflation_radius = 0.3
     while not rospy.is_shutdown():
         if counter == 0:

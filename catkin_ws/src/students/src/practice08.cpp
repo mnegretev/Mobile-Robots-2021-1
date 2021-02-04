@@ -21,10 +21,10 @@
 
 #define LASER_DOWNSAMPLING  10
 #define SENSOR_NOISE        0.1
-#define RESAMPLING_NOISE    0.1
+#define RESAMPLING_NOISE    0.05
 #define MOVEMENT_NOISE      0.05
-#define DISTANCE_THRESHOLD  0.2
-#define ANGLE_THRESHOLD     0.2
+#define DISTANCE_THRESHOLD  0.1
+#define ANGLE_THRESHOLD     0.1
 #define BETA_PARAMETER      0.1
 
 sensor_msgs::LaserScan real_sensor_info;
@@ -323,7 +323,7 @@ int main(int argc, char** argv)
     float init_max_x = 2;
     float init_max_y = 2;
     float init_max_a = 1;
-    float number_of_particles = 200;
+    float number_of_particles = 100;
     if(ros::param::has("~n"))
         ros::param::get("~n", number_of_particles);
     if(ros::param::has("~max_x"))
