@@ -12,14 +12,14 @@ pub_direccion = None
 #Estados
 """
 Estado 0: Espera de Orden (Si llega orden ejecuta movimiento)
-Estado 2: Ejecutando Orden (Si llega una orden la ignora)
-Estado 3: Orden terminada (Dice Llegue!, regresa a E0)
+Estado 1: Ejecutando Orden (Si llega una orden la ignora)
+Estado 2: Orden terminada (Dice Llegue!, regresa a E0)
 """
 
 def estado0(orden):
     global pub_direccion
     direccion = PoseStamped()
-    if orden == "ROBOT GO TO BEDROOM":
+    if orden == "ROBOT GO TO THE BEDROOM":
         direccion.pose.position.x = 7
         direccion.pose.position.y = 0
         direccion.pose.orientation.w = 1
