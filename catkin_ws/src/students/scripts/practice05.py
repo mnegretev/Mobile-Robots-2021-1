@@ -18,9 +18,12 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
+from sound_play.msg import SoundRequest                                     # TO FINAL PROJECT
 
 NAME = "Torres_Trejo"
+ALERT = "I Reached Goal"                                                    # TO FINAL PROJECT
 
+pub_speech = None                                                           # TO FINAL PROJECT
 pub_cmd_vel = None
 loop        = None
 listener    = None
@@ -111,6 +114,17 @@ def follow_path(path):
     cmd_vel.angular.z = 0.0                                                                                 # Send Zero Speed Angular
     pub_cmd_vel.publish(cmd_vel)                                                                            # Publishing Message
     return
+
+# SEND VOICE TO FINAL PROJECT
+def robot_say():
+    print(ALERT)
+    msg_speech = SoundRequest()
+    msg_speech.sound   = -3
+    msg_speech.command = 1
+    msg_speech.volume  = 1.0
+    msg_speech.arg = ALERT
+    msg_speech.arg2 = "voice_kal_diphone"
+    pub_speech.publish(msg_speech)
     
 def callback_global_goal(msg):
     print "Calculating path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
@@ -126,6 +140,7 @@ def callback_global_goal(msg):
     path =[[p.pose.position.x, p.pose.position.y] for p in path.poses]
     follow_path(path)
     print "Global goal point reached"
+    robot_say()                                                                                             # CALL robot_say TO SAY RESPONSE
 
 def get_robot_pose(listener):
     try:
@@ -137,18 +152,19 @@ def get_robot_pose(listener):
             robot_a -= 2*math.pi
         return robot_x, robot_y, robot_a
     except:
-        pass
-    return None
+        pass    
+    return [0,0,0]
 
 def main():
-    global pub_cmd_vel, loop, listener
+    global pub_cmd_vel, pub_speech ,loop, listener
     print "PRACTICE 05 - " + NAME
     rospy.init_node("practice05")
     rospy.Subscriber('/move_base_simple/goal', PoseStamped, callback_global_goal)
+    pub_speech = rospy.Publisher('/robotsound', SoundRequest, queue_size = 10)                              # TO FINAL PROJECT - PUBLISHER
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(15.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 
