@@ -17,6 +17,7 @@
   <node name="inflado" pkg="students" type="practice03.py" output="screen"/>
   <node name="ruta" pkg="students" type="practice04.py" output="screen"/>
   <node name="control" pkg="students" type="practice05.py" output="screen"/>
+  <node name="alto_nivel" pkg="students" type="testing.py" output="screen"/>
   <node name="localizar" pkg="students" type="practice08" output="screen">
     <param name="min_x" value="-0.5"/>
     <param name="max_x" value="0.5"/>

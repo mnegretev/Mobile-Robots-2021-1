@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 #
 # AUTONOMOUS MOBILE ROBOTS - UNAM, FI, 2021-1
-# PRACTICE 5 - POSITION CONTROL AND PATH TRACKING
-#
-# Instructions:
-# Write the code necessary to move the robot along a given path.
-# Consider a differential base. Max linear and angular speeds
-# must be 0.8 and 1.0 respectively.
+# FINAL PROJECT - SERVICE ROBOT CONTROLED BY VOICE COMMANDS
 #
 
 import sys
@@ -18,12 +13,10 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
-from sound_play.msg import SoundRequest
 
 NAME = "REYES_ESLAVA"
 
 pub_cmd_vel = None
-pub_voice   = None
 loop        = None
 listener    = None
 
@@ -119,7 +112,6 @@ def follow_path(path):
     return
     
 def callback_global_goal(msg):
-    global pub_voice
     print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
@@ -132,7 +124,6 @@ def callback_global_goal(msg):
     print "Following path with " + str(len(path.poses)) + " points..."
     path =[[p.pose.position.x, p.pose.position.y] for p in path.poses]
     follow_path(path)
-    pub_voice.publish(-3,1,1.0,'Destination reached. Ready to recieve new commands','voice_kal_diphone')
     print "Global goal point reached"
 
 def get_robot_pose(listener):
@@ -149,12 +140,10 @@ def get_robot_pose(listener):
     return [0,0,0]
 
 def main():
-    global pub_cmd_vel, loop, listener, pub_voice
-    print "PRACTICE 05 - " + NAME
-    rospy.init_node("practice05")
+    rospy.init_node("alto_nivel")
     rospy.Subscriber('/move_base_simple/goal', PoseStamped, callback_global_goal)
-    pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-    pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size=10)
+    rospy.Subscriber('/recognized', String, callback_reconocimiento_voz)
+    pub_cmd_vel = rospy.Publisher('/robotsound', SoundRequest)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
     #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
