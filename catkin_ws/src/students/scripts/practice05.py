@@ -69,36 +69,37 @@ def follow_path(path):
     #
     # Set local goal point as the first point of the path
     posicion = 0
-    local_goal_x = path[posicion][0]
-    local_goal_y = path[posicion][1]
+    #local_goal_x = path[posicion][0]
+    #local_goal_y = path[posicion][1]
+    local_goal = path[posicion]
+    global_goal = path[len(path)-1]
     # Set global goal point as the last point of the path
-    global_goal_x = path[len(path)-1][0]
-    global_goal_y = path[len(path)-1][1]
+    #global_goal_x = path[len(path)-1][0]
+    #global_goal_y = path[len(path)-1][1]
     # Get robot position with [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     robot_x, robot_y, robot_a = get_robot_pose(listener)
     # Calculate global error as the magnitude of the vector from robot pose to global goal point
-    global_error = math.sqrt(((global_goal_x - robot_x)*(global_goal_x - robot_x)) + ((global_goal_y - robot_y)*(global_goal_y - robot_y)))
+    global_error = math.sqrt(((global_goal[0] - robot_x)*(global_goal[0] - robot_x)) + ((global_goal[1] - robot_y)*(global_goal[1] - robot_y)))
     # Calculate local  error as the magnitude of the vector from robot pose to local  goal point
-    local_error = math.sqrt(((local_goal_x - robot_x)*(local_goal_x - robot_x)) + ((local_goal_y - robot_y)*(local_goal_y - robot_y)))
+    local_error = math.sqrt(((local_goal[0] - robot_x)*(local_goal[0] - robot_x)) + ((local_goal[1] - robot_y)*(local_goal[1] - robot_y)))
     # WHILE global error > tolerance  and not rospy.is_shutdown() #This keeps the program aware of signals such as Ctrl+C
     tolerancia = 0.01
     while posicion < (len(path)-1) and global_error > tolerancia and not rospy.is_shutdown():
         #Calculate control signals v and w and publish the corresponding message
-        pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal_x, local_goal_y))
+        pub_cmd_vel.publish(calculate_control(robot_x, robot_y, robot_a, local_goal[0], local_goal[1]))
         #loop.sleep()  #This is important to avoid an overconsumption of processing time
         loop.sleep()
         #Get robot position
         robot_x, robot_y, robot_a = get_robot_pose(listener)
         #Calculate local error
-        local_error = math.sqrt(((local_goal_x - robot_x)*(local_goal_x - robot_x)) + ((local_goal_y - robot_y)*(local_goal_y - robot_y)))
+        local_error = math.sqrt(((local_goal[0] - robot_x)*(local_goal[0] - robot_x)) + ((local_goal[1] - robot_y)*(local_goal[1] - robot_y)))
         #If local error is less than 0.3 (you can change this constant)
         if local_error < 0.3:
             #Change local goal point to the next point in the path
             posicion += 1
-            local_goal_x = path[posicion][0]
-            local_goal_y = path[posicion][1]
+            local_goal = path[posicion]
         #Calculate global error
-        global_error = math.sqrt(((global_goal_x - robot_x)*(global_goal_x - robot_x)) + ((global_goal_y - robot_y)*(global_goal_y - robot_y)))
+        global_error = math.sqrt(((global_goal[0] - robot_x)*(global_goal[0] - robot_x)) + ((global_goal[1] - robot_y)*(global_goal[1] - robot_y)))
     print("Ha llegado a su destino")
 
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
@@ -135,7 +136,7 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    return None
+    return [0, 0, 0]
 
 def main():
     global pub_cmd_vel, loop, listener
@@ -145,7 +146,7 @@ def main():
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 
