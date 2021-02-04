@@ -6,6 +6,8 @@
 
 grammar movement;
 
-public <mvn> = ROBOT GO TO THE  <location>;
+public <mvn> = ROBOT <goto>;
 
-<location> = BEDROOM | LIVINGROOM | CORRIDOR | KITCHEN | ENTRANCE;
+<goto> = GO TO THE <location> | EXECUTE ORDER SIXTY SIX;
+
+<location> = LIVINGROOM | OFFICE | KITCHEN | ENTRANCE;

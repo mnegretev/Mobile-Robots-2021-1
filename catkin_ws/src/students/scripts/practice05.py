@@ -25,8 +25,8 @@ loop        = None
 listener    = None
 
 #Constants
-v_max = 0.8
-w_max = 1
+v_max = 0.9
+w_max = 0.6
 alpha = 0.5 #V
 beta = 0.5  #W
 tolerance = 0.3 
@@ -52,10 +52,7 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # Max linear and angular speeds
     # must be 0.8 and 1.0 respectively.
     #
-    v_max   = 0.8
-    w_max   = 1.0
-    alpha   = 0.5
-    beta    = 0.5
+    global v_max, w_max, alpha, beta
 
     deltaX = goal_x - robot_x
     deltaY = goal_y - robot_y
