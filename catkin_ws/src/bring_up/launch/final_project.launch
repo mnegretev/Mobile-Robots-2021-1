@@ -26,5 +26,5 @@
   </node>
 
   <node name="sound_play" pkg="sound_play" type="soundplay_node.py" output="screen"/>
-  <include file="$(find bring_up)/launch/proyecto_final_voz.launch"/>
+  <include file="$(find bring_up)/launch/proyecto_final_solo_voz.launch"/>
 </launch>
