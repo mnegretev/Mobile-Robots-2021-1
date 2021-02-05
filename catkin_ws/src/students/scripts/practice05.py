@@ -10,7 +10,9 @@
 #
 
 import sys
+import numpy
 import rospy
+import map
 import tf
 import math
 from nav_msgs.msg import Path
@@ -18,12 +20,14 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
+from soud_play.msg import SoudRequest
 
 NAME = "AMALFI FIGUEROA ISAAC"
 
 pub_cmd_vel = None
 loop        = None
 listener    = None
+pub_voice	= None
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
@@ -41,7 +45,7 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    vmax = 1
+    vmax = 0.5
     wmax = 0.5
     alpha= 0.01
     beta = 0.1
@@ -58,12 +62,15 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     v = vmax*math.exp(-error_a*error_a/alpha)
     w = wmax*(2/(1 + math.exp(-error_a/beta)) - 1)
 
-    cmd_vel.linear.x=v
-    cmd_vel.angular.z=w
+    cmd_vel.linear.y = 0
+    cmd_vel.linear.x = v
+    cmd_vel.angular.z= w
 
     return cmd_vel
 
 def follow_path(path):
+	tolerance = 0.2
+	epsilon = 0.1
     #
     # TODO:
     # Use the calculate_control function to move the robot along the path.
