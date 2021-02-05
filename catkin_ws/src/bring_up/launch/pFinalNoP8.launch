@@ -14,4 +14,6 @@
   <node name ="Ruta" pkg = "students" type = "practice04.py"/>
   <node name ="Control" pkg = "students" type = "practice05.py"/>
   <node name = "Sonido" pkg = "sound_play" type = "soundplay_node.py"/>
+
+  <include file = "$(find bring_up)/launch/PS_Proyecto.launch"/>
 </launch>
