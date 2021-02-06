@@ -143,6 +143,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(practice08 src/practice08.cpp)
 add_executable(practice07 src/practice07.cpp)
+add_executable(ProyectoF src/ProyectoF.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -153,6 +154,7 @@ add_executable(practice07 src/practice07.cpp)
 ## same as for the library above
 add_dependencies(practice08 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(practice07 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(ProyectoF ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(practice08
@@ -161,7 +163,9 @@ target_link_libraries(practice08
 target_link_libraries(practice07
   ${catkin_LIBRARIES}
 )
-
+target_link_libraries(ProyectoF
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############

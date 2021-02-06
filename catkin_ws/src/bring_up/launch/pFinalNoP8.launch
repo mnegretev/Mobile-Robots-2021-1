@@ -13,7 +13,8 @@
   <node name ="Inflado" pkg = "students" type = "practice03.py"/>
   <node name ="Ruta" pkg = "students" type = "practice04.py"/>
   <node name ="Control" pkg = "students" type = "practice05.py"/>
-  <node name = "Sonido" pkg = "sound_play" type = "soundplay_node.py"/>
+  <node name ="Nexo" pkg = "students" type = "ProyectoF" output="screen"/>
+  <node name = "soundplay_node" pkg = "sound_play" type = "soundplay_node.py"/>
 
   <include file = "$(find bring_up)/launch/PS_Proyecto.launch"/>
 </launch>
