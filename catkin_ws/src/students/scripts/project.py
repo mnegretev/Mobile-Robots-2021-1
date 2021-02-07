@@ -5,24 +5,24 @@
 # 
 #
 import sys
-import rospy
-import numpy 
+import rospy 
 
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 from sound_play.msg import SoundRequest
+from std_msgs.msg import String
 
 NAME = "ARGUELLES_MACOSAY"
+
 
 #####################################
 #Definir posiciones(coordenadas) de los lugares
 #####################################
 #ENTRANCE(0,0) - es la posicion casi inicial por defecto del robot
-#BEDROOM
-#LIVINGROOM
-#CORRIDOR
-#KITCHEN
-
+#BEDROOM(6,0)
+#LIVINGROOM(5,5)
+#CORRIDOR(3,0)
+#KITCHEN(8,5)
 def position(order):
     dir= PoseStamped()
     if order==1:
@@ -42,51 +42,51 @@ def position(order):
     print("goal:"+ posx+","+posy)
     return
 
-def listening(orden):
-    order_received = orden
+def listening(order):
+    return order.data
 
 def receiving_orders():
     if order_received=="GO TO THE ENTRACE":
         robot_talk("did you said go to the entrace")
         if(order_received== "YES"):
             position(1)
-    elif order_received=="GO TO THE BEDROOM"
+    elif order_received=="GO TO THE BEDROOM":
         robot_talk("did you said go to the bedroom")
         if(order_received== "YES"):
             position(2)
-    elif order_received=="GO TO THE LIVINGROOM"
+    elif order_received=="GO TO THE LIVINGROOM":
         robot_talk("did you said go to the livingroom")
         if(order_received== "YES"):
             position(3)
-    elif order_received=="GO TO THE CORRIDOR"
+    elif order_received=="GO TO THE CORRIDOR":
         robot_talk("did you said go to the corridor")
         if(order_received== "YES"):
             position(4)
-    elif order_received=="GO TO THE KITCHEN"
+    elif order_received=="GO TO THE KITCHEN":
         robot_talk("did you said go to the kitchen")
         if(order_received== "YES"):
-        position(5)
-    else
+            position(5)
+    else:
         robot_talk("I didn't recognice the voice command")
 
 def robot_talk(to_say):
     print(to_say)
     Robot_voice=SoundRequest()
     Robot_voice.arg= to_say
-    Publishing_robot_voice.publish(Robot_voice)
+    publishing_robot_voice.publish(Robot_voice)
 
 def main():
-    global pub_cmd_vel publishing_dir, order_received
-    publishing_dir=0
-    Publishing_robot_voice=0
-    position()
-    print ("projet " + NAME)
+    global publishing_robot_voice
+    global publishing_dir
+    global order_received
+    print ("PROJECT " + NAME)
     rospy.init_node("project")
-    robot_talk("Were do you want me to go")
-    rospy.Subscriber("/recognized",String,listening)
+ 
     publishing_dir=rospy.Publisher('/move_base_simple/goal', PoseStamped,queue_size=10)
-    Publishing_robot_voice=ropy.Publisher('/robotsound',SoundRequest,queue_size=10)
-    loop= rospy.Rate(50)
+    publishing_robot_voice=rospy.Publisher('/robotsound',SoundRequest,queue_size=10)
+    robot_talk("Were do you want me to go")
+    order_received=rospy.Subscriber("/recognized",String,listening)
+    rospy.Rate(50)
     rospy.spin()
 
 if __name__ == '__main__':

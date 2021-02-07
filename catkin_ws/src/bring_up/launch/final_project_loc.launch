@@ -23,5 +23,5 @@
     <param name="max_y" value="0.5"/>
   </node>
   <include file="$(find bring_up)/launch/pocketsphinx_test.launch"/>
-  <node name="project" pkg="students" type="project" output="screen"/>
+  <node name="project" pkg="students" type="project.py" output="screen"/>
 </launch>
