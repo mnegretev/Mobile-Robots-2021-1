@@ -91,6 +91,7 @@ def listening(order):
             else:
                 position(place)
                 actual_pos=place
+                confirm=0
         elif(order_received=="NO"):
             robot_talk("sorry try again i didnt listen well")
             confirm=0
@@ -112,9 +113,9 @@ def robot_talk(to_say):
 def main():
     global publishing_robot_voice
     global publishing_dir
+
     print ("PROJECT " + NAME)
     rospy.init_node("project")
-    robot_talk("Were do you want me to go")
     publishing_dir=rospy.Publisher('/move_base_simple/goal', PoseStamped,queue_size=10)
     publishing_robot_voice=rospy.Publisher('/robotsound',SoundRequest,queue_size=10)
     rospy.Subscriber("/recognized",String,listening)
