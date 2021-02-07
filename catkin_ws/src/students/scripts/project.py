@@ -6,7 +6,7 @@
 #
 import sys
 import rospy 
-
+import tf
 
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
@@ -114,16 +114,15 @@ def main():
     global publishing_dir
     print ("PROJECT " + NAME)
     rospy.init_node("project")
+    robot_talk("Were do you want me to go")
     publishing_dir=rospy.Publisher('/move_base_simple/goal', PoseStamped,queue_size=10)
     publishing_robot_voice=rospy.Publisher('/robotsound',SoundRequest,queue_size=10)
     rospy.Subscriber("/recognized",String,listening)
-    robot_talk("Were do you want me to go")
     rospy.Rate(50)
     rospy.spin()
 
 if __name__ == '__main__':
     try:
-        place=0
         main()
     except rospy.ROSInterruptException:
         pass
