@@ -8,7 +8,7 @@
     <arg name="debug" value="false"/>
     <arg name="world_name" value="$(find bring_up)/worlds/apartment_fast.world"/>
   </include>
-
+  
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bring_up)/rviz/localization.rviz"/>
   <node name="simple_gui" pkg="simple_gui" type="simple_gui_node"/>
   <node name="mobile_base" pkg="mobile_base_simul" type="mobile_base_simul.py"/>
@@ -22,4 +22,6 @@
     <param name="min_y" value="-0.5"/>
     <param name="max_y" value="0.5"/>
   </node>
+  
+  <include file="$(find bring_up)/launch/pocketsphinx_test.launch"/>
 </launch>
