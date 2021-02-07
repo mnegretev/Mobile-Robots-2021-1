@@ -1,0 +1,15 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar similar to kws example
+ */
+
+grammar navigation;
+
+public <move> = MOVE FORWARD;
+
+public <move2> = ROBOT <directions> [<speed>];
+
+<directions> = FORWARD | BACK | LEFT | RIGHT;
+
+<speed> = FULL SPEED | HALF SPEED;
