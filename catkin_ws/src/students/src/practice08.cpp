@@ -163,12 +163,12 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
      * given by the quaternion (0,0,sin(theta/2), cos(theta/2)), thus, you should first
      * get the corresponding angle, then add noise, and the get again the corresponding quaternion.
      */
-    int index = 0;
+    int idx = 0;
     for(int i = 0; i < particles.poses.size(); i++){
-        index = random_choice(weights);
-        resampled_particles.poses[i].position.x = particles.poses[index].position.x + rnd.gaussian(0, RESAMPLING_NOISE);
-    	resampled_particles.poses[i].position.y = particles.poses[index].position.y + rnd.gaussian(0, RESAMPLING_NOISE);
-        float a = atan2(particles.poses[index].orientation.z , particles.poses[index].orientation.w)*2;
+        idx = random_choice(weights);
+        resampled_particles.poses[i].position.x = particles.poses[idx].position.x + rnd.gaussian(0, RESAMPLING_NOISE);
+    	resampled_particles.poses[i].position.y = particles.poses[idx].position.y + rnd.gaussian(0, RESAMPLING_NOISE);
+        float a = atan2(particles.poses[idx].orientation.z , particles.poses[idx].orientation.w)*2;
 	a += rnd.gaussian(0, RESAMPLING_NOISE);
         resampled_particles.poses[i].orientation.z = sin(a/2);
     	resampled_particles.poses[i].orientation.w = cos(a/2);
