@@ -47,7 +47,7 @@ geometry_msgs::PoseArray get_initial_distribution(int N, float min_x, float max_
      * For the Euler angles (roll, pitch, yaw) = (0,0,theta) the corresponding quaternion is
      * given by (0,0,sin(theta/2), cos(theta/2)).
      */
-    for(size_t i=0; i<N; i++)
+    for(size_t i=0; i<particles.poses.size(); i++)
     {
         particles.poses[i].position.x = rnd.uniformReal(min_x,max_x);
         particles.poses[i].position.y = rnd.uniformReal(min_y,max_y);
@@ -98,17 +98,19 @@ std::vector<float> calculate_particle_weights(std::vector<sensor_msgs::LaserScan
      * IMPORTANT NOTE 2. Both, simulated an real scans, can have infinite ranges. Thus, when comparing readings,
      * ensure both simulated and real ranges are finite values.
      */
-    float sum = 0;
+    double sum = 0;
     for(size_t i=0; i < simulated_scans.size(); i++)
     {
-        float d = 0;
+	weights[i] = 0;
         for(size_t j=0; j < simulated_scans[i].ranges.size(); j++){
             if((simulated_scans[i].ranges[j]  < real_scan.range_max) && (real_scan.ranges[j*LASER_DOWNSAMPLING] < real_scan.range_max)){
-                d += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
+                weights[i] += fabs(simulated_scans[i].ranges[j] - real_scan.ranges[j*LASER_DOWNSAMPLING]);
                 }
+	    else
+		weights[i] += real_scan.range_max;
         }
-        d /= simulated_scans[i].ranges.size();
-        weights[i] = expf(-d*d/SENSOR_NOISE);
+        weights[i] /= simulated_scans[i].ranges.size();
+        weights[i] = exp(-weights[i]*weights[i]/SENSOR_NOISE);
         sum += weights[i];
     }
 
@@ -129,7 +131,7 @@ int random_choice(std::vector<float>& weights)
      * Probability of picking an integer 'i' is given by the corresponding weights[i] value.
      * Return the chosen integer.
      */
-    float num = rnd.uniformReal(0, weights.size());
+    float num = rnd.uniformReal(0, 1);
     for(int i = 0; i < weights.size(); i++){
     if(num < weights[i]){
         return i;
@@ -166,7 +168,8 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
         index = random_choice(weights);
         resampled_particles.poses[i].position.x = particles.poses[index].position.x + rnd.gaussian(0, RESAMPLING_NOISE);
     	resampled_particles.poses[i].position.y = particles.poses[index].position.y + rnd.gaussian(0, RESAMPLING_NOISE);
-        float a = atan2(particles.poses[i].orientation.z , particles.poses[i].orientation.w)*2 + rnd.gaussian(0, RESAMPLING_NOISE);
+        float a = atan2(particles.poses[index].orientation.z , particles.poses[index].orientation.w)*2;
+	a += rnd.gaussian(0, RESAMPLING_NOISE);
         resampled_particles.poses[i].orientation.z = sin(a/2);
     	resampled_particles.poses[i].orientation.w = cos(a/2);
     }
@@ -219,10 +222,18 @@ geometry_msgs::Pose2D get_robot_odometry(tf::TransformListener& listener)
 {
     tf::StampedTransform t;
     geometry_msgs::Pose2D pose;
-    listener.lookupTransform("odom", "base_link", ros::Time(0), t);
-    pose.x = t.getOrigin().x();
-    pose.y = t.getOrigin().y();
-    pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;
+    try{
+	listener.lookupTransform("odom", "base_link", ros::Time(0), t);
+    	pose.x = t.getOrigin().x();
+    	pose.y = t.getOrigin().y();
+    	pose.theta = atan2(t.getRotation().z(), t.getRotation().w())*2;
+    }
+    catch(std::exception &e){
+    	pose.x = 0;
+	pose.y = 0;
+	pose.theta = 0;
+    }
+
     return pose;
 }
 
@@ -308,6 +319,7 @@ int main(int argc, char** argv)
      * Sentences for getting the static map, info about real lidar sensor,
      * and initialization of corresponding arrays.
      */
+    ros::service::waitForService("/static_map", ros::Duration(20));
     ros::service::call("/static_map", srv_get_map);
     static_map = srv_get_map.response.map;
     real_scan = *ros::topic::waitForMessage<sensor_msgs::LaserScan>("/scan");

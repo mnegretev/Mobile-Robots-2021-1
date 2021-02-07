@@ -42,10 +42,10 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     # and return it (check online documentation for the Twist message).
     # Remember to keep error angle in the interval (-pi,pi]
     #
-    alpha = 0.01
-    beta = 0.1
-    v_max = 0.4
-    w_max = 0.4
+    alpha = 0.2
+    beta = 0.7
+    v_max = 0.8
+    w_max = 1.0
     
     goal_a = math.atan2(goal_y - robot_y, goal_x - robot_x)
     error_a = goal_a - robot_a
@@ -53,7 +53,7 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     if error_a > math.pi:
         error_a -= 2*math.pi
         
-    if error_a < -math.pi:
+    if error_a <= -math.pi:
         error_a += 2*math.pi
     
     v = v_max*math.exp(-error_a*error_a/alpha)
@@ -92,8 +92,8 @@ def follow_path(path):
     #     Calculate global error
     # Send zero speeds (otherwise, robot will keep moving after reaching last point)
     #
-    tolerance = 0.1
-    
+    tolerance = 0.3
+    current_point = 0
     local_goal = path[0]
     i = 0
     global_goal = path[len(path) - 1]
@@ -106,10 +106,8 @@ def follow_path(path):
         loop.sleep()
         [r_x, r_y, r_a] = get_robot_pose(listener)
         e_local = math.sqrt(math.pow(r_x - local_goal[0], 2) + math.pow(r_y - local_goal[1], 2))
-        if e_local < 0.3:
-            i += 1
-            local_goal = path[i]
-        #e_local = math.sqrt(math.pow(r_x - local_goal[0], 2) + math.pow(r_y - local_goal[1], 2))
+        current_point = min(current_point+1, len(path)-1) if e_local < 0.3 else current_point
+        [local_goal[0], local_goal[1]] = path[current_point]
         e_global = math.sqrt(math.pow(r_x - global_goal[0], 2) + math.pow(r_y - global_goal[1], 2))
         
     cmd_vel.linear.x = 0
@@ -148,7 +146,7 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    return None
+    return [0,0,0]
 
 def main():
     global pub_cmd_vel, loop, listener
@@ -158,7 +156,7 @@ def main():
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 
