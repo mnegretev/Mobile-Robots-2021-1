@@ -1,0 +1,6 @@
+La práctica no funciona correctamente.
+El programa arroja un error de overflow in double scalars,
+lo que seguramente se debe a que el descenso del gradiente no converge.
+Esto puede deberse a un cálculo erróneo del gradiente
+o una mala selección de constantes.
+Calificación: 8.0
