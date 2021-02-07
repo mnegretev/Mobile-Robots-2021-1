@@ -18,6 +18,7 @@ NAME = "ARGUELLES_MACOSAY"
 confirm=0
 actual_pos=1
 place=0
+pos_ant=0
 #####################################
 #Definir posiciones(coordenadas) de los lugares
 #####################################
@@ -53,6 +54,7 @@ def position(order):
     dir.pose.position.y=posy
     dir.pose.orientation.w=0
     publishing_dir.publish(dir)
+    global pos_ant
     pos_ant=posx,posy
     print("goal:"+ str(pos_ant))
     return
@@ -97,9 +99,6 @@ def listening(order):
             confirm=0
     else:
         robot_talk("I didn't recognice the voice command")
-        
-
-
 
 def robot_talk(to_say):
     print(to_say)
@@ -113,7 +112,6 @@ def robot_talk(to_say):
 def main():
     global publishing_robot_voice
     global publishing_dir
-
     print ("PROJECT " + NAME)
     rospy.init_node("project")
     publishing_dir=rospy.Publisher('/move_base_simple/goal', PoseStamped,queue_size=10)
