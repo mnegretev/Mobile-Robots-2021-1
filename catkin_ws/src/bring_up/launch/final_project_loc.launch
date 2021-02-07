@@ -1,5 +1,5 @@
 <launch>
-  <param name="robot_description" textfile="$(find bring_up)/urdf/justina_simple.urdf" />
+  <param name="robot_description" textfile="$(find bring_up)/urdf/justina_base.urdf"/>
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="paused" value="false"/>
@@ -13,10 +13,10 @@
   <node name="simple_gui" pkg="simple_gui" type="simple_gui_node"/>
   <node name="mobile_base" pkg="mobile_base_simul" type="mobile_base_simul.py"/>
   <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find bring_up)/maps/appartment.yaml"/>
-  <node name="practice03" pkg="students" type="practice03.py" output="screen"/>
+  <node name="practice03" pkg="students" type="practice0301.py" output="screen"/>
   <node name="practice04" pkg="students" type="practice04.py" output="screen"/>
   <node name="practice05" pkg="students" type="practice05.py" output="screen"/>
-  <node name="practice08" pkg="students" type="practice08" output="screen"/>
+  <node name="practice08" pkg="students" type="practice08" output="screen">
     <param name="min_x" value="-0.5"/>
     <param name="max_x" value="0.5"/>
     <param name="min_y" value="-0.5"/>
