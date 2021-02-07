@@ -1,0 +1,5 @@
+El programa funciona solo parcialmente.
+El robot evade obstáculos pero en ocasiones el programa arroja
+un error de división entre cero.
+El problema está el cálculo de la fuerza repulsiva.
+Calificación: 8.0

@@ -1,0 +1,3 @@
+La práctica funciona correctamente.
+El programa obtiene correctamente el mapa con los obstáculos inflados
+y el mapa de costo. 

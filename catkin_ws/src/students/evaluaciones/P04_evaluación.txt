@@ -1,0 +1,3 @@
+El programa no calcula correctamente el suavizado.
+La ejecución indica que en algún momento se obtiene un valor nan.
+Calificación: 8.0
