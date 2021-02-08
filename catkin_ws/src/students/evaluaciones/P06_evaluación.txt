@@ -1,0 +1,4 @@
+La práctica funciona parcialmente.
+Aunque las fuerzas atractiva y repulsiva son calculadas de acuerdo con lo
+visto en clase, hace falta mejorar la sintonización de parámetros, pues el
+robot choca sistemática con los obstáculos. 
