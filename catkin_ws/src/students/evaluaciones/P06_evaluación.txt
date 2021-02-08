@@ -1,0 +1,6 @@
+La práctica no funciona correctamente.
+El robot no evade obstáculos y siempre choca contra ellos.
+El error está en el cálculo de la fuerza repulsiva.
+Las ecuciones que vimos se aplican cuando la distancia medida es menor que
+un umbral d0. En el programa esta comparación está al revés.
+Calificación: 7.0
