@@ -1,0 +1,2 @@
+La práctica funciona correctamente.
+El programa realiza correctamente la evasión de obstáculos.
