@@ -1,0 +1,6 @@
+El programa no funciona.
+El robot gira al iniciar la ruta pero nunca avanza.
+El error está en la línea 69. Dice:
+cmd_vel.angular.x = min(v_max, error_d)*math.exp(-error_a*error_a/alpha)
+Debería decir:
+cmd_vel.linear.x = min(v_max, error_d)*math.exp(-error_a*error_a/alpha)

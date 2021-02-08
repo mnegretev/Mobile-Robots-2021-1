@@ -1,0 +1,4 @@
+La práctica no funciona correctamente.
+El robot parece calcular las fuerzas de atracción y repulsión correctamente,
+pero nunca avanza.
+El error es similar al de la práctica 05. 

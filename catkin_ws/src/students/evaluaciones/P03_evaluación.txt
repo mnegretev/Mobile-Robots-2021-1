@@ -1,0 +1,5 @@
+La práctica funciona solo parcialmente.
+El inflado se realiza correctamente pero el cálculo de mapas de costo no funciona.
+En el cálculo del mapa de costo, el programa siempre arroja un error
+indicando índices fuera de rango.
+Calificación: 8.0
