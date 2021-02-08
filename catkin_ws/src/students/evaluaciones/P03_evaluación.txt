@@ -1,0 +1,3 @@
+La práctica funciona correctamente.
+El programa infla correctamente los obstáculos
+y calcula correctamente el mapa de costo. 
