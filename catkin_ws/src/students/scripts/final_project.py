@@ -42,7 +42,6 @@ def state_machine(message):
         print 'El mensaje: '+message+' no corresponde con ningun tipo de orden.'
 
 def callback_pose(msg):
-    voice = SoundRequest()
     #voice.sound = 1 
     #voice.command = 1
     #voice.volume= 1.0
@@ -57,20 +56,20 @@ def callback_pose(msg):
 
 def callback_msg(msg):
     message = msg.data
-    state_machine('ROBOT GO TO THE BEDROOM')
+    state_machine(message)
 
 def main():
-    global loop, pub_pose, pub_sound, mov_flag
+    global loop, pub_pose, pub_sound, mov_flag, voice
     print "Proyecto final - " + NAME
     mov_flag = False
     pub_pose = rospy.Publisher('/pose', PoseStamped, queue_size=10)
     pub_sound = rospy.Publisher('/soundRequest', SoundRequest, queue_size=10)
+    voice = SoundRequest()
     rospy.init_node("final_project")
     rospy.Subscriber('/cmd_vel', Twist, callback_pose)
     rospy.Subscriber('/chatter', String, callback_msg)
-    loop = rospy.Rate(20) # 20Hz
-    #while not rospy.is_shutdown():
-     #   loop.sleep()
+    #loop = rospy.Rate(20) # 20Hz
+    rospy.wait_for_service('/static_map')
     rospy.spin()
 
 if __name__ == "__main__":
