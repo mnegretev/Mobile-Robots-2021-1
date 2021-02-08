@@ -1,0 +1,3 @@
+La práctica funciona parcialmente.
+El programa se cae sistematicamente cuando no hay un obstáculo
+enfrente a una distancia corta. 
