@@ -1,0 +1,3 @@
+El programa realiza correctamente el seguimiento de rutas
+aunque hace falta sintonizar las constantes, pues en las curvas
+se aleja mucho de la ruta planeada. 

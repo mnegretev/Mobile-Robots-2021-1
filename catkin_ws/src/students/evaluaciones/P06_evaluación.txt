@@ -1,0 +1,5 @@
+La práctica funciona parcialmente. 
+Aunque las ecuaciones para el cálculo de las fuerzas atractiva y repulsiva
+son correctas, hace falta una mejor sintonización de los parámetros,
+pues el robot choca sistemáticamente con los obstáculos.
+Calificación: 9.0
