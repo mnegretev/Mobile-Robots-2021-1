@@ -1,0 +1,3 @@
+La práctica funciona parcialmente.
+En ocasiones el programa se cae debido a una división entre cero.
+Calificación 9.0
