@@ -1,0 +1,4 @@
+La práctica funciona parcialmente.
+El robot sigue la ruta calculada pero el programa se cae
+cuando el robot llega al último punto de la ruta.
+Calificación: 8.0

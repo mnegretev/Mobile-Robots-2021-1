@@ -1,0 +1,4 @@
+La práctica 03 no funciona correctamente.
+El mapa inflado que arroja el programa es la transpuesta del correcto.
+Esto se debe a un problema con los índices de la matriz del mapa.
+Calificación: 7.0
