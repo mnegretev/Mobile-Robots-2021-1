@@ -1,0 +1,4 @@
+La práctica funciona parcialmente.
+La distribución inicial se calcula correctamente pero el programa
+sistemáticamente arroja partículas con valores 'inf' o 'nan'.
+Calificación: 8.0
