@@ -18,10 +18,13 @@ from nav_msgs.srv import GetPlan
 from nav_msgs.srv import GetPlanRequest
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
+from sound_play.msg import SoundRequest
 
 NAME = "IBANEZ_LOPEZ"
+MESSAGE = "I arrived to the location"
 
 pub_cmd_vel = None
+pub_voice = None
 loop        = None
 listener    = None
 
@@ -120,6 +123,15 @@ def follow_path(path):
     
     return
     
+def speech_voice():
+    msg_voice = SoundRequest()
+    msg_voice.sound = -3
+    msg_voice.command = 1
+    msg_voice.volume = 1.0
+    msg_voice.arg = MESSAGE
+    msg_voice.arg2 = "voice_kal_diphone"
+    pub_voice.publish(msg_voice)
+
 def callback_global_goal(msg):
     print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
@@ -134,6 +146,7 @@ def callback_global_goal(msg):
     path =[[p.pose.position.x, p.pose.position.y] for p in path.poses]
     follow_path(path)
     print "Global goal point reached"
+    speech_voice()
 
 def get_robot_pose(listener):
     try:
@@ -149,11 +162,12 @@ def get_robot_pose(listener):
     return [0,0,0]
 
 def main():
-    global pub_cmd_vel, loop, listener
+    global pub_cmd_vel, loop, listener, pub_voice
     print "PRACTICE 05 - " + NAME
     rospy.init_node("practice05")
     rospy.Subscriber('/move_base_simple/goal', PoseStamped, callback_global_goal)
     pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size = 10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
     #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
