@@ -43,7 +43,7 @@ def state_machine(message):
 
 def callback_pose(msg):
     voice = SoundRequest()
-    #voice.sound = -3 
+    #voice.sound = 1 
     #voice.command = 1
     #voice.volume= 1.0
     if(msg.linear.x == 0 and msg.angular.x == 0):
@@ -69,8 +69,8 @@ def main():
     rospy.Subscriber('/cmd_vel', Twist, callback_pose)
     rospy.Subscriber('/chatter', String, callback_msg)
     loop = rospy.Rate(20) # 20Hz
-    while not rospy.is_shutdown():
-        loop.sleep()
+    #while not rospy.is_shutdown():
+     #   loop.sleep()
     rospy.spin()
 
 if __name__ == "__main__":
