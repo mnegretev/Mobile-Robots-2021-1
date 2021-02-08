@@ -1,0 +1,4 @@
+La práctica funciona solo parcialmente.
+La distribución inicial de las partículas se calcula correctamente
+pero después las partículas no convergen a la posición real del robot.
+Calificación: 7.0
