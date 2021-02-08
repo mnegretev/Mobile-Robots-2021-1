@@ -22,6 +22,7 @@
     <param name="max_y" value="0"/>
   </node>
 
+  <node name="pfinal" pkg="students" type="final_practice.py" output="screen"/>
   <node name="sound_play" pkg="sound_play" type="soundplay_node.py" output="screen"/>
   <include file="$(find bring_up)/launch/pocketsphinx_test.launch"/>
 </launch>
