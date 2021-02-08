@@ -23,6 +23,7 @@
     <param name="/navigation/path_planning/smoothing_beta" value="0.01"/>
 
   <node name="practice08" pkg="students" type="practice08" output="screen">
+    <param name="n" value="50"/>
     <param name="min_x" value="-1.0"/>
     <param name="max_x" value="1.0"/>
     <param name="min_y" value="-1.0"/>
@@ -34,5 +35,7 @@
   <include file="$(find bring_up)/launch/voice_test.launch"/>
 
   <node name="practice05" pkg="students" type="practice05.py" output="screen"/>
+
+  <node name="final_project" pkg="students" type="final_project.py" output="screen"/>
  
 </launch>
