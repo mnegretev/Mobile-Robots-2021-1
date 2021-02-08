@@ -1,0 +1,4 @@
+La práctica no funciona.
+El programa arroja siempre el error: "'distance_to_goal_point' is not defined"
+por lo que no es posible evaluar el desempeño del programa.
+Calificación: 6.0

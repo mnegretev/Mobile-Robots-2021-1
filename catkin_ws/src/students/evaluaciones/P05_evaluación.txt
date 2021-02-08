@@ -1,0 +1,5 @@
+La práctica funciona solo parcialmente.
+El robot sigue la ruta pero al final del recorrido
+el programa arroja un error de variable inexistente.
+Este error se da solo al final del recorrido.
+Calificación: 9.0
