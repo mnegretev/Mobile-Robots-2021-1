@@ -1,0 +1,4 @@
+La práctica funciona solo parcialmente.
+El robot no avanza, solo se queda girando siempre hacia la misma dirección.
+Hay un error en el cálculo de la velocidad angular.
+Calificación: 8.0
