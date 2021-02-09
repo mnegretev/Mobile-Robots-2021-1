@@ -161,7 +161,7 @@ def get_robot_pose(listener):
         return robot_x, robot_y, robot_a
     except:
         pass
-    return None
+    return [0,0,0]
 
 def main():
     global pub_cmd_vel, loop, listener, pub_voice
@@ -172,7 +172,7 @@ def main():
     pub_voice = rospy.Publisher('/robotsound', SoundRequest, queue_size = 10)
     loop = rospy.Rate(20)
     listener = tf.TransformListener()
-    listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
+    #listener.waitForTransform("map", "base_link", rospy.Time(), rospy.Duration(5.0))
     rospy.wait_for_service('/navigation/path_planning/a_star_search')
     rospy.spin()
 

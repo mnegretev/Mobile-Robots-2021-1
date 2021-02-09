@@ -60,8 +60,7 @@ def main():
     rospy.Subscriber('/recognized', String, callback_ins)
     rospy.Subscriber('/cmd_vel', Twist, callback_goal)
     loop = rospy.Rate(20)
-    while not rospy.is_shutdown():
-        loop.sleep()
+    rospy.spin()
 
 if __name__ == '__main__':
     try:
