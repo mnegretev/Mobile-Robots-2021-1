@@ -1,0 +1,4 @@
+La práctica funciona parcialmente.
+El problema puede deberse a que no se está calculando el promedio de las
+posiciones de los puntos en el espacio xyz.
+Calificación: 8.0
