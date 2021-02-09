@@ -1,0 +1,2 @@
+La práctica funciona correctamente.
+El programa determina correctamente la posición del objeto en el espacio. 
