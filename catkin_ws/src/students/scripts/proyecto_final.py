@@ -21,7 +21,7 @@ def say(sentence):
     voice = SoundRequest()
     voice.sound = -3
     voice.command = 1
-    voice.volume=1.0
+    voice.volume = 1
     voice.arg = sentence
     pub_voice.publish(voice)
 

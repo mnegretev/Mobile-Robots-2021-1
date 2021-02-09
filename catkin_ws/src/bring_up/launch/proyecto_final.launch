@@ -31,7 +31,7 @@
   <!-- FIN PRACTICAS-->
 
 
- <!-- INICIO POCKETPHINC-->
+ <!-- INICIO POCKETSPHINX-->
   <node name="speech_recog" pkg="pocketsphinx" type="asr_test.py" output="screen">
     <remap from="jsgf_audio" to="sphinx_audio" />
     <param name="gram" value="$(find pocketsphinx)/vocab/voice_cmd"/>
@@ -57,9 +57,3 @@
 
 </launch>
 
-    <!--
-    practica  3
-              4
-              5
-              8
-  -->
