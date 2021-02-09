@@ -188,7 +188,8 @@ geometry_msgs::PoseArray resample_particles(geometry_msgs::PoseArray& particles,
         ind = random_choice(weights);
         resampled_particles.poses[i].position.x = particles.poses[ind].position.x + rnd.gaussian(0, RESAMPLING_NOISE);
     	resampled_particles.poses[i].position.y = particles.poses[ind].position.y + rnd.gaussian(0, RESAMPLING_NOISE);
-        float a = atan2(particles.poses[i].orientation.z , particles.poses[i].orientation.w)*2 + rnd.gaussian(0, RESAMPLING_NOISE);
+        float a = atan2(particles.poses[ind].orientation.z , particles.poses[ind].orientation.w)*2;
+        a += rnd.gaussian(0, RESAMPLING_NOISE);
         resampled_particles.poses[i].orientation.z = sin(a/2);
     	resampled_particles.poses[i].orientation.w = cos(a/2);
     }
