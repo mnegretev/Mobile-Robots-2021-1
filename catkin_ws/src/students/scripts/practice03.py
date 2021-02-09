@@ -120,13 +120,18 @@ def main():
     loop = rospy.Rate(10)
     
     counter = 0
-    cost_radius = 0.4
-    inflation_radius = 0.2
-
+    cost_radius = 0.5
+    inflation_radius = 0.3
     while not rospy.is_shutdown():
-	if counter == 0:
-             pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
-        counter = (counter + 1) % 10
+        if counter == 0:
+            if rospy.has_param("/navigation/path_planning/cost_radius"):
+                cost_radius = rospy.get_param("/navigation/path_planning/cost_radius")
+            if rospy.has_param("/navigation/path_planning/inflation_radius"):
+                new_inflation_radius = rospy.get_param("/navigation/path_planning/inflation_radius")
+                if new_inflation_radius != inflation_radius:
+                    inflation_radius = new_inflation_radius
+                    pub_inflated.publish(callback_inflated_map(GetMapRequest()).map)
+        counter = (counter + 1) % 100
         loop.sleep()
 
 if __name__ == '__main__':
