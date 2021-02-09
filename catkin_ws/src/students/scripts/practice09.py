@@ -46,9 +46,9 @@ def segment_by_color(img_bgr, points):
         sumx += points[mask_nz[i][0][1]][mask_nz[i][0][0]][0]
         sumy += points[mask_nz[i][0][1]][mask_nz[i][0][0]][1]
         sumz += points[mask_nz[i][0][1]][mask_nz[i][0][0]][2]
-    x= sumax/len(mask_nz)
-    y= sumay/len(mask_nz)
-    z= sumaz/len(mask_nz)
+    x= sumx/len(mask_nz)
+    y= sumy/len(mask_nz)
+    z= sumz/len(mask_nz)
     media = cv2.mean(mask_nz)
     img_c = media[0]
     img_r = media[1]   
