@@ -32,7 +32,7 @@
 
   <node name="sound_play" pkg="sound_play" type="soundplay_node.py" output="screen"/>
 
-  <include file="$(find bring_up)/launch/voice_test.launch"/>
+  <include file="$(find bring_up)/launch/myvoc.launch"/>
 
   <node name="practice05" pkg="students" type="practice05.py" output="screen"/>
 

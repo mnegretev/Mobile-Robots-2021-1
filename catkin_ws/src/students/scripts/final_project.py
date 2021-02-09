@@ -10,47 +10,54 @@ from geometry_msgs.msg import PoseStamped
 from sound_play.msg import SoundRequest
 
 NAME = "ANTONIO_GARCIA"
-ROBOT_PHRASE1 = "I have arrived"
-ROBOT_PHRASE2 = "I am busy"
+ROBOT_PHRASE1 = "I arrived"
+ROBOT_PHRASE2 = "busy"
+#loop = None
+pub_pose = None
+pub_sound = None
+voice = None
+mov_flag = False
+repeat = True
 
 def state_machine(message):
+    global mov_flag, pub_pose
     pos = PoseStamped()
     if(mov_flag==True):
         print 'Robot en movimiento'
-    elif(message == 'ROBOT GO TO THE ENTRANCE'):
+    elif(message == 'ENTRANCE'):
         mov_flag = True
-        pos.pose.x = 0
-        pos.pose.y = 0
-        pos.pose.w = 0
+        pos.pose.position.x = 0
+        pos.pose.position.y = 0
+        pos.pose.orientation.w = 1
         pub_pose.publish(pos)
         print 'En direccion a la entrada'
-    elif(message == 'ROBOT GO TO THE KITCHEN'):
+    elif(message == 'KITCHEN'):
         mov_flag = True
-        pos.pose.x = 4
-        pos.pose.y = 0
-        pos.pose.w = 1
+        pos.pose.position.x = 4
+        pos.pose.position.y = 0
+        pos.pose.orientation.w = 1
         pub_pose.publish(pos)
         print 'En direcciona a la cocina'
-    elif(message == 'ROBOT GO TO THE BEDROOM'):
+    elif(message == 'BEDROOM'):
         mov_flag = True
-        pos.pose.x = 8
-        pos.pose.y = 2
-        pos.pose.w = 1
+        pos.pose.position.x = 8
+        pos.pose.position.y = 2
+        pos.pose.orientation.w = 1
         pub_pose.publish(pos)
         print 'En direccion al cuarto'
     else:
         print 'El mensaje: '+message+' no corresponde con ningun tipo de orden.'
 
 def callback_pose(msg):
-    #voice.sound = 1 
-    #voice.command = 1
-    #voice.volume= 1.0
+    global voice, pub_sound, mov_flag, repeat
     if(msg.linear.x == 0 and msg.angular.x == 0):
         mov_flag = False
         print 'El robot llego a su destino'
         voice.arg = ROBOT_PHRASE1
         pub_sound.publish(voice)
-    else:
+        repeat = True
+    elif(repeat == True):
+        repeat = False
         voice.arg = ROBOT_PHRASE2
 	pub_sound.publish(voice)
 
@@ -59,15 +66,17 @@ def callback_msg(msg):
     state_machine(message)
 
 def main():
-    global loop, pub_pose, pub_sound, mov_flag, voice
+    global pub_pose, pub_sound, voice#,loop
     print "Proyecto final - " + NAME
-    mov_flag = False
-    pub_pose = rospy.Publisher('/pose', PoseStamped, queue_size=10)
-    pub_sound = rospy.Publisher('/soundRequest', SoundRequest, queue_size=10)
     voice = SoundRequest()
+    voice.sound = 1 
+    voice.command = 1
+    voice.volume= 1.0
+    pub_pose = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+    pub_sound = rospy.Publisher('/robotsound', SoundRequest, queue_size=10)
     rospy.init_node("final_project")
     rospy.Subscriber('/cmd_vel', Twist, callback_pose)
-    rospy.Subscriber('/chatter', String, callback_msg)
+    rospy.Subscriber('/recognized', String, callback_msg)
     #loop = rospy.Rate(20) # 20Hz
     rospy.wait_for_service('/static_map')
     rospy.spin()
