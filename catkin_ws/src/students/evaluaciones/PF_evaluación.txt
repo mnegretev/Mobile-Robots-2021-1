@@ -1,0 +1,5 @@
+El proyecto funciona correctamente.
+En algunas ocasiones, el robot colisiona ligeramente con las puertas.
+Este comportamiento debe corregirse, pero el desempeño general
+es bueno.
+Calificación: 10.0
