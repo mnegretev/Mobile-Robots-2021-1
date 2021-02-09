@@ -1,0 +1,8 @@
+La práctica funciona solo parcialmente.
+En algunas ocasiones el robot no evade bien el obstáculo.
+El error está en la línea 145.
+Dice:
+[fx,fy] = [afx + rfx, afy + afy]
+Debería decir:
+[fx,fy] = [afx + rfx, afy + rfy]
+Calificación: 8.0
