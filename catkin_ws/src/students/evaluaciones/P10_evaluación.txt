@@ -1,0 +1,3 @@
+La práctica no funciona.
+El programa arroja un error de sintaxis.
+Calificación: 6.0
