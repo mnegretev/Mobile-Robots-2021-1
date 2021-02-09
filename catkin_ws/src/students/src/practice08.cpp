@@ -20,11 +20,11 @@
 #define NOMBRE "REYES_ESLAVA"
 
 #define LASER_DOWNSAMPLING  10
-#define SENSOR_NOISE        0.1
-#define RESAMPLING_NOISE    0.1
-#define MOVEMENT_NOISE      0.1
-#define DISTANCE_THRESHOLD  0.2
-#define ANGLE_THRESHOLD     0.2
+#define SENSOR_NOISE        0.02
+#define RESAMPLING_NOISE    0.02
+#define MOVEMENT_NOISE      0.02
+#define DISTANCE_THRESHOLD  0.1
+#define ANGLE_THRESHOLD     0.1
 
 sensor_msgs::LaserScan real_sensor_info;
 sensor_msgs::LaserScan real_scan;

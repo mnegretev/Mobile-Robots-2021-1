@@ -8,6 +8,6 @@ grammar proyecto_voice_cmd;
 
 <move> = ROBOT [<polite>] GO TO <place>;
 
-<place> = THE KITCHEN | THE LIVING ROOM | THE DINING ROOM | (THE | MY) BEDROOM;
+<place> = THE KITCHEN | THE LIVING ROOM | THE DINING ROOM;
 
 <polite> = PLEASE | COULD YOU;

@@ -21,8 +21,8 @@ loop      = None
 global_g  = None
 sub_voice = None
 sub_synth = None
-rospy.set_param("/navigation/path_planning/smoothing_beta",0.95)
-rospy.set_param("/navigation/path_planning/smoothing_alpha",0.01)
+rospy.set_param("/navigation/path_planning/smoothing_beta",0.90)
+rospy.set_param("/navigation/path_planning/smoothing_alpha",0.05)
 
 def callback_voice_recognized(data):
     global state, global_g, loop
@@ -40,24 +40,24 @@ def callback_voice_recognized(data):
     words = phrase.split()
 
     if (words[-1]=='KITCHEN'):
-        goal.pose.position.x = 2.0
-        goal.pose.position.y = -1.0
+        goal.pose.position.x = 8.5
+        goal.pose.position.y = 4.5
         goal.pose.position.z = 0.0
         destination = 'the kitchen'
-    elif (words[-1]=='BEDROOM'):
-        goal.pose.position.x = 3.0
-        goal.pose.position.y = 1.0
-        goal.pose.position.z = 0.0
-        destination = 'the bedroom'
+    #elif (words[-1]=='BEDROOM'):
+        #goal.pose.position.x = 5.2
+        #goal.pose.position.y = 2.0
+        #goal.pose.position.z = 0.0
+        #destination = 'the bedroom'
     elif (words[-1]=='ROOM'):
         if (words[-2]=='LIVING'):
-            goal.pose.position.x = 2.0
-            goal.pose.position.y = 3.5
+            goal.pose.position.x = 3.0
+            goal.pose.position.y = 0.0
             goal.pose.position.z = 0.0
             destination = 'the living room'
         elif (words[-2]=='DINING'):
             goal.pose.position.x = 4.0
-            goal.pose.position.y = 3.8
+            goal.pose.position.y = 4.0
             goal.pose.position.z = 0.0
             destination = 'the dining room'
     else:
