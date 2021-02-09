@@ -8,8 +8,8 @@ grammar voice_cmd;
 
 public <move> = MOVE FORWARD;
 
-public <move2> = STOP | MOVE <direction> [<speed>];
+public <move2> = GO | TO <direction> [<speed>];
 
-<direction> = FORWARD | BACK | LEFT | RIGHT;
+<direction> = FORWARD | BACK | LEFT | RIGHT | KITCHEN | BEDROOM | LOUNGE;
 
 <speed> = FULL SPEED | HALF SPEED;

@@ -50,12 +50,14 @@ def get_inflated_map(static_map, inflation_cells):
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    for i in range(0, width):
-        for j in range(0,height):
-            if (static_map[j,i] > 50):
-                for k1 in range(j-r, j + r):#si encuentro celda ocupada necesito 2 for para recorrer el radio de inflacion
-                    for k2 in range(i-r, i + r):
-                        inflated[k1,k2] = 100
+    for i in range(0,height-1):
+        for  j in range(0,width-1):
+            if static_map[i,j]>50:
+                for k1 in range(i-r,i+r):
+                    for k2 in range(j-r,j+r):
+                        inflated[k1,k2]=100;
+            
+
     return inflated
 
 def get_cost_map(static_map, cost_radius):
@@ -71,14 +73,15 @@ def get_cost_map(static_map, cost_radius):
     # Map is given in 'static_map' as a bidimensional numpy array.
     # Consider as occupied cells all cells with an occupation value greater than 50
     #
-    for i in range(0, width):
-        for j in range(0,height):
+    for i in range(0, height-1):
+        for j in range(0,width-1):
             if (static_map[i,j] > 50):
                 for k1 in range(-cost_radius, cost_radius):#si encuentro celda ocupada necesito 2 for para recorrer el radio de inflacion
                     for k2 in range(-cost_radius, cost_radius): 
                         c = cost_radius +1 - max(abs(k1),abs(k2))#restar maximo del valor absoluto de k1 y k2
                         #c = r +1 - max(abs(k1)) - max(abs(k2))#restar maximo del valor absoluto de k1 y k2
-                        cost_map[j+ cost_radius,i + cost_radius] = max(c, cost_map[j+ cost_radius, i+ cost_radius])
+                        if c > cost_map[i + k1,j + k2]:
+                            cost_map[k1 + i,j + k2] = c
     return cost_map
 
 def callback_inflated_map(req):

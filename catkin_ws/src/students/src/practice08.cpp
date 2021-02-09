@@ -383,6 +383,7 @@ int main(int argc, char** argv)
      * Sentences for getting the static map, info about real lidar sensor,
      * and initialization of corresponding arrays.
      */
+    ros::service::waitForService("static_map", ros::Duration(20));
     ros::service::call("/static_map", srv_get_map);
     static_map = srv_get_map.response.map;
     real_scan = *ros::topic::waitForMessage<sensor_msgs::LaserScan>("/scan");

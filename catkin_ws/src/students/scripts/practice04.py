@@ -155,7 +155,7 @@ def get_smooth_path(original_path, alpha, beta):
       gradient[0][0] = alpha* (smooth_path[0][0] - original_path[0][0]) - beta * (smooth_path[1][0]-smooth_path[0][0])
       smooth_path[0][0] = smooth_path[0][0] - epsilon * gradient[0][0]
 
-      #Duda: si trato de combinar las dos instrucciones anteriores en una misma línea de código el suavizado de curvas no me lo hace bien.
+      #Duda: si trato de combinar las dos instrucciones anteriores en una misma linea de codigo el suavizado de curvas no me lo hace bien.
       #Lo mismo ocure en el resto de lineas comentadas en la funcion
       #smooth_path[0][0] =smooth_path[0][0] -  epsilon*(alpha* (smooth_path[0][0] - original_path[0][0]) - beta * (smooth_path[1][0]-smooth_path[0][0]))
 
