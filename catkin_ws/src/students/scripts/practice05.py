@@ -134,7 +134,7 @@ def follow_path(path):
     return
     
 def callback_global_goal(msg):
-    print "Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y])
+    print ("Calculatin path from robot pose to " + str([msg.pose.position.x, msg.pose.position.y]))
     clt_plan_path = rospy.ServiceProxy('/navigation/path_planning/a_star_search', GetPlan)
     [robot_x, robot_y, robot_a] = get_robot_pose(listener)
     req = GetPlanRequest()
