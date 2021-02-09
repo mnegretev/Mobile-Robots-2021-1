@@ -20,9 +20,9 @@
 #define NOMBRE "REYES_ESLAVA"
 
 #define LASER_DOWNSAMPLING  10
-#define SENSOR_NOISE        0.02
-#define RESAMPLING_NOISE    0.02
-#define MOVEMENT_NOISE      0.02
+#define SENSOR_NOISE        0.05
+#define RESAMPLING_NOISE    0.05
+#define MOVEMENT_NOISE      0.05
 #define DISTANCE_THRESHOLD  0.1
 #define ANGLE_THRESHOLD     0.1
 
