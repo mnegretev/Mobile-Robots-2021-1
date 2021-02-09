@@ -19,7 +19,7 @@
   <node name="p03" pkg="students" type="practice03.py" output="screen"/>
   <node name="p04" pkg="students" type="practice04.py" output="screen"/>
   <node name="p05" pkg="students" type="practice05.py" output="screen"/>
-  <node name="p08" pkg="students" type="practice08" output="screen"/>
+  <node name="p08" pkg="students" type="practice08" output="screen">
   <param name="min_x" value="-0.5"/>
   <param name="max_x" value="0.5"/>
   <param name="min_y" value="-0.5"/>
@@ -27,7 +27,7 @@
   </node>
 
   <node name="speech_recog" pkg="pocketsphinx" type="asr_test.py" output="screen">
-    <remap from="jsgf_audio" to="sphinx_audio" />
+    <remap from="jsgf_audio" to="sphinx_audio"/>
     <param name="gram" value="$(find pocketsphinx)/vocab/movement"/>
     <param name="dict" value="$(find pocketsphinx)/vocab/movement.dic"/>
     <param name="grammar" value="movement"/>
