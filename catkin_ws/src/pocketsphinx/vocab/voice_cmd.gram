@@ -10,6 +10,6 @@ public <move> = MOVE FORWARD;
 
 public <move2> = GO | TO <direction> [<speed>];
 
-<direction> = FORWARD | BACK | LEFT | RIGHT | KITCHEN | BEDROOM | LOUNGE;
+<direction> = FORWARD | BACK | LEFT | RIGHT | KITCHEN | BEDROOM | LOUNGE | WALL;
 
 <speed> = FULL SPEED | HALF SPEED;
