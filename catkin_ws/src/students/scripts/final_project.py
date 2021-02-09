@@ -34,10 +34,6 @@ def control_ins(command):
 	    loc.pose.position.x = 3.0
 	    loc.pose.position.y = 1.0
 	    pub_cmd_loc.publish(loc)
-        elif (command == "ROBOT GO TO THE ENTRANCE"):
-            loc.pose.position.x = 1.0
-	    loc.pose.position.y = 0.0
-	    pub_cmd_loc.publish(loc)
 
 
 def callback_ins(msg):
