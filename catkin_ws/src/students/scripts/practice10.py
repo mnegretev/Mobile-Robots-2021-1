@@ -15,6 +15,7 @@ import cv2
 import math
 import rospy
 import rospkg
+import os
 from cv_bridge import CvBridge, CvBridgeError
 
 NAME = "AMALFI FIGUEROA ISAAC"

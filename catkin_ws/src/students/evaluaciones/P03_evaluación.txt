@@ -1,0 +1,5 @@
+La práctica no funciona correctamente.
+El programa realiza el inflado del mapa pero el mapa
+aparece transpuesto, es decir, la asignación de
+renglones y columnas no se está realizando correctamente.
+Calificación: 8.0

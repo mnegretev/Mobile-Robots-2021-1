@@ -1,0 +1,4 @@
+El programa no corre. Indica un error de sangrado, sin embargo,
+incluso corrigiendo ese error, el programa no realiza correctamente
+el suavizado de la ruta calculada.
+Calificación: 7.0
