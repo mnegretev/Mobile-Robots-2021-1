@@ -5,10 +5,11 @@
 # 
 #
 import sys
-import rospy 
+import rospy
 import tf
+import math
+import numpy
 
-from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 from sound_play.msg import SoundRequest
 from std_msgs.msg import String
@@ -18,7 +19,7 @@ NAME = "ARGUELLES_MACOSAY"
 confirm=0
 actual_pos=1
 place=0
-pos_ant=0
+pos_goal=0
 #####################################
 #Definir posiciones(coordenadas) de los lugares
 #####################################
@@ -54,9 +55,9 @@ def position(order):
     dir.pose.position.y=posy
     dir.pose.orientation.w=0
     publishing_dir.publish(dir)
-    global pos_ant
-    pos_ant=posx,posy
-    print("goal:"+ str(pos_ant))
+    global pos_goal
+    pos_goal=posx,posy
+    print("goal:"+ str(pos_goal))
     return
 
 def listening(order):
@@ -88,7 +89,7 @@ def listening(order):
     elif (confirm==1):
         if(order_received=="YES"):
             if (place==actual_pos):
-                robot_talk("im already in the place")
+                robot_talk("im already going or in the place")
                 confirm=0
             else:
                 position(place)
@@ -109,14 +110,60 @@ def robot_talk(to_say):
     Robot_voice.arg= to_say
     publishing_robot_voice.publish(Robot_voice)
 
+def arrived(odom):
+    tolerance=0.5
+    [robot_act_x,robot_act_y,robot_act_a]= get_robot_pose(listener)
+    global pos_goal
+    print("pos actual:" +str(robot_act_x)+","+str(robot_act_y))
+    print("goal pos:" + str(pos_goal ))
+    print("")
+    place_arrived=""
+    not_arrived=True
+    while(not_arrived):
+        [robot_act_x,robot_act_y,robot_act_a]= get_robot_pose(listener)
+        #print("pos actual:" +str(robot_act_x)+","+str(robot_act_y))
+        pos_tolerance_x= numpy.fabs(robot_act_x-pos_goal[0])
+        pos_tolerance_y= numpy.fabs(robot_act_y-pos_goal[1])
+        #print("diff_de_pos: "+str(pos_tolerance_x)+","+str(pos_tolerance_y))
+        if(pos_tolerance_x<=tolerance and pos_tolerance_y<=tolerance):
+            not_arrived=False
+            if (place==1):
+                place_arrived="entrance"
+            elif (place==2):
+                place_arrived="bedroom"
+            elif (place==3):
+                place_arrived="livingroom"
+            elif (place==4):
+                place_arrived="corridor"
+            elif (place==5):
+                place_arrived="kitchen"
+            robot_talk("I have arrived to the " + place_arrived)
+
+def get_robot_pose(listener):
+    try:
+        (trans, rot) = listener.lookupTransform('map', 'base_link', rospy.Time(0))
+        robot_x = trans[0]
+        robot_y = trans[1]
+        robot_a = 2*math.atan2(rot[2], rot[3])
+        if robot_a > math.pi:
+            robot_a -= 2*math.pi
+        return robot_x, robot_y, robot_a
+    except:
+        pass
+    return [0,0,0]
+
 def main():
     global publishing_robot_voice
     global publishing_dir
+    global listener
+
     print ("PROJECT " + NAME)
     rospy.init_node("project")
     publishing_dir=rospy.Publisher('/move_base_simple/goal', PoseStamped,queue_size=10)
     publishing_robot_voice=rospy.Publisher('/robotsound',SoundRequest,queue_size=10)
     rospy.Subscriber("/recognized",String,listening)
+    rospy.Subscriber('/move_base_simple/goal', PoseStamped, arrived)
+    listener = tf.TransformListener()
     rospy.Rate(50)
     rospy.spin()
 
