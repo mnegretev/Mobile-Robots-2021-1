@@ -1,0 +1,4 @@
+El proyecto funciona parcialmente.
+Después de la segunda meta, el robot siempre dice que está ocupado
+y no obedece más comandos.
+Calificación: 9.0
