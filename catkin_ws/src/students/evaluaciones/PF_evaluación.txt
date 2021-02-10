@@ -1,0 +1,5 @@
+El proyecto funciona parcialmente.
+El robot reconoce bien los comandos de voz, navega y se localiza bien.
+Sin embargo, no avisa por voz cuando llega al destino.
+Sí se está publicando un tópico para que hable, pero faltó levantar el nodo de síntesis de voz en el archivo launch.
+Calificación: 9.0
