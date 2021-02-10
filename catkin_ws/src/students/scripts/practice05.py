@@ -27,7 +27,7 @@ NAME = "AMALFI FIGUEROA ISAAC"
 pub_cmd_vel = None
 loop        = None
 listener    = None
-pub_voice	= None
+pub_voice   = None
 
 def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     cmd_vel = Twist()
@@ -69,8 +69,8 @@ def calculate_control(robot_x, robot_y, robot_a, goal_x, goal_y):
     return cmd_vel
 
 def follow_path(path):
-	tolerance = 0.2
-	epsilon = 0.1
+    tolerance = 0.2
+    epsilon = 0.1
     #
     # TODO:
     # Use the calculate_control function to move the robot along the path.
