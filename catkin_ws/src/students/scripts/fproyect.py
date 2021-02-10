@@ -28,7 +28,7 @@ def to_order(word):
     #............................................................
     
     if (walk == False):
-         if word=='GO TO BEDROOM':
+        if word=='GO TO BEDROOM':
             localization.pose.position.x = 8
             localization.pose.position.y = 0
             localization.pose.orientation.w = 1
@@ -55,7 +55,6 @@ def to_order(word):
         finish=True
     if (walk==True):
         talk('I am still working on the previus command')
-
     return 0
 
 def callback_function(msg):
@@ -81,7 +80,7 @@ def callback_checar(msg):
 
     if(msg.linear.x!=0):
         walk = True
-        print 'Order received'
+        print "Order received"
 
     if(msg.linear.x==0 and finish):
         finish  = False
