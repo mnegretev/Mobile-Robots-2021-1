@@ -1,5 +1,1 @@
-El programa no funciona correctamente.
-El programa siempre indica que se llegó a un NaN en un punto del descenso del gradiente.
-Esto puede deberse a un cálculo incorrecto del gradiente o bien
-a un a mala selección de constantes.
-Calificación: 7.0
+El programa funciona correctamente. 
