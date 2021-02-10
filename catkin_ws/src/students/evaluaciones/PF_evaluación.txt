@@ -1,0 +1,4 @@
+El proyecto funciona correctamente.
+Conviene revisar las constantes del control para que el
+movimiento sea menos accidentado.
+Calificación: 10
