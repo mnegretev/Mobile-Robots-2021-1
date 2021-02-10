@@ -21,8 +21,8 @@ from collections import deque
 
 NAME = "AMALFI FIGUEROA ISAAC"
 def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
-	execution_steps=0
- 	open_list = []
+    execution_steps=0
+    open_list = []
     in_open_list   = numpy.full(grid_map.shape, False)
     in_closed_list = numpy.full(grid_map.shape, False)
     distances      = numpy.full(grid_map.shape, sys.maxint)
@@ -48,7 +48,6 @@ def dijkstra(start_r, start_c, goal_r, goal_c, grid_map, cost_map):
                 in_open_list[nr,nc] = True
                 heapq.heappush(open_list,(dist,[nr,nc]))
             execution_steps += 1
-
     if [r,c] != [goal_r, goal_c]:
         print "Cannot calculate path by Dijkstra:'("
         return []
@@ -112,7 +111,7 @@ def get_smooth_path(original_path, alpha, beta):
     # in the variables xo_i and yo_i respectively. 
     #
     #
-  	smooth_path  = copy.deepcopy(original_path)            # At the beginnig, the smooth path is the same than the original path.
+    smooth_path  = copy.deepcopy(original_path)            # At the beginnig, the smooth path is the same than the original path.
     tolerance    = 0.00001                                 # If gradient magnitude is less than a tolerance, we consider.
     gradient_mag = tolerance + 1                           # we have reached the local minimum.
     gradient     = [[0,0] for i in range(len(smooth_path))]# Gradient has N components of the form [x,y]. 
