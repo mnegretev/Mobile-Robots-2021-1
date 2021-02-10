@@ -98,7 +98,6 @@ def main():
 	listener = tf.TransformListener()
 	
 	sub_voice = rospy.Subscriber('/recognized',String,catch_the_voice)
-	sub_gen = rospy.Subscriber('/robotsound',SoundRequest, ignored_noise)
 	while not rospy.is_shutdown():
         	loop.sleep()
 

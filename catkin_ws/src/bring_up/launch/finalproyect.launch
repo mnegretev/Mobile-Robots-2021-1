@@ -37,10 +37,6 @@
   </node>
 
 
- <node name="sound_play" pkg="sound_play" type="sound_play_node.py" output="screen" />
- <node name="say" pkg="sound_play" type="say.py" output="screen" />
-    
-
   <node name="Inflation" pkg="students" type="practice03.py" output="screen" />
   <node name="Smooth" pkg="students" type="practice04.py" output="screen" />
   <node name="Control" pkg="students" type="practice05.py" output="screen" />
