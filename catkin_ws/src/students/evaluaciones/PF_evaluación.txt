@@ -1,0 +1,4 @@
+El proyecto no funciona debido a que la práctica 05 (seguimiento de rutas)
+se cae sistematicamente arrojando el error:
+'ImportError: No module named map'.
+Calificación: 6.0
