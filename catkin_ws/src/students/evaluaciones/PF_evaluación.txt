@@ -1,0 +1,5 @@
+El proyecto funciona parcialmente.
+Cuando el robot inicia y cuando llega al destino se escucha un sonido,
+que supongo sirve para anunciar lo que está haciendo el robot.
+Sin embargo se pidió que el robot sintetizara voz.
+Calificación: 9.0
