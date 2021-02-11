@@ -1,0 +1,7 @@
+El proyecto no funciona correctamente.
+Primero, el archivo launch no corre. Dice que no se encuentra el ejecutable de la práctica 08.
+Si se corrige el nombre del ejecutable, el archivo launch corre, pero la localización no funciona.
+Al parecer se agregó un nuevo archivo para la localización, sin embargo, para
+que compilara se tendría que haber modificado también el CMakeLists.txt.
+En síntesis, el proyecto no funciona debido a que la localización no funciona.
+Calificación: 7.0
